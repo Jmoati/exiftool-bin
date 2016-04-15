@@ -1,0 +1,11 @@
+{
+  "name": "jmoati/exiftool-bin",
+  "authors": [
+    {
+      "name": "Jacques Moati",
+      "email": "jacques@moati.net"
+    }
+  ],
+  "license": "MIT",
+  "bin": ["exiftool"]
+}
