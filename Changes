@@ -4,14 +4,153 @@ ExifTool Version History
 
 RSS feed: http://owl.phy.queensu.ca/~phil/exiftool/rss.xml
 
-Note: The most recent production release is Version 10.10. (Other versions are
+Note: The most recent production release is Version 10.20. (Other versions are
 considered development releases, and are not uploaded to CPAN.)
+
+Aug. 3, 2016 - Version 10.25
+
+  - Added a new Pentax PictureMode (thanks Louis Granboulan)
+  - Added a new Nikon LensID (thanks LibRaw)
+  - Decode a new Samsung tag (thanks LibRaw)
+  - Decode a few more Canon tags (thanks Anton Reiser)
+  - Removed "Avoid" flag for XMP-crs:ColorTemperature
+  - Changed the format of a number of XMP-GPano tags from integer to real
+  - Fixed incorrect tag ID's for some obscure Island Graphics EXIF tags
+  - Fixed decoding of some UTF-8 DNG tags which may be stored in BYTE format
+
+July 27, 2016 - Version 10.24
+
+  - Added support for DJI Phantom maker notes
+  - Added a few more XMP-crs tags
+  - Added ability to write DNG OpcodeList tags
+  - Added a new Sony/Minolta LensType (thanks Jos Roost)
+  - Added a few new FujiFilm Saturation values
+  - Added a new FujiFlashMode value and fixed an incorrect Italian translation
+    (thanks Massimo Sanna, ApolloOne)
+  - Decode more Pentax tags (thanks Louis Granboulan)
+  - Changed -config option to search the current directory first for the config
+    file (patches problem introduced in ExifTool 10.21 for Windows where the
+    working directory might not be searched when using the -config option)
+  - Changed print conversion of ProcessingTime to show 3 significant digits
+  - Fixed bug decoding PanasonicRaw DistortionInfo in DNG images
+
+July 14, 2016 - Version 10.23
+
+  - Added read support for Ogg Opus audio files
+  - Added ability to geotag only GPS date/time if no position information is
+    available by setting Geotag to "DATETIMEONLY" (all caps)
+  - Added "-charset RIFF" option
+  - Added a new Sony LensType (thanks Jos Roost)
+  - Decode a number of new Canon tags (thanks Kai Harrekilde-Petersen)
+  - Changed handling of special characters in RIFF-format files (eg. AVI, WAV)
+  - Changed MIME type of OGG files to audio/ogg (was audio/x-ogg)
+  - Minor change to wording of new Nikon D80 Rotation tag for consistency
+  - API Changes:
+      - Added CharsetRIFF option
+
+July 7, 2016 - Version 10.22
+
+  - Added read support for BPG images
+  - Minor changes to a few of the new Nikon tags
+  - Fixed problem in Windows version where not all 10.21 updates were included
+    in the release
+
+June 29, 2016 - Version 10.21
+
+  - WARNING: The Windows EXE package for this release was built on Windows 10
+    using Perl 5.24 instead of Windows XP and Perl 5.8 -- please watch for
+    problems and report anything that you find
+  - Added a new Minolta/Sony LensType (thanks LibRaw)
+  - Added a new element to the XMP Colorant structure
+  - Added a new Pentax lens (thanks Louis Granboulan)
+  - Decode Nikon D5/D500 AF information (thanks Michael Tapes for samples)
+  - Decode a number of new Olympus tags (thanks Daniel Pollock)
+  - Decode a number of new Nikon tags (thanks Warren Hatch)
+  - Decode Pentax K-1 AF points (thanks Louis Granboulan)
+  - Extract a new DPX tag
+  - Patched to avoid writing an empty structure field for an undefined value
+
+June 13, 2016 - Version 10.20 (production release)
+
+  - Added a few new Sigma LensTypes (thanks LibRaw and Jos Roost)
+  - Added a new Sony LensType (thanks Jos Roost)
+  - Added two new Canon LensTypes (thanks Jos Roost and Norbert Wasser)
+  - Added a couple of new PentaxModelID's (thanks Louis Granboulan for one)
+  - Added a new Pentax LensType (thanks Louis Granboulan)
+  - Added a few new Olympus PictureMode values (thanks Daniel Pollock)
+  - Added a few more XMP tags
+  - Decode a new Nikon video tag (thanks Hayo Baan)
+  - Patched to allow protected binary data tags to be extracted when -b is
+    combined with -php or -X if the tag is specifically requested
+  - Fixed bug introduced in version 9.96 where extended XMP is ignored if the
+    MWG module is used
+  - Fixed problem where the MWG module wasn't loaded automatically if there were
+    MWG tags in the argument to the -p option
+  - Fixed column alignment of alternate-language output (requires
+    Unicode::LineBreak to be installed)
+  - Fixed problem writing Sigma:LensFocalRange
+
+May 31, 2016 - Version 10.19
+
+  - Added a few new Sony and Sigma LensType values (thanks Jos Roost)
+  - Decode more Nikon tags (thanks Warren Hatch)
+  - Fixed an incorrect Sigma LensType (thanks LibRaw)
+  - Fixed decoding of D500 custom settings for NEF images (thanks Warren Hatch)
+
+May 27, 2016 - Version 10.18
+
+  - Added a number of new Sigma LensTypes (thanks LibRaw)
+  - Added a few new Sony/Minolta lenses (thanks Jos Roost)
+  - Added ability to write FilePermissions
+  - Decode NikonCustom settings for the D500 (thanks Warren Hatch)
+  - Decode PLUS MediaSummaryCode values
+  - Use hexadecimal for Sigma LensType values
+  - Changed -fileOrder option to sort numbers in strings numerically
+  - Fixed typo in Samsung lens name
+
+May 16, 2016 - Version 10.17
+
+  - Added support for Leica X-U (Typ 113) maker notes
+  - Added a new Pentax LensType (thanks Louis Granboulan)
+  - Added a number of new Sony lenses (thanks Jos Roost)
+  - Added a new Canon LensType (thanks Mees Dekker)
+  - Extract TIFF-format thumbnails and previews
+  - Patched to ignore XML entities inside comments
+  - Fixed inconsistent conversion of PreviewColorSpace values
+  - Fixed writing of TargetPrinter tag
+  - Fixed bug introduced in 10.16 which which could cause a runtime warning when
+    using the -o option and not writing any "real" tags
+
+May 3, 2016 - Version 10.16
+
+  - Added %D, %F and %E filename format codes
+  - Added a new Minolta lens (thanks Jos Roost)
+  - Decode Photoshop Compression mode
+  - Decode Nikon MultiExposure information for the D5
+  - Updated decoding of Sony tags for ILCA-68 (thanks Jos Roost)
+  - Fixed bug adding back XMP tags after deleting all XMP from MOV/MP4 files
+  - Fixed problem using -o option when reading from stdin (ie. FILE is "-")
+  - Fixed problem where user-defined Composite tags may not always override
+    pre-defined Composite tags with the same name, and added feature to allow
+    the user to specify whether they should override existing tags or not
+
+Apr. 20, 2016 - Version 10.15 (production release)
+
+  - Added .a and .o to the list of supported file types
+  - Added a few new Sony/Minolta lenses (thanks Jos Roost and LibRaw)
+  - Decode more Photoshop tags (thanks Taylor Bangs for some)
+  - Decode more information from static library (.a) files
+  - Decode a few more tags from GoPro MP4 videos (thanks Calvin Hass)
+  - Decode ColorData for Canon EOS 1300D (thanks LibRaw)
+  - Updated Sony decoding for newer models (thanks Jos Roost)
+  - Fixed bug where ScaleFactor35efl could be calculated incorrectly for Canon
+    images from some models which have had their EXIF rebuilt
 
 Apr. 8, 2016 - Version 10.14
 
   - Added read support for ISO 9660 disk images
   - Added a few new Nikon ISOExpansion values (thanks LibRaw)
-  - Added a few new Olympus LensType values (thanks Niels Kristian Bech Jensen) 
+  - Added a few new Olympus LensType values (thanks Niels Kristian Bech Jensen)
   - Added a couple of new SonyModelID values (thanks LibRaw for one)
   - Added a new Olympus CameraType
   - Added config_files/gps2utm.config to distribution

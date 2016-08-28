@@ -6,6 +6,5 @@
       "email": "jacques@moati.net"
     }
   ],
-  "license": "MIT",
-  "bin": ["exiftool"]
+  "license": "MIT"
 }

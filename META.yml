@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               Image-ExifTool
-version:            10.14
+version:            10.25
 abstract:           Read and write meta information
 author:
     - Phil Harvey (phil@owl.phy.queensu.ca)
@@ -25,3 +25,4 @@ recommends:
     Compress::Zlib:  0
     Digest::MD5:     0
     Digest::SHA:     0
+    Time::HiRes:     0

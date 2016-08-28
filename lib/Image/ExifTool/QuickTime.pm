@@ -42,7 +42,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 
-$VERSION = '1.95';
+$VERSION = '1.97';
 
 sub FixWrongFormat($);
 sub ProcessMOV($$;$);
@@ -199,6 +199,11 @@ my %timeInfo = (
 my %durationInfo = (
     ValueConv => '$$self{TimeScale} ? $val / $$self{TimeScale} : $val',
     PrintConv => '$$self{TimeScale} ? ConvertDuration($val) : $val',
+);
+# handle unknown tags
+my %unknownInfo = (
+    Unknown => 1,
+    ValueConv => '$val =~ /^([\x20-\x7e]*)\0*$/ ? $1 : \$val',
 );
 # parsing for most of the 3gp udta language text boxes
 my %langText = (
@@ -402,8 +407,7 @@ my %graphicsMode = (
         # "\x98\x7f\xa3\xdf\x2a\x85\x43\xc0\x8f\x8f\xd9\x7c\x47\x1e\x8e\xea" - unknown data in Flip videos
         { #8
             Name => 'UUID-Unknown',
-            Unknown => 1,
-            Binary => 1,
+            %unknownInfo,
         },
     ],
     _htc => {
@@ -712,8 +716,7 @@ my %graphicsMode = (
         },
         {
             Name => 'UUID-Unknown',
-            Unknown => 1,
-            Binary => 1,
+            %unknownInfo,
         },
     ],
     cmov => {
@@ -835,8 +838,7 @@ my %graphicsMode = (
         },
         {
             Name => 'UUID-Unknown',
-            Unknown => 1,
-            Binary => 1,
+            %unknownInfo,
         },
     ],
     # edts - edits --> contains elst (edit list)
@@ -998,15 +1000,15 @@ my %graphicsMode = (
         PrintConv => \&PrintGPSCoordinates,
     },
     # \xa9 tags written by DJI Phantom 3: (ref PH)
-    # \xa9xsp - +0.00
-    # \xa9ysp - +0.00
-    # \xa9zsp - +0.00,+0.40
-    # \xa9fpt - -2.80,-0.80,-0.20,+0.20,+0.70,+6.50
-    # \xa9fyw - -160.70,-83.60,-4.30,+87.20,+125.90,+158.80,
-    # \xa9frl - +1.60,-0.30,+0.40,+0.60,+2.50,+7.20
-    # \xa9gpt - -49.90,-17.50,+0.00
-    # \xa9gyw - -160.60,-83.40,-3.80,+87.60,+126.20,+158.00 (similar values to fyw)
-    # \xa9grl - +0.00
+    "\xa9xsp" => 'SpeedX', #PH (guess)
+    "\xa9ysp" => 'SpeedY', #PH (guess)
+    "\xa9zsp" => 'SpeedZ', #PH (guess)
+    "\xa9fpt" => 'Pitch', #PH
+    "\xa9fyw" => 'Yaw', #PH
+    "\xa9frl" => 'Roll', #PH
+    "\xa9gpt" => 'CameraPitch', #PH
+    "\xa9gyw" => 'CameraYaw', #PH
+    "\xa9grl" => 'CameraRoll', #PH
     # and the following entries don't have the proper 4-byte header for \xa9 tags:
     "\xa9dji" => { Name => 'UserData_dji', Format => 'undef', Binary => 1, Unknown => 1, Hidden => 1 },
     "\xa9res" => { Name => 'UserData_res', Format => 'undef', Binary => 1, Unknown => 1, Hidden => 1 },
@@ -1398,8 +1400,19 @@ my %graphicsMode = (
             ByteOrder => 'LittleEndian',
         },
     },
-    # ---- GoPro ----
-    GoPr => 'GoProType', #PH
+    # ---- GoPro ---- (ref PH)
+    GoPr => 'GoProType', # (Hero3+)
+    FIRM => 'FirmwareVersion', # (Hero4)
+    LENS => 'LensSerialNumber', # (Hero4)
+    CAME => { # (Hero4)
+        Name => 'SerialNumberHash',
+        Description => 'Camera Serial Number Hash',
+        ValueConv => 'unpack("H*",$val)',
+    },
+    # SETT? 12 bytes (Hero4)
+    # MUID? 32 bytes (Hero4, starts with serial number hash)
+    # HMMT? 404 bytes (Hero4, all zero)
+    # free (all zero)
     # --- HTC ----
     htcb => {
         Name => 'HTCBinary',
@@ -6213,8 +6226,7 @@ sub ProcessMOV($$;$)
                 $tagInfo = {
                     Name => "Unknown_$name",
                     Description => "Unknown $name",
-                    Unknown => 1,
-                    Binary => 1,
+                    %unknownInfo,
                 };
             }
             AddTagToTable($tagTablePtr, $tag, $tagInfo);

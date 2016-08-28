@@ -21,7 +21,7 @@ use vars qw($VERSION %samsungLensTypes);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.32';
+$VERSION = '1.34';
 
 sub WriteSTMN($$$);
 sub ProcessINFO($$$);
@@ -45,7 +45,7 @@ sub ProcessSamsungIFD($$$);
     10 => 'Samsung NX 45mm F1.8', #3
     11 => 'Samsung NX 45mm F1.8 2D/3D', #3
     12 => 'Samsung NX 12-24mm F4-5.6 ED', #4
-    13 => 'Saumsun NX 16-50mm F2-2.8 S ED OIS', #forum3833
+    13 => 'Samsung NX 16-50mm F2-2.8 S ED OIS', #forum3833
     14 => 'Samsung NX 10mm F3.5 Fisheye', #NJ
     15 => 'Samsung NX 16-50mm F3.5-5.6 Power Zoom ED OIS', #5
     20 => 'Samsung NX 50-150mm F2.8 S ED OIS', #PH
@@ -440,6 +440,10 @@ my %formatMinMax = (
     #    RawConv    => 'Image::ExifTool::Samsung::Crypt($self,$val,$tagInfo,6)',
     #    RawConvInv => 'Image::ExifTool::Samsung::Crypt($self,$val,$tagInfo,-6)',
     #},
+    0xa025 => { #IB
+        Name => 'HighlightLinearityLimit',
+        Writable => 'int32u',
+    },
     0xa028 => { #2/PH
         Name => 'WB_RGGBLevelsBlack',
         Writable => 'int32s',

@@ -48,7 +48,7 @@ use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 require Exporter;
 
-$VERSION = '2.91';
+$VERSION = '2.95';
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(EscapeXML UnescapeXML);
 
@@ -368,11 +368,23 @@ my %sPageInfo = (
     red         => { Writable => 'integer' },
     green       => { Writable => 'integer' },
     blue        => { Writable => 'integer' },
+    gray        => { Writable => 'integer' },
     L           => { Writable => 'real' },
     A           => { Writable => 'integer' },
     B           => { Writable => 'integer' },
     # 'tint' observed in INDD sample - PH
     tint        => { Writable => 'integer', Notes => 'not part of 2010 XMP specification' },
+);
+my %sSwatchGroup = (
+    STRUCT_NAME => 'SwatchGroup',
+    NAMESPACE   => 'xmpG',
+    groupName   => { },
+    groupType   => { Writable => 'integer' },
+    Colorants => {
+        FlatName => 'SwatchColorant',
+        Struct => \%sColorant,
+        List => 'Seq',
+    },
 );
 my %sFont = (
     STRUCT_NAME => 'Font',
@@ -589,7 +601,7 @@ my %sCVTermDetails = (
     },
     plus => {
         Name => 'plus',
-        SubDirectory => { TagTable => 'Image::ExifTool::XMP::plus' },
+        SubDirectory => { TagTable => 'Image::ExifTool::PLUS::XMP' },
     },
     cc => {
         Name => 'cc',
@@ -971,6 +983,16 @@ my %sPantryItem = (
         List => 'Seq',
     },
     PlateNames          => { List => 'Seq' },
+    # the following found in an AI file:
+    HasVisibleTransparency => { Writable => 'boolean' },
+    HasVisibleOverprint    => { Writable => 'boolean' },
+    SwatchGroups => {
+        Struct => \%sSwatchGroup,
+        List => 'Seq',
+    },
+    SwatchGroupsColorants => { Name => 'SwatchGroupsColorants', Flat => 1 },
+    SwatchGroupsGroupName => { Name => 'SwatchGroupName',       Flat => 1 },
+    SwatchGroupsGroupType => { Name => 'SwatchGroupType',       Flat => 1 },
 );
 
 # PDF namespace properties (pdf)
@@ -1152,7 +1174,7 @@ my %sPantryItem = (
     ShadowTint      => { Writable => 'integer' },
     Sharpness       => { Writable => 'integer', Avoid => 1 },
     Smoothness      => { Writable => 'integer' },
-    Temperature     => { Writable => 'integer', Avoid => 1, Name => 'ColorTemperature' },
+    Temperature     => { Writable => 'integer', Name => 'ColorTemperature' },
     Tint            => { Writable => 'integer' },
     ToneCurve       => { List => 'Seq' },
     ToneCurveName => {
@@ -1400,6 +1422,12 @@ my %sPantryItem = (
     NegativeCacheLargePreviewSize       => { Writable => 'integer' },
     JPEGHandling                        => { },
     TIFFHandling                        => { },
+    Dehaze                              => { Writable => 'real' },
+    ToneMapStrength                     => { Writable => 'real' },
+    # yet more
+    PerspectiveX                        => { Writable => 'real' },
+    PerspectiveY                        => { Writable => 'real' },
+    UprightFourSegmentsCount            => { Writable => 'integer' },
 );
 
 # Tiff namespace properties (tiff)
@@ -2083,6 +2111,7 @@ my %sPantryItem = (
     DistortionCorrectionAlreadyApplied  => { Writable => 'boolean' },
     VignetteCorrectionAlreadyApplied    => { Writable => 'boolean' },
     LateralChromaticAberrationCorrectionAlreadyApplied => { Writable => 'boolean' },
+    LensDistortInfo => { }, # (LR 7.5.1, 4 signed rational values)
 );
 
 # IPTC Core namespace properties (Iptc4xmpCore) (ref 4)
@@ -3299,11 +3328,16 @@ sub ParseXMPElement($$$;$$$$)
         # reset nodeID before processing each element
         my $nodeID = $$blankInfo{NodeID} = $oldNodeID;
         # get next element
-        last if $$dataPt !~ m{<([?/]?)([-\w:.\x80-\xff]+)([^>]*)>}sg or pos($$dataPt) > $end;
+        last if $$dataPt !~ m{<([?/]?)([-\w:.\x80-\xff]+|!--)([^>]*)>}sg or pos($$dataPt) > $end;
         # (the only reason we match '<[?/]' is to keep from scanning past the
         #  "<?xpacket end..." terminator or other closing token, so
         next if $1;
         my ($prop, $attrs) = ($2, $3);
+        # skip comments
+        if ($prop eq '!--') {
+            next if $attrs =~ /--$/ or $$dataPt =~ /-->/sg;
+            last;
+        }
         my $valStart = pos($$dataPt);
         my $valEnd;
         # only look for closing token if this is not an empty element

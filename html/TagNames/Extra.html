@@ -232,7 +232,7 @@ FileName, Directory and TestName tags)</span></span></td></tr>
 the RequestAll API option is set)</span></span></td></tr>
 <tr class=b>
 <td>FilePermissions</td>
-<td class=c>N</td>
+<td class=c title=' ! = Unsafe'>Y!</td>
 <td class=c>System</td>
 <td><span class=s><span class=n>(r=read, w=write and x=execute permissions for the file owner, group and
 others.  The ValueConv value is an octal number so bit test operations on
@@ -287,8 +287,9 @@ and extraction of synchronization times from image files. See the
 <td><span class=s><span class=n>(this write-only tag is used to define the GPS track log data or track log
 file name.  Currently supported track log formats are GPX, NMEA RMC/GGA/GLL,
 KML, IGC, Garmin XML and TCX, Magellan PMGNTRK, Honeywell PTNTHPR, Winplus
-Beacon text, and Bramor gEO log files.  See <a href="../geotag.html">geotag.html</a>
-for details)</span></span></td></tr>
+Beacon text, and Bramor gEO log files.  May be set to the special value of
+&quot;DATETIMEONLY&quot; (all caps) to set GPS date/time tags if no input track points
+are available.  See <a href="../geotag.html">geotag.html</a> for details)</span></span></td></tr>
 <tr class=b>
 <td>Geotime</td>
 <td class=c>Y</td>
@@ -396,23 +397,28 @@ RequestAll API option is set)</span></span></td></tr>
 <td class=c>File</td>
 <td><span class=s><span class=n>(PNG-format embedded preview image)</span></span></td></tr>
 <tr class=b>
+<td>PreviewTIFF</td>
+<td class=c>N</td>
+<td class=c>File</td>
+<td><span class=s><span class=n>(TIFF-format embedded preview image)</span></span></td></tr>
+<tr>
 <td>PreviewWMF</td>
 <td class=c>N</td>
 <td class=c>File</td>
 <td><span class=s><span class=n>(WMF-format embedded preview image)</span></span></td></tr>
-<tr>
+<tr class=b>
 <td>ProcessingTime</td>
 <td class=c>N</td>
 <td class=c>ExifTool</td>
 <td><span class=s><span class=n>(the clock time in seconds taken by ExifTool to extract information from this
 file.  Not generated unless specifically requested or the RequestAll API
 option is set.  Requires Time::HiRes)</span></span></td></tr>
-<tr class=b>
+<tr>
 <td>RAFVersion</td>
 <td class=c>N</td>
 <td class=c>File</td>
 <td><span class=s><span class=n>(RAF file version number)</span></span></td></tr>
-<tr>
+<tr class=b>
 <td>ResourceForkSize</td>
 <td class=c>N</td>
 <td class=c>System</td>
@@ -421,14 +427,14 @@ tag is generated the ExtractEmbedded option may be used to extract
 resource-fork information as a sub-document.  When writing, the resource
 fork is preserved by default, but it may be deleted with <code>-rsrc:all=</code> on
 the command line)</span></span></td></tr>
-<tr class=b>
+<tr>
 <td>TestName</td>
 <td class=c>Y</td>
 <td class=c>-</td>
 <td><span class=s><span class=n>(this write-only tag may be used instead of FileName for dry-run tests of the
 file renaming feature.  Writing this tag prints the old and new file names
 to the console, but does not affect the file itself)</span></span></td></tr>
-<tr>
+<tr class=b>
 <td>Warning</td>
 <td class=c>N</td>
 <td class=c>ExifTool</td>
@@ -437,18 +443,18 @@ Use the -a or Duplicates option to see all warnings if more than one
 occurred. Minor warnings may be ignored with the -m or IgnoreMinorErrors
 option.  Minor warnings with a capital &quot;M&quot; in the &quot;[Minor]&quot; designation
 indicate that the processing is affected by ignoring the warning)</span></span></td></tr>
-<tr class=b>
+<tr>
 <td>XMP</td>
 <td class=c title=' ! = Unsafe'>Y!</td>
 <td class=c>XMP</td>
 <td><span class=s><span class=n>(the XMP data block, but note that extended XMP in JPEG images may be split
 into multiple blocks)</span></span></td></tr>
-<tr>
+<tr class=b>
 <td>XResolution</td>
 <td class=c>N</td>
 <td class=c>File</td>
 <td><span class=s><span class=n>(the horizontal pixel resolution)</span></span></td></tr>
-<tr class=b>
+<tr>
 <td>YResolution</td>
 <td class=c>N</td>
 <td class=c>File</td>
@@ -457,7 +463,7 @@ into multiple blocks)</span></span></td></tr>
 
 <hr>
 (This document generated automatically by Image::ExifTool::BuildTagLookup)
-<br><i>Last revised Jan 11, 2016</i>
+<br><i>Last revised Jul 14, 2016</i>
 <p class=lf><a href='index.html'>&lt;-- ExifTool Tag Names</a></p>
 </body>
 </html>

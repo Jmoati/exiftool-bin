@@ -49,7 +49,7 @@ use vars qw($VERSION %minoltaLensTypes %minoltaTeleconverters %minoltaColorMode
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '2.31';
+$VERSION = '2.36';
 
 # Full list of product codes for Sony-compatible Minolta lenses
 # (ref http://www.kb.sony.com/selfservice/documentLink.do?externalId=C1000570)
@@ -160,7 +160,8 @@ $VERSION = '2.31';
 
 # high bytes in Sony LensID's identifying Metabones adapters and high bytes of Canon LensID's
 %metabonesID = (
-    0xef00 => \ 'Metabones Adapter',        # with Canon LensID 0x00xx
+    # 0xef00 is used by Metabones, Fotodiox, Sigma and Viltrox adapters (JR)
+    0xef00 => \ 'Canon EF Adapter',         # with Canon LensID 0x00xx
     0xf000 => 0xef00,                       # with Canon LensID 0x01xx
     0xf100 => 0xef00,                       # with Canon LensID 0x02xx
     0xff00 => 0xef00,                       # with Canon LensID 0x10xx
@@ -192,11 +193,18 @@ $VERSION = '2.31';
         # Note: Metabones Smart Adapter firmware versions before 31 kill
         # the high byte for 2-byte Canon LensType values, so the reported lens
         # will be incorrect for these
-        my $mb = $metabonesID{$id} or return undef;
-        ref $mb or $id = $mb, $mb = $metabonesID{$id};
-        require Image::ExifTool::Canon;
-        my $lens = $Image::ExifTool::Canon::canonLensTypes{$val - $id};
-        return $lens ? "$lens + $$mb" : undef;
+        my $mb = $metabonesID{$id};
+        if ($mb) {
+            ref $mb or $id = $mb, $mb = $metabonesID{$id};
+            require Image::ExifTool::Canon;
+            my $lens = $Image::ExifTool::Canon::canonLensTypes{$val - $id};
+            return "$lens + $$mb" if $lens;
+        } elsif ($val >= 0x4900) { # test for Sigma MC-11 adapter with Sigma lens
+            require Image::ExifTool::Sigma;
+            my $lens = $Image::ExifTool::Sigma::sigmaLensTypes{$val - 0x4900};
+            return "$lens + MC-11" if $lens;
+        }
+        return undef;
     },
     0 => 'Minolta AF 28-85mm F3.5-4.5 New', # New added (ref 13/18)
     1 => 'Minolta AF 80-200mm F2.8 HS-APO G', # white
@@ -336,6 +344,7 @@ $VERSION = '2.31';
    '128.18' => 'Tamron AF 28-105mm F4-5.6 [IF]', #IB (Model 179D)
    '128.19' => 'Sigma 35mm F1.4 DG HSM', #JR
    '128.20' => 'Sigma 18-35mm F1.8 DC HSM', #JR
+   '128.21' => 'Sigma 50-500mm F4.5-6.3 APO DG OS HSM', #JR
     129 => 'Tamron Lens (129)',
     129.1 => 'Tamron 200-400mm F5.6 LD', #12 (LD ref 23)
     129.2 => 'Tamron 70-300mm F4-5.6 LD', #12
@@ -364,6 +373,7 @@ $VERSION = '2.31';
     255.7 => 'Tamron SP AF 70-200mm F2.8 Di LD IF Macro', #22 (Model A001)
     255.8 => 'Tamron SP AF 28-75mm F2.8 XR Di LD Aspherical IF', #24 (Model A09)
     255.9 => 'Tamron AF 90-300mm F4.5-5.6 Telemacro', #Fredrik Agert
+    18688 => 'Sigma MC-11 Adapter', #JR (to this, add Sigma LensType)
     25501 => 'Minolta AF 50mm F1.7', #7
     25511 => 'Minolta AF 35-70mm F4 or Other Lens',
     25511.1 => 'Sigma UC AF 28-70mm F3.5-4.5', #12/16(HighSpeed-AF)
@@ -483,7 +493,7 @@ $VERSION = '2.31';
     26721 => 'Minolta AF 24-105mm F3.5-4.5 (D)', #11
     # 30464: newer firmware versions of the Speed Booster report type 30464 (=0x7700)
     # - this is the base to which the Canon LensType is added
-    30464 => 'Metabones Canon EF Speed Booster', #Metabones
+    30464 => 'Metabones Canon EF Speed Booster', #Metabones (to this, add Canon LensType)
     45671 => 'Tokina 70-210mm F4-5.6', #22
     45711 => 'Vivitar 70-210mm F4.5-5.6', #IB
     45741 => '2x Teleconverter or Tamron or Tokina Lens', #18
@@ -496,13 +506,15 @@ $VERSION = '2.31';
     45871 => 'Tamron AF 70-210mm F2.8 SP LD', #Fabio Suprani
     # 48128: the Speed Booster Ultra appears to report type 48128 (=0xbc00)
     # - this is the base to which the Canon LensType is added
-    48128 => 'Metabones Canon EF Speed Booster Ultra', #JR
+    48128 => 'Metabones Canon EF Speed Booster Ultra', #JR (to this, add Canon LensType)
     # 61184: older firmware versions of both the Speed Booster and the Smart Adapter
     # report type 61184 (=0xef00), and add only the lower byte of the Canon LensType (ref JR).
     # For newer firmware versions this is only used by the Smart Adapter, and
     # the full Canon LensType code is added - PH
     # the metabones adapter translates Canon L -> G, II -> II, USM -> SSM, IS -> OSS (ref JR)
-    61184 => 'Metabones Canon EF Adapter or Other Adapter', #JR (also Fotodiox or Viltrox)
+    61184 => 'Canon EF Adapter', #JR (also Fotodiox or Viltrox) (to this, add Canon LensType)
+    # 65280 = 0xff00
+    65280 => 'Sigma 16mm F2.8 Filtermatic Fisheye', #IB
     # all M42-type lenses give a value of 65535 (and FocalLength=0, FNumber=1)
     65535 => 'E-Mount, T-Mount, Other Lens or no lens', #JD/JR
 #
@@ -536,36 +548,41 @@ $VERSION = '2.31';
    '65535.26' => 'Sony FE 28mm F2',                 #JR (32816 - SEL28F20)
    '65535.27' => 'Sony FE PZ 28-135mm F4 G OSS',    #JR (32817 - SELP28135G)
    '65535.28' => 'Sony FE 24-70mm F2.8 GM',         #JR (32821 - SEL2470GM)
-   '65535.29' => 'Sony FE 85mm F1.4 GM',            #JR (32823 - SEL85F14GM)
-   '65535.30' => 'Sony FE 21mm F2.8 (SEL28F20 + SEL075UWC)', #JR         # (32826 - SEL28F20 + SEL075UWC Ultra-wide converter)
-   '65535.31' => 'Sony FE 16mm F3.5 Fisheye (SEL28F20 + SEL057FEC)', #JR # (32827 - SEL28F20 + SEL057FEC Fisheye converter)
-   '65535.32' => 'Sony FE 70-200mm F2.8 GM OSS',    #JR (32830 - SEL70200GM)
+   '65535.29' => 'Sony FE 50mm F1.4 ZA', #JR
+   '65535.30' => 'Sony FE 85mm F1.4 GM',            #JR (32823 - SEL85F14GM)
+   '65535.31' => 'Sony FE 50mm F1.8',               #JR (32824 - SEL50F18F with trailing "F" as compared to 32790)
+   '65535.32' => 'Sony FE 21mm F2.8 (SEL28F20 + SEL075UWC)', #JR         # (32826 - SEL28F20 + SEL075UWC Ultra-wide converter)
+   '65535.33' => 'Sony FE 16mm F3.5 Fisheye (SEL28F20 + SEL057FEC)', #JR # (32827 - SEL28F20 + SEL057FEC Fisheye converter)
+   '65535.34' => 'Sony FE 70-300mm F4.5-5.6 G OSS', #JR (32828 - SEL70300G)
+   '65535.35' => 'Sony FE 70-200mm F2.8 GM OSS',    #JR (32830 - SEL70200GM)
 #
 # 3rd party E lenses
 #
-    '65535.33' => 'Sigma 19mm F2.8 [EX] DN', #JR
-    '65535.34' => 'Sigma 30mm F2.8 [EX] DN', #JR
-    '65535.35' => 'Sigma 60mm F2.8 DN', #JR
-    '65535.36' => 'Sigma 30mm F1.4 DC DN | C', #IB
-    '65535.37' => 'Tamron 18-200mm F3.5-6.3 Di III VC', #JR (Model B011)
-    '65535.38' => 'Zeiss Batis 25mm F2', #JR
-    '65535.39' => 'Zeiss Batis 85mm F1.8', #JR
-    '65535.40' => 'Zeiss Loxia 21mm F2.8', #JR
-    '65535.41' => 'Zeiss Loxia 35mm F2', #JR
-    '65535.42' => 'Zeiss Loxia 50mm F2', #JR
-    '65535.43' => 'Zeiss Touit 12mm F2.8', #JR
-    '65535.44' => 'Zeiss Touit 32mm F1.8', #JR
-    '65535.45' => 'Zeiss Touit 50mm F2.8 Macro', #JR
+    '65535.36' => 'Sigma 19mm F2.8 [EX] DN', #JR
+    '65535.37' => 'Sigma 30mm F2.8 [EX] DN', #JR
+    '65535.38' => 'Sigma 60mm F2.8 DN', #JR
+    '65535.39' => 'Sigma 30mm F1.4 DC DN | C', #IB (50480)
+    '65535.40' => 'Tamron 18-200mm F3.5-6.3 Di III VC', #JR (Model B011)
+    '65535.41' => 'Zeiss Batis 25mm F2', #JR (49216)
+    '65535.42' => 'Zeiss Batis 85mm F1.8', #JR (49217)
+    '65535.43' => 'Zeiss Batis 18mm F2.8', #IB (49218)
+    '65535.44' => 'Zeiss Loxia 21mm F2.8', #JR (49234)
+    '65535.45' => 'Zeiss Loxia 35mm F2', #JR
+    '65535.46' => 'Zeiss Loxia 50mm F2', #JR (49232 or 0)
+    '65535.47' => 'Zeiss Touit 12mm F2.8', #JR
+    '65535.48' => 'Zeiss Touit 32mm F1.8', #JR
+    '65535.49' => 'Zeiss Touit 50mm F2.8 Macro', #JR
+    '65535.50' => 'Samyang AF 50mm F1.4 FE', #JR (32789)
 #
 # other lenses
 #
-    '65535.46' => 'Arax MC 35mm F2.8 Tilt+Shift', #JD
-    '65535.47' => 'Arax MC 80mm F2.8 Tilt+Shift', #JD
-    '65535.48' => 'Zenitar MF 16mm F2.8 Fisheye M42', #JD
-    '65535.49' => 'Samyang 500mm Mirror F8.0', #19
-    '65535.50' => 'Pentacon Auto 135mm F2.8', #19
-    '65535.51' => 'Pentacon Auto 29mm F2.8', #19
-    '65535.52' => 'Helios 44-2 58mm F2.0', #19
+    '65535.51' => 'Arax MC 35mm F2.8 Tilt+Shift', #JD
+    '65535.52' => 'Arax MC 80mm F2.8 Tilt+Shift', #JD
+    '65535.53' => 'Zenitar MF 16mm F2.8 Fisheye M42', #JD
+    '65535.54' => 'Samyang 500mm Mirror F8.0', #19
+    '65535.55' => 'Pentacon Auto 135mm F2.8', #19
+    '65535.56' => 'Pentacon Auto 29mm F2.8', #19
+    '65535.57' => 'Helios 44-2 58mm F2.0', #19
 );
 
 %minoltaTeleconverters = (

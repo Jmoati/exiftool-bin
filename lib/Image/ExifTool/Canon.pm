@@ -65,6 +65,8 @@
 #              49) http://www.listware.net/201101/digikam-users/49795-digikam-users-re-lens-recognition.html
 #              50) http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3833.0.html
 #              51) http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,4110.0.html
+#              52) Kai Harrekilde-Petersen private communication
+#              53) Anton Reiser private communication
 #              IB) Iliah Borg private communication (LibRaw)
 #              JD) Jens Duttke private communication
 #              JR) Jos Roost private communication
@@ -83,7 +85,7 @@ sub ProcessSerialData($$$);
 sub ProcessFilters($$$);
 sub SwapWords($);
 
-$VERSION = '3.60';
+$VERSION = '3.65';
 
 # Note: Removed 'USM' from 'L' lenses since it is redundant - PH
 # (or is it?  Ref 32 shows 5 non-USM L-type lenses)
@@ -268,6 +270,7 @@ $VERSION = '3.60';
     155 => 'Canon EF 85mm f/1.8 USM',
     156 => 'Canon EF 28-105mm f/3.5-4.5 USM or Tamron Lens',
     156.1 => 'Tamron SP 70-300mm f/4.0-5.6 Di VC USD', #PH (model A005)
+    156.2 => 'Tamron SP AF 28-105mm f/2.8 LD Aspherical IF', #JR (Model 176D)
     160 => 'Canon EF 20-35mm f/3.5-4.5 USM or Tamron or Tokina Lens',
     160.1 => 'Tamron AF 19-35mm f/3.5-4.5', #44
     160.2 => 'Tokina AT-X 124 AF Pro DX 12-24mm f/4', #49
@@ -330,6 +333,7 @@ $VERSION = '3.60';
     183.2 => 'Sigma 105mm f/2.8 EX DG OS HSM Macro', #50
     183.3 => 'Sigma 180mm f/2.8 EX DG OS HSM APO Macro', #IB
     183.4 => 'Sigma 150-600mm f/5-6.3 DG OS HSM | C', #47
+    183.5 => 'Sigma 150-600mm f/5-6.3 DG OS HSM | S', #forum7109 (Sports 014)
     184 => 'Canon EF 400mm f/2.8L + 2x', #15
     185 => 'Canon EF 600mm f/4L IS', #32
     186 => 'Canon EF 70-200mm f/4L', #9
@@ -419,6 +423,7 @@ $VERSION = '3.60';
     507 => 'Canon EF 16-35mm f/4L IS USM', #42
     508 => 'Canon EF 11-24mm f/4L USM', #PH
     747 => 'Canon EF 100-400mm f/4.5-5.6L IS II USM', #JR
+    748 => 'Canon EF 100-400mm f/4.5-5.6L IS II USM + 1.4x', #JR (1.4x Mk III)
     750 => 'Canon EF 35mm f/1.4L II USM', #42
     # (STM lenses seem to start with 0x10xx)
     4142 => 'Canon EF-S 18-135mm f/3.5-5.6 IS STM',
@@ -434,6 +439,7 @@ $VERSION = '3.60';
     4152 => 'Canon EF 24-105mm f/3.5-5.6 IS STM', #42
     4153 => 'Canon EF-M 15-45mm f/3.5-6.3 IS STM', #PH
     4154 => 'Canon EF-S 24mm f/2.8 STM', #IB
+    4155 => 'Canon EF-M 28mm f/3.5 Macro IS STM', #42
     4156 => 'Canon EF 50mm f/1.8 STM', #42
     36912 => 'Canon EF-S 18-135mm f/3.5-5.6 IS USM', #42
     65535 => 'n/a',
@@ -851,6 +857,8 @@ my %pictureStyles = ( #12
     0x86 => 'Monochrome',
     0x87 => 'Auto', #PH
     0x88 => 'Fine Detail', #PH
+    0xff => 'n/a', #PH (guess)
+    0xffff => 'n/a', #PH (guess)
 );
 my %userDefStyles = ( #12/48
     Notes => q{
@@ -1658,8 +1666,8 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
             Name => 'ColorData7',
             SubDirectory => { TagTable => 'Image::ExifTool::Canon::ColorData7' },
         },
-        {   # (int16u[1560|1592]) - 5DS/5DSR (1560), 80D (1592), ref IB
-            Condition => '$count == 1560 or $count == 1592',
+        {   # (int16u[1560|1592]) - 5DS/5DSR (1560), 80D (1592), 1300D (1353) ref IB
+            Condition => '$count == 1560 or $count == 1592 or $count == 1353',
             Name => 'ColorData8',
             SubDirectory => { TagTable => 'Image::ExifTool::Canon::ColorData8' },
         },
@@ -1685,11 +1693,22 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
         # 'Drop' because not found in JPEG images (too large for APP1 anyway)
         Flags => [ 'Unknown', 'Binary', 'Drop' ],
     },
-    0x4008 => { #PH guess (1DmkIII)
-        Name => 'BlackLevel', # (BasePictStyleOfUser)
-        Unknown => 1,
+    0x4008 => { #53
+        Name => 'PictureStyleUserDef', # (BasePictStyleOfUser)
+        Format => 'int16u',
+        Count => 3, # UserDef1, UserDef2, UserDef3
+        PrintHex => 1,
+        SeparateTable => 'PictureStyle',
+        PrintConv => [\%pictureStyles,\%pictureStyles,\%pictureStyles],
     },
-    # 0x4009 (BasePictStyleOfPC)
+    0x4009 => { #53
+        Name => 'PictureStylePC', # (BasePictStyleOfUser)
+        Format => 'int16u',
+        Count => 3, # PC1, PC2, PC3
+        PrintHex => 1,
+        SeparateTable => 'PictureStyle',
+        PrintConv => [\%pictureStyles,\%pictureStyles,\%pictureStyles],
+    },
     0x4010 => { #forum2933
         Name => 'CustomPictureStyleFileName', # (PictStyleCaption)
         Writable => 'string',
@@ -7215,19 +7234,23 @@ my %ciMaxFocal = (
     },
 );
 
-# Color data (MakerNotes tag 0x4001, count=1560) (ref IB)
+# Color data (MakerNotes tag 0x4001, count=1560,etc) (ref IB)
 %Image::ExifTool::Canon::ColorData8 = (
     %binaryDataAttrs,
-    NOTES => 'These tags are used by the EOS 5DS and EOS 5DS R.',
+    NOTES => 'These tags are used by the EOS 5DS, 5DS R, 80D and 1300D.',
     FORMAT => 'int16s',
     FIRST_ENTRY => 0,
     GROUPS => { 0 => 'MakerNotes', 2 => 'Camera' },
+    DATAMEMBER => [ 0 ],
     IS_SUBDIR => [ 0x107 ],
     0x00 => {
         Name => 'ColorDataVersion',
+        DataMember => 'ColorDataVersion',
+        RawConv => '$$self{ColorDataVersion} = $val',
         PrintConv => {
             12 => '12 (5DS/5DSR)',
             13 => '13 (80D)', #PH
+            14 => '14 (1300D)', #IB
         },
     },
     0x3f => { Name => 'WB_RGGBLevelsAsShot',     Format => 'int16s[4]' },
@@ -7318,12 +7341,57 @@ my %ciMaxFocal = (
         Notes => 'B, C, A, Temperature',
         SubDirectory => { TagTable => 'Image::ExifTool::Canon::ColorCalib' }
     },
-
-    0x146 => { Name => 'AverageBlackLevel',     Format => 'int16u[4]' },
-    0x30a => { Name => 'PerChannelBlackLevel',  Format => 'int16u[4]' },
-    0x30e => { Name => 'NormalWhiteLevel',      Format => 'int16u', RawConv => '$val || undef' },
-    0x30f => { Name => 'SpecularWhiteLevel',    Format => 'int16u' },
-    0x310 => { Name => 'LinearityUpperMargin',  Format => 'int16u' },
+    0x146 => { Name => 'AverageBlackLevel', Format => 'int16u[4]' },
+    0x22c => {
+        Name => 'PerChannelBlackLevel',
+        Condition => '$$self{ColorDataVersion} == 14',
+        Format => 'int16u[4]',
+        Notes => '1300D',
+    },
+    0x230 => {
+        Name => 'NormalWhiteLevel',
+        Condition => '$$self{ColorDataVersion} == 14',
+        Format => 'int16u',
+        Notes => '1300D',
+        RawConv => '$val || undef',
+    },
+    0x231 => {
+        Name => 'SpecularWhiteLevel',
+        Condition => '$$self{ColorDataVersion} == 14',
+        Format => 'int16u',
+        Notes => '1300D',
+    },
+    0x232 => {
+        Name => 'LinearityUpperMargin',
+        Condition => '$$self{ColorDataVersion} == 14',
+        Format => 'int16u',
+        Notes => '1300D',
+    },
+    0x30a => {
+        Name => 'PerChannelBlackLevel',
+        Condition => '$$self{ColorDataVersion} < 14',
+        Format => 'int16u[4]',
+        Notes => '5DS, 5DS R and 80D',
+    },
+    0x30e => {
+        Name => 'NormalWhiteLevel',
+        Condition => '$$self{ColorDataVersion} < 14',
+        Format => 'int16u',
+        Notes => '5DS, 5DS R and 80D',
+        RawConv => '$val || undef',
+    },
+    0x30f => {
+        Name => 'SpecularWhiteLevel',
+        Condition => '$$self{ColorDataVersion} < 14',
+        Format => 'int16u',
+        Notes => '5DS, 5DS R and 80D',
+    },
+    0x310 => {
+        Name => 'LinearityUpperMargin',
+        Condition => '$$self{ColorDataVersion} < 14',
+        Format => 'int16u',
+        Notes => '5DS, 5DS R and 80D',
+    },
 );
 
 # Unknown color data (MakerNotes tag 0x4001)
@@ -7615,7 +7683,7 @@ my %filterConv = (
     # 3 - maybe related to AutoImageAlign?
 );
 
-# AF configuration info (MakerNotes tag 0x4027) (ref PH)
+# AF configuration info (MakerNotes tag 0x4028) (ref PH)
 %Image::ExifTool::Canon::AFConfig = (
     %binaryDataAttrs,
     GROUPS => { 0 => 'MakerNotes', 2 => 'Camera' },
@@ -7634,6 +7702,134 @@ my %filterConv = (
         Description => 'AF Accel/Decel Tracking',
     },
     4 => 'AFPointSwitching',
+    5 => { #52
+        Name => 'AIServoFirstImage',
+        PrintConv => {
+             0 => 'Equal Priority',
+             1 => 'Release Priority',
+             2 => 'Focus Priority',
+        },
+    },
+    6 => { #52
+        Name => 'AIServoSecondImage',
+        PrintConv => {
+             0 => 'Equal Priority',
+             1 => 'Release Priority',
+             2 => 'Focus Priority',
+             3 => 'Release High Priority',
+             4 => 'Focus High Priority',
+        },
+    },
+    7 => { #52
+        Name => 'USMLensElectronicMF',
+        PrintConv => {
+             0 => 'Enable After AF',
+             1 => 'Disable After AF',
+             2 => 'Disable in AF Mode',
+        },
+    },
+    8 => { #52
+        Name => 'AFAssistBeam',
+        PrintConv => {
+             0 => 'Enable',
+             1 => 'Disable',
+             2 => 'IR AF Assist Beam Only',
+        },
+    },
+    9 => { #52
+        Name => 'OneShotAFRelease',
+        PrintConv => {
+             0 => 'Focus Priority',
+             1 => 'Release Priority',
+        },
+    },
+    10 => { #52
+        Name => 'AutoAFPointSelEOSiTRAF',
+        Description => 'Auto AF Point Sel EOS iTR AF',
+        Notes => 'only valid for some models',
+        Condition => '$$self{Model} !~ /5D /',
+        PrintConv => {
+             0 => 'Enable',
+             1 => 'Disable',
+        },
+    },
+    11 => { #52
+        Name => 'LensDriveWhenAFImpossible',
+        PrintConv => {
+             0 => 'Continue Focus Search',
+             1 => 'Stop Focus Search',
+        },
+    },
+    12 => { #52
+        Name => 'SelectAFAreaSelectionMode',
+        PrintConv => { BITMASK => {
+            0 => 'Single pt',
+            1 => 'Auto', # (61 point)
+            2 => 'Zone',
+            3 => 'Expand area 4pt',
+            4 => 'Spot',
+            5 => 'Expand area 8pt',
+        }},
+    },
+    13 => { #52
+        Name => 'AFAreaSelectionMethod',
+        PrintConv => {
+             0 => 'M-Fn Button',
+             1 => 'Main Dial',
+        },
+    },
+    14 => { #52
+        Name => 'OrientationLinkedAF',
+        PrintConv => { # Covers both 1Dx (0-2) and 5D3 (0-1)
+             0 => 'Same for Vert/Horiz Points',
+             1 => 'Separate Vert/Horiz Points',
+             2 => 'Separate Area+Points',
+        },
+    },
+    15 => { #52
+        Name => 'ManualAFPointSelPattern',
+        PrintConv => {
+             0 => 'Stops at AF Area Edges',
+             1 => 'Continuous',
+        },
+    },
+    16 => { #52
+        Name => 'AFPointDisplayDuringFocus',
+        PrintConv => {
+             0 => 'Selected (constant)',
+             1 => 'All (constant)',
+             2 => 'Selected (pre-AF, focused)',
+             3 => 'Selected (focused)',
+             4 => 'Disabled',
+        },
+    },
+    17 => { #52
+        Name => 'VFDisplayIllumination',
+        PrintConv => {
+             0 => 'Auto',
+             1 => 'Enable',
+             2 => 'Disable',
+        },
+    },
+    18 => { #52
+        Name => 'AFStatusViewfinder',
+        Condition => '$$self{Model} =~ /1D X/',
+        Notes => '1D X only',
+        PrintConv => {
+             0 => 'Show in Field of View',
+             1 => 'Show Outside View',
+        },
+    },
+    19 => { #52
+        Name => 'InitialAFPointInServo',
+        Condition => '$$self{Model} =~ /1D X/',
+        Notes => '1D X only',
+        PrintConv => {
+             0 => 'Initial AF Point Selected',
+             1 => 'Manual AF Point',
+             2 => 'Auto', #PH (1DXmkII)
+        },
+    },
 );
 
 # Canon UUID atoms (ref PH, SX280)
@@ -7917,7 +8113,9 @@ sub CalcSensorDiag($$)
             $xres[0] < 10000000 and $yres[0] < 10000000 and
             # minimum sensor size is 0.061 inches (DC models - PH)
             $xres[1] >= 61 and $xres[1] < 1500 and
-            $yres[1] >= 61 and $yres[1] < 1000)
+            $yres[1] >= 61 and $yres[1] < 1000 and
+            # sensor isn't square (may happen if rationals have been reduced)
+            $xres[1] != $yres[1])
         {
             return sqrt($xres[1]*$xres[1] + $yres[1]*$yres[1]) * 0.0254;
         }
@@ -7996,6 +8194,15 @@ sub PrintLensID(@)
             }
             # default to returning the first user-defined lens
             return LensWithTC($user[0], $shortFocal);
+        }
+        # differentiate Sigma Art/Contemporary/Sports models
+        if (@matches > 1 and $lensModel and $lensModel =~ /(\| [ACS])/) {
+            my $type = $1;
+            my @best;
+            foreach $lens (@matches) {
+                push @best, $lens if $lens =~ /\Q$type/;
+            }
+            @matches = @best if @best;
         }
         return join(' or ', @matches) if @matches;
         return join(' or ', @likely) if @likely;
@@ -8528,10 +8735,10 @@ Thanks Michael Rommel and Daniel Pittman for information they provided about
 the Digital Ixus and PowerShot S70 cameras, Juha Eskelinen and Emil Sit for
 figuring out the 20D and 30D FileNumber, Denny Priebe for figuring out a
 couple of 1D tags, and Michael Tiemann, Rainer Honle, Dave Nicholson, Chris
-Huebsch, Ger Vermeulen, Darryl Zurn, D.J. Cristi, Bogdan and Vesa Kivisto
-for decoding a number of new tags.  Also thanks to everyone who made
-contributions to the LensType lookup list or the meanings of other tag
-values.
+Huebsch, Ger Vermeulen, Darryl Zurn, D.J. Cristi, Bogdan, Vesa Kivisto and
+Kai Harrekilde-Petersen for decoding a number of new tags.  Also thanks to
+everyone who made contributions to the LensType lookup list or the meanings
+of other tag values.
 
 =head1 SEE ALSO
 
