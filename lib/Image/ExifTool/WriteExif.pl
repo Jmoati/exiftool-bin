@@ -38,7 +38,7 @@ my %mandatory = (
         0x0128 => 2,        # ResolutionUnit (inches)
     },
     ExifIFD => {
-        0x9000 => '0230',   # ExifVersion
+        0x9000 => '0231',   # ExifVersion
         0x9101 => "1 2 3 0",# ComponentsConfiguration
         0xa000 => '0100',   # FlashpixVersion
         0xa001 => 0xffff,   # ColorSpace (uncalibrated)
@@ -553,11 +553,12 @@ sub WriteExif($$$)
                     # need value to evaluate the condition
                     my $val = $et->GetNewValue($tagInfo);
                     # must convert to binary for evaluating in Condition
-                    if ($$tagInfo{Format} and defined $val) {
-                        $val = WriteValue($val, $$tagInfo{Format}, $$tagInfo{Count});
+                    my $fmt = $$tagInfo{Writable} || $$tagInfo{Format};
+                    if ($fmt and defined $val) {
+                        $val = WriteValue($val, $fmt, $$tagInfo{Count});
                     }
                     if (defined $val) {
-                        my $fmt = $$tagInfo{Writable} || $$tagInfo{Format} || 'undef';
+                        $fmt or $fmt = 'undef';
                         my $cnt = $$tagInfo{Count} || 1;
                         # always use old format/count for Condition in maker notes
                         if ($inMakerNotes) {

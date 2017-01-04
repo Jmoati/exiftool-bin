@@ -61,7 +61,7 @@ must be <a href="#Orient">user-defined</a>.</i></blockquote>
 <h3>Implementation</h3>
 
 <p>Geotagging is accomplished in ExifTool through the use of three special
-<a href="TagNames/Extra.html">Extra tags</a>:
+write-only <a href="TagNames/Extra.html">Extra tags</a>:
 <code>Geotag</code>, <code>Geosync</code> and <code>Geotime</code>.</p>
 
 <blockquote class=lt><i>Note: When writing these tags, order is important. If
@@ -80,9 +80,8 @@ track log file "track.log" in the current directory:</p>
 <pre>exiftool -geotag=track.log /Users/Phil/Pictures
 </pre>
 
-<p>As a convienience the exiftool application also provides a
-<code>-geotag</code> option, so the following command is equivalent to the one
-above:</p>
+<p>For convienience, the exiftool application also provides a
+<code>-geotag</code> option, so this command is equivalent to the one above:</p>
 
 <pre>exiftool -geotag track.log /Users/Phil/Pictures
 </pre>
@@ -193,8 +192,8 @@ DateTimeOriginal, CreateDate, ModifyDate, FileModifyDate</li>
 position is calculated (by interpolating between fixes in the GPS track log). 
 Unless a group is specified, exiftool writes the generated tags to the default
 groups.  If a value for <code>Geotime</code> is not given, it is taken from
-<code>DateTimeOriginal</code> for each image (as if
-<code>"-Geotime&lt;DateTimeOriginal"</code> had been specified), but the value
+unformatted value of <code>DateTimeOriginal</code> for each image (as if
+<code>"-Geotime&lt;DateTimeOriginal#"</code> had been specified), but the value
 may be copied from any other date/time tag or set directly from a date/time
 string.</p>
 
@@ -217,7 +216,7 @@ lines illustrating various aspects of the geotagging feature.</p>
 
 <blockquote class=lt><i>Programmers:  Note that <code>Geotime</code> must always
 be specified when geotagging via the API -- the default value of
-<code>DateTimeOriginal</code> is implemented by the application.</i>
+<code>DateTimeOriginal#</code> is implemented by the application.</i>
 </blockquote>
 
 <a name="Examples"></a>
@@ -225,8 +224,9 @@ be specified when geotagging via the API -- the default value of
 
 <p>Geotag all images in the "c:\images" directory from position information in a
 GPS track log ("c:\gps logs\track.log").  Since the <code>Geotime</code> time is
-not specified, the value of <code>DateTimeOriginal</code> is used.  Local system
-time is assumed unless <code>DateTimeOriginal</code> contains a timezone:</p>
+not specified, the value of <code>DateTimeOriginal#</code> is used.  Local
+system time is assumed unless <code>DateTimeOriginal#</code> contains a
+timezone:</p>
 
 <pre>exiftool -geotag "c:\gps logs\track.log" c:\images</pre>
 
@@ -649,11 +649,13 @@ file from a collection of geotagged images:</p>
 </pre>
 
 <p>This example print format file is included in the "fmt_files" directory of
-the full ExifTool distribution.</p>
+the full ExifTool distribution.  See
+<a href="http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,7836.0.html">this
+forum post</a> for more useful tips about creating KML files.</p>
 
 <hr>
 <i>Created Apr. 2, 2009</i><br>
-<i>Last revised Mar. 5, 2015</i>
+<i>Last revised Dec. 6, 2016</i>
 <p class='lf'><a href="index.html">&lt;-- Back to ExifTool home page</a></p>
 </body>
 </html>

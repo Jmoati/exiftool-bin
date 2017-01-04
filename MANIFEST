@@ -1,5 +1,6 @@
 Changes
 MANIFEST
+META.json
 META.yml
 Makefile.PL
 README
@@ -14,11 +15,14 @@ arg_files/xmp2exif.args
 arg_files/xmp2gps.args
 arg_files/xmp2iptc.args
 arg_files/xmp2pdf.args
+config_files/bibble.config
 config_files/convert_regions.config
 config_files/example.config
+config_files/fotoware.config
 config_files/gps2utm.config
 config_files/photoshop_paths.config
 config_files/picasa_faces.config
+config_files/time_zone.config
 exiftool
 fmt_files/gpx.fmt
 fmt_files/gpx_wpt.fmt
@@ -52,6 +56,7 @@ html/TagNames/EXE.html
 html/TagNames/EXIF.html
 html/TagNames/Extra.html
 html/TagNames/FLAC.html
+html/TagNames/FLIF.html
 html/TagNames/FLIR.html
 html/TagNames/Flash.html
 html/TagNames/FlashPix.html
@@ -236,6 +241,7 @@ lib/Image/ExifTool/DjVu.pm
 lib/Image/ExifTool/EXE.pm
 lib/Image/ExifTool/Exif.pm
 lib/Image/ExifTool/FLAC.pm
+lib/Image/ExifTool/FLIF.pm
 lib/Image/ExifTool/FLIR.pm
 lib/Image/ExifTool/Fixup.pm
 lib/Image/ExifTool/Flash.pm
@@ -385,6 +391,8 @@ t/APE_2.out
 t/APE_3.out
 t/ASF.t
 t/ASF_2.out
+t/Apple.t
+t/Apple_2.out
 t/Audible.t
 t/Audible_2.out
 t/BMP.t
@@ -471,6 +479,12 @@ t/ExifTool_9.out
 t/FLAC.t
 t/FLAC_2.out
 t/FLAC_3.out
+t/FLIF.t
+t/FLIF_2.out
+t/FLIF_3.out
+t/FLIF_4.out
+t/FLIF_5.out
+t/FLIF_6.out
 t/FLIR.t
 t/FLIR_2.out
 t/FLIR_3.out
@@ -828,6 +842,7 @@ t/images/AIFF.aif
 t/images/APE.ape
 t/images/APE.mpc
 t/images/ASF.wmv
+t/images/Apple.jpg
 t/images/Audible.aa
 t/images/BMP.bmp
 t/images/BPG.bpg
@@ -858,6 +873,7 @@ t/images/ExifTool.tif
 t/images/ExtendedXMP.jpg
 t/images/FLAC.flac
 t/images/FLAC.ogg
+t/images/FLIF.flif
 t/images/FLIR.fpf
 t/images/FLIR.jpg
 t/images/Flash.flv

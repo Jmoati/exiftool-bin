@@ -15,6 +15,8 @@
 #                  and http://forum.photome.de/viewtopic.php?f=2&t=353&p=742#p740
 #               7) Kai Lappalainen private communication
 #               8) http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,5223.0.html
+#               9) Zilvinas Brobliauskas private communication
+#               10) Albert Shan private communication
 #               IB) Iliah Borg private communication (LibRaw)
 #               JD) Jens Duttke private communication
 #------------------------------------------------------------------------------
@@ -26,7 +28,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.54';
+$VERSION = '1.55';
 
 sub ProcessFujiDir($$$);
 sub ProcessFaceRec($$$);
@@ -218,6 +220,7 @@ my %faceCategories = (
     0x1010 => {
         Name => 'FujiFlashMode',
         Writable => 'int16u',
+        PrintHex => 1,
         PrintConv => {
             0 => 'Auto',
             1 => 'On',
@@ -225,6 +228,9 @@ my %faceCategories = (
             3 => 'Red-eye reduction',
             4 => 'External', #JD
             16 => 'Commander',
+            0xa920 => '1st Curtain (front)', #10 (EF-X500 flash)
+            0xc920 => '2nd Curtain (rear)', #10
+            0xe920 => 'High Speed Sync (HSS)', #10
         },
     },
     0x1011 => {
@@ -355,6 +361,12 @@ my %faceCategories = (
             32 => 'Soft',
         },
     },
+    0x1044 => { #forum7668
+        Name => 'DigitalZoom',
+        Writable => 'int32u',
+        ValueConv => '$val / 8',
+        ValueConvInv => '$val * 8',
+    },
     0x1050 => { #forum6109
         Name => 'ShutterType',
         Writable => 'int16u',
@@ -380,6 +392,20 @@ my %faceCategories = (
     # 0x1150 - Pro Low-light - val=1; Pro Focus - val=2 (ref 7)
     # 0x1151 - Pro Low-light - val=4 (number of pictures taken?); Pro Focus - val=2,3 (ref 7)
     # 0x1152 - Pro Low-light - val=1,3,4 (stacked pictures used?); Pro Focus - val=1,2 (ref 7)
+    0x1153 => { #forum7668
+        Name => 'PanoramaAngle',
+        Writable => 'int16u',
+    },
+    0x1154 => { #forum7668
+        Name => 'PanoramaDirection',
+        Writable => 'int16u',
+        PrintConv => {
+            1 => 'Right',
+            2 => 'Up',
+            3 => 'Left',
+            4 => 'Down',
+        },
+    },
     0x1201 => { #forum6109
         Name => 'AdvancedFilter',
         Writable => 'int32u',
@@ -861,11 +887,12 @@ my %faceCategories = (
     },
     # 0xf009 - values: 0, 3
     0xf00a => 'BlackLevel', #IB
-    # 0xf00b ?
+    0xf00b => 'GeometricDistortionParams', #9 (rational64s[23, 35 or 43])
     0xf00c => 'WB_GRBLevelsStandard', #IB (GRBXGRBX; X=17 is standard illuminant A, X=21 is D65)
     0xf00d => 'WB_GRBLevelsAuto', #IB
     0xf00e => 'WB_GRBLevels',
-    # 0xf00f ?
+    0xf00f => 'ChromaticAberrationParams', # (rational64s[23])
+    0xf010 => 'VignettingParams', #9 (rational64s[31 or 64])
 );
 
 # information found in FFMV atom of MOV videos

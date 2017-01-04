@@ -28,7 +28,7 @@ ol.index { margin: 0; padding: 0 0 0 2em }
 <li><a href="#Q10">Coded character sets</a></li>
 <li><a href="#Q11">User-defined tags</a></li>
 <li><a href="#Q12">Export to database</a></li>
-<li><a href="#Q13">Output file size</a></li>
+<li><a href="#Q13">Output file size and image quality</a></li>
 <li><a href="#Q14">GPS coordinate format</a></li>
 <li><a href="#Q15">MakerNote errors</a></li>
 <li><a href="#Q16">Some files not renamed</a></li>
@@ -200,12 +200,11 @@ matches the above criteria (eg. "IMG_20110927_103000.jpg").
 CreateDate and ModifyDate.  See the <a href="TagNames/Shortcuts.html">Shortcuts
 Tags documentation</a> for more information.]</i></blockquote>
 
-<blockquote>The <code>-d</code> option allows full control over the format of
-date/time values when reading.  However, the effect of the <code>-d</code>
-option is not reversible, so date/time values must be written using the format
-described above, even when the <code>-d</code> option is used.  Note that when
-reading, the effect of the <code>-n</code> option on date/time values is only to
-disable the <code>-d</code> formatting.</blockquote>
+<blockquote>The <code>-d</code> option provides additional flexibility in
+parsing strings when writing date/time tags if POSIX::strptime or Time::Piece is
+installed and the ExifTool version is 10.32 or later (use "<code>exiftool -ver -v</code>"
+to check the installed packages).  The format of the <code>-d</code> argument is
+the same for reading and writing.</blockquote>
 
 <blockquote><b>Special feature</b>: A value of "<code>now</code>" may be used to
 represent the current time when writing any date/time tag.  For example:
@@ -519,7 +518,7 @@ string contains special characters, in which case it is converted from the
 external character set (UTF&#8209;8 by default), and stored as Unicode. ExifTool
 writes Unicode in native EXIF byte ordering by default, but the byte order may
 be specified by setting the ExifUnicodeByteOrder tag (see the
-<a href="TagNames/Extra.html">Extra Tags</a> documentation).</blockquote>
+<a href="TagNames/Extra.html">Extra Tags documentation</a>).</blockquote>
 
 <blockquote>The EXIF "XP" tags (XPTitle, XPComment, etc) are always stored
 internally as little-endian Unicode (UCS&#8209;2), and are read and written
@@ -852,7 +851,8 @@ documentation</a> for more information about this feature.
 
 <a name="Q13"></a>
 <p>13a. <b>"Why is my file smaller after I use ExifTool to write information?"</b>, or
-<br>13b. <b>"Why do some Offset tags change value when I write other tags?"</b></p>
+<br>13b. <b>"Why do some Offset tags change value when I write other tags?"</b>, or
+<br>13c. <b>"How does editing a file with ExifTool affect image quality?"</b></p>
 
 <blockquote>
 There are various specific reasons why this can happen, but the general answer
@@ -887,11 +887,12 @@ ThumbnailOffset and PreviewImageStart) may change when the file is rewritten.
 This is normal, and simply indicates that the associated data is now stored at a
 different position within the file.</blockquote>
 
-<blockquote>ExifTool does not modify the image data itself, so editing a file is
-"lossless" as far as the image is concerned.</blockquote>
+<blockquote>ExifTool does not modify the image data itself, so <b>editing a file
+with ExifTool is "lossless" as far as the image is concerned</b>.</blockquote>
 
 <a name="Q14"></a>
-<p>14. <b>"What format do I use for writing GPS coordinates?"</b></p>
+<p>14a. <b>"What format do I use for writing GPS coordinates?"</b>, or<br>
+14b. <b>"How do I change the format of extracted GPS coordinates?"</b></p>
 
 <blockquote>ExifTool is very flexible in the formats allowed for entering GPS
 coordinates.  Any string containing between 1 and 3 floating point numbers is
@@ -1096,10 +1097,11 @@ any command where the same tag is set with "<code>+=</code>" or
 "<code>-=</code>" in another assignment.  (ie. existing items will be preserved
 unless specifically deleted with "<code>-=</code>".)</blockquote>
 
-<blockquote>To prevent duplication when adding new items, specific items can be
-deleted then added back again in the same command.  For example, the following
-command adds the keywords "one" and "two", ensuring that they are not duplicated
-if they already existed in the keywords of an image:
+<blockquote><a name="nodups"></a><b>To prevent duplication when adding new
+items</b>, specific items can be deleted then added back again in the same
+command.  For example, the following command adds the keywords "one" and "two",
+ensuring that they are not duplicated if they already existed in the keywords of
+an image:
 
 <pre>exiftool -keywords-=one -keywords+=one -keywords-=two -keywords+=two DIR
 </pre>
@@ -1455,11 +1457,13 @@ file.</blockquote>
 <blockquote>On systems where a filesystem creation date is maintained, ExifTool
 also sets this to the current date/time when the file is edited.  On Windows the
 creation date is accessed through the FileCreateDate tag, and is also preserved
-with the <code>-P</code> option.  On Mac/Linux the FileInodeChangeDate tag is
-available instead of FileCreateDate.  On Mac, the filesystem stores a creation
-date, but currently the only way to preserve this is with the
+with the <code>-P</code> option.  On Mac, the filesystem does store a creation
+date readable via the MDItemFSCreationDate tag, but this tag is not writable and
+is extracted only if specified explicitly or the MDItemTags API option is used,
+and currently the only way to preserve this is with the
 <code>-overwrite_original_in_place</code> option.  On Linux, the file creation
-date is not stored.</blockquote>
+date is not stored.  See the <a href="TagNames/Extra.html">Extra Tags documentation</a>
+for more information about these tags.</blockquote>
 
 <blockquote>For example, commands like this act on common metadata tags, setting
 the filesystem modification date/time to the current date/time:
@@ -1581,7 +1585,7 @@ proper technique for shifting a date/time value when copying:
 </blockquote>
 
 <hr>
-<i>Last revised Jul 21, 2016</i>
+<i>Last revised Nov 17, 2016</i>
 <p class='lf'><a href="index.html">&lt;-- Back to ExifTool home page</a></p>
 </body>
 </html>

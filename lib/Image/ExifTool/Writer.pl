@@ -91,6 +91,37 @@ my %dirMap = (
     EXIF => \%exifMap,
 );
 
+# module names and processing functions for each writable file type
+# (defaults to "$type" and "Process$type" if not defined)
+# - types that are handled specially will not appear in this list
+my %writableType = (
+    CRW => [ 'CanonRaw',    'WriteCRW' ],
+    DR4 =>   'CanonVRD',
+    EPS => [ 'PostScript',  'WritePS'  ],
+    FLIF=> [ undef,         'WriteFLIF'],
+    GIF =>   undef,
+    ICC => [ 'ICC_Profile', 'WriteICC' ],
+    IND =>   'InDesign',
+    JP2 =>   'Jpeg2000',
+    MIE =>   undef,
+    MOV => [ 'QuickTime',   'WriteMOV' ],
+    MRW =>   'MinoltaRaw',
+    PDF => [ undef,         'WritePDF' ],
+    PNG =>   undef,
+    PPM =>   undef,
+    PS  =>   'PostScript',
+    PSD =>   'Photoshop',
+    RAF => [ 'FujiFilm',    'WriteRAF' ],
+    VRD =>   'CanonVRD',
+    X3F =>   'SigmaRaw',
+    XMP => [ undef,         'WriteXMP' ],
+);
+
+# (Note: all writable "pseudo" tags must be found in Extra table)
+my @writablePseudoTags =  qw(
+    FileName FilePermissions Directory FileModifyDate FileCreateDate HardLink TestName
+);
+
 # groups we are allowed to delete
 # Notes:
 # 1) these names must either exist in %dirMap, or be translated in InitWriteDirs())
@@ -178,7 +209,7 @@ my %intRange = (
     'int32s' => [-0x80000000, 0x7fffffff],
 );
 # lookup for file types with block-writable EXIF
-my %blockExifTypes = map { $_ => 1 } qw(JPEG PNG JP2 MIE EXIF);
+my %blockExifTypes = map { $_ => 1 } qw(JPEG PNG JP2 MIE EXIF FLIF);
 
 my $maxSegmentLen = 0xfffd;     # maximum length of data in a JPEG segment
 my $maxXMPLen = $maxSegmentLen; # maximum length of XMP data in JPEG
@@ -464,7 +495,7 @@ sub SetNewValue($;$$%)
         }
         unless ($listOnly) {
             if (not TagExists($tag)) {
-                $err = "Tag '$origTag' does not exist";
+                $err = "Tag '$origTag' is not supported";
                 $err .= ' or has a bad language code' if $origTag =~ /-/;
             } elsif ($langCode) {
                 $err = "Tag '$tag' does not support alternate languages";
@@ -695,15 +726,17 @@ TAG: foreach $tagInfo (@matchingTags) {
         my $addValue = $options{AddValue};
         if (defined $shift) {
             # (can't currently shift list-type tags)
-            if (not $$tagInfo{List}) {
+            my $shiftable;
+            if ($$tagInfo{List}) {
+                $shiftable = '';    # can add/delete but not shift
+            } else {
+                $shiftable = $$tagInfo{Shift};
                 unless ($shift) {
                     # set shift according to AddValue/DelValue
                     $shift = 1 if $addValue;
-                    if ($options{DelValue}) {
-                        # can shift a date/time with -=, but this is
-                        # a conditional delete operation for other tags
-                        $shift = -1 if $$tagInfo{Shift} and $$tagInfo{Shift} eq 'Time';
-                    }
+                    # can shift a date/time with -=, but this is
+                    # a conditional delete operation for other tags
+                    $shift = -1 if $options{DelValue} and defined $shiftable and $shiftable eq 'Time';
                 }
                 if ($shift and (not defined $value or not length $value)) {
                     # (now allow -= to be used for shiftable tag - v8.05)
@@ -712,7 +745,12 @@ TAG: foreach $tagInfo (@matchingTags) {
                     #next;
                     undef $shift;
                 }
-            } elsif ($shift) {
+            }
+                # can't shift List-type tag
+            if ((defined $shiftable and not $shiftable) and
+                # and don't try to conditionally delete if Shift is "0"
+                ($shift or ($shiftable eq '0' and $options{DelValue})))
+            {
                 $err = "$wgrp1:$tag is not shiftable";
                 $verbose > 2 and print $out "$err\n";
                 next;
@@ -951,12 +989,13 @@ WriteAlso:
             foreach $wtag (keys %$writeAlso) {
                 my %opts = (
                     Type => 'ValueConv',
-                    Protected => $protected | 0x02,
-                    AddValue => $addValue,
-                    DelValue => $options{DelValue},
-                    Replace => $options{Replace}, # handle lists properly
-                    CreateGroups => $createGroups,
-                    SetTags => \%alsoWrote, # remember tags already written
+                    Protected   => $protected | 0x02,
+                    AddValue    => $addValue,
+                    DelValue    => $options{DelValue},
+                    Shift       => $options{Shift},
+                    Replace     => $options{Replace},   # handle lists properly
+                    CreateGroups=> $createGroups,
+                    SetTags     => \%alsoWrote,         # remember tags already written
                 );
                 undef $evalWarning;
                 #### eval WriteAlso ($val)
@@ -1006,7 +1045,7 @@ WriteAlso:
             } elsif ($foundMatch) {
                 $err = "Sorry, $pre$tag is not writable";
             } else {
-                $err = "Tag '$pre$tag' does not exist";
+                $err = "Tag '$pre$tag' is not supported";
             }
         }
         if ($err) {
@@ -1528,8 +1567,8 @@ sub CountNewValues($)
     return $num unless wantarray;
     my $pseudo = 0;
     if ($newVal) {
-        # (Note: all writable "pseudo" tags must be found in Extra table)
-        foreach $tag (qw{FileName FilePermissions Directory FileModifyDate FileCreateDate HardLink TestName}) {
+        # count the number of pseudo tags we are writing
+        foreach $tag (@writablePseudoTags) {
             ++$pseudo if defined $$newVal{$Image::ExifTool::Extra{$tag}};
         }
     }
@@ -1919,10 +1958,15 @@ sub WriteInfo($$;$$)
         # create file from scratch
         $outType = GetFileExtension($outfile) unless $outType or ref $outfile;
         if (CanCreate($outType)) {
-            $fileType = $tiffType = $outType;   # use output file type if no input file
-            $infile = "$fileType file";         # make bogus file name
-            $self->VPrint(0, "Creating $infile...\n");
-            $inRef = \ '';      # set $inRef to reference to empty data
+            if ($$self{OPTIONS}{WriteMode} =~ /g/i) {
+                $fileType = $tiffType = $outType;   # use output file type if no input file
+                $infile = "$fileType file";         # make bogus file name
+                $self->VPrint(0, "Creating $infile...\n");
+                $inRef = \ '';      # set $inRef to reference to empty data
+            } else {
+                $self->Error("Not creating new $outType file (disallowed by WriteMode)");
+                return 0;
+            }
         } elsif ($outType) {
             $self->Error("Can't create $outType files");
             return 0;
@@ -2027,62 +2071,21 @@ sub WriteInfo($$;$$)
                     $dirInfo{Parent} = $tiffType;
                     $rtnVal = $self->ProcessTIFF(\%dirInfo);
                 }
-            } elsif ($type eq 'GIF') {
-                require Image::ExifTool::GIF;
-                $rtnVal = Image::ExifTool::GIF::ProcessGIF($self,\%dirInfo);
-            } elsif ($type eq 'CRW') {
-                require Image::ExifTool::CanonRaw;
-                $rtnVal = Image::ExifTool::CanonRaw::WriteCRW($self, \%dirInfo);
-            } elsif ($type eq 'MRW') {
-                require Image::ExifTool::MinoltaRaw;
-                $rtnVal = Image::ExifTool::MinoltaRaw::ProcessMRW($self, \%dirInfo);
-            } elsif ($type eq 'RAF') {
-                require Image::ExifTool::FujiFilm;
-                $rtnVal = Image::ExifTool::FujiFilm::WriteRAF($self, \%dirInfo);
+            } elsif (exists $writableType{$type}) {
+                my ($module, $func);
+                if (ref $writableType{$type} eq 'ARRAY') {
+                    $module = $writableType{$type}[0] || $type;
+                    $func = $writableType{$type}[1];
+                } else {
+                    $module = $writableType{$type} || $type;
+                }
+                require "Image/ExifTool/$module.pm";
+                $func = "Image::ExifTool::${module}::" . ($func || "Process$type");
+                no strict 'refs';
+                $rtnVal = &$func($self, \%dirInfo);
+                use strict 'refs';
             } elsif ($type eq 'ORF' or $type eq 'RAW') {
                 $rtnVal = $self->ProcessTIFF(\%dirInfo);
-            } elsif ($type eq 'X3F') {
-                require Image::ExifTool::SigmaRaw;
-                $rtnVal = Image::ExifTool::SigmaRaw::ProcessX3F($self, \%dirInfo);
-            } elsif ($type eq 'PNG') {
-                require Image::ExifTool::PNG;
-                $rtnVal = Image::ExifTool::PNG::ProcessPNG($self, \%dirInfo);
-            } elsif ($type eq 'MIE') {
-                require Image::ExifTool::MIE;
-                $rtnVal = Image::ExifTool::MIE::ProcessMIE($self, \%dirInfo);
-            } elsif ($type eq 'XMP') {
-                require Image::ExifTool::XMP;
-                $rtnVal = Image::ExifTool::XMP::WriteXMP($self, \%dirInfo);
-            } elsif ($type eq 'PPM') {
-                require Image::ExifTool::PPM;
-                $rtnVal = Image::ExifTool::PPM::ProcessPPM($self, \%dirInfo);
-            } elsif ($type eq 'PSD') {
-                require Image::ExifTool::Photoshop;
-                $rtnVal = Image::ExifTool::Photoshop::ProcessPSD($self, \%dirInfo);
-            } elsif ($type eq 'EPS' or $type eq 'PS') {
-                require Image::ExifTool::PostScript;
-                $rtnVal = Image::ExifTool::PostScript::WritePS($self, \%dirInfo);
-            } elsif ($type eq 'PDF') {
-                require Image::ExifTool::PDF;
-                $rtnVal = Image::ExifTool::PDF::WritePDF($self, \%dirInfo);
-            } elsif ($type eq 'ICC') {
-                require Image::ExifTool::ICC_Profile;
-                $rtnVal = Image::ExifTool::ICC_Profile::WriteICC($self, \%dirInfo);
-            } elsif ($type eq 'VRD') {
-                require Image::ExifTool::CanonVRD;
-                $rtnVal = Image::ExifTool::CanonVRD::ProcessVRD($self, \%dirInfo);
-            } elsif ($type eq 'DR4') {
-                require Image::ExifTool::CanonVRD;
-                $rtnVal = Image::ExifTool::CanonVRD::ProcessDR4($self, \%dirInfo);
-            } elsif ($type eq 'JP2') {
-                require Image::ExifTool::Jpeg2000;
-                $rtnVal = Image::ExifTool::Jpeg2000::ProcessJP2($self, \%dirInfo);
-            } elsif ($type eq 'IND') {
-                require Image::ExifTool::InDesign;
-                $rtnVal = Image::ExifTool::InDesign::ProcessIND($self, \%dirInfo);
-            } elsif ($type eq 'MOV') {
-                require Image::ExifTool::QuickTime;
-                $rtnVal = Image::ExifTool::QuickTime::WriteMOV($self, \%dirInfo);
             } elsif ($type eq 'EXIF') {
                 # go through WriteDirectory so block writes, etc are handled
                 my $tagTablePtr = GetTagTable('Image::ExifTool::Exif::Main');
@@ -3498,7 +3501,7 @@ sub InitWriteDirs($$;$)
 # Write an image directory
 # Inputs: 0) ExifTool object reference, 1) source directory information reference
 #         2) tag table reference, 3) optional reference to writing procedure
-# Returns: New directory data or undefined on error
+# Returns: New directory data or undefined on error (or empty string to delete directory)
 sub WriteDirectory($$$;$)
 {
     my ($self, $dirInfo, $tagTablePtr, $writeProc) = @_;
@@ -4138,10 +4141,11 @@ sub NewGUID()
 #         3) flag to allow date-only (YYYY, YYYY:mm or YYYY:mm:dd) or time without seconds
 # Returns: formatted date/time string (or undef and issues warning on error)
 # Notes: currently accepts different separators, but doesn't use DateFormat yet
+my $hasStrptime; # flag for strptime available
 sub InverseDateTime($$;$$)
 {
     my ($self, $val, $tzFlag, $dateOnly) = @_;
-    my ($rtnVal, $tz);
+    my ($rtnVal, $tz, $noStrptime);
     # strip off timezone first if it exists
     if ($val =~ s/([+-])(\d{1,2}):?(\d{2})\s*$//i) {
         $tz = sprintf("$1%.2d:$3", $2);
@@ -4151,6 +4155,51 @@ sub InverseDateTime($$;$$)
         $tz = '';
         # allow special value of 'now'
         return TimeNow($tzFlag) if lc($val) eq 'now';
+    }
+    my $fmt = $$self{OPTIONS}{DateFormat};
+    # only convert date if a format was specified and the date is recognizable
+    if ($fmt) {
+        unless (defined $hasStrptime) {
+            if (eval { require POSIX::strptime }) {
+                $hasStrptime = 1;
+            } elsif (eval { require Time::Piece }) {
+                $hasStrptime = 2;
+            } else {
+                $hasStrptime = 0;
+            }
+        }
+        if ($hasStrptime) {
+            my @a;
+            if ($hasStrptime == 1) {
+                @a = POSIX::strptime($val, $fmt);
+            } else {
+                @a = Time::Piece::_strptime($val, $fmt);
+            }
+            if (defined $a[5] and length $a[5]) {
+                $a[5] += 1900; # add 1900 to year
+            } else {
+                warn "Invalid date/time (no year)\n";
+                return undef;
+            }
+            ++$a[4] if defined $a[4] and length $a[4];  # add 1 to month
+            my $i;
+            foreach $i (0..4) {
+                if (not defined $a[$i] or not length $a[$i]) {
+                    if ($i < 2 or $dateOnly) { # (allow missing minutes/seconds)
+                        $a[$i] = '  ';
+                    } else {
+                        warn("Incomplete date/time specification\n");
+                        return undef;
+                    }
+                } elsif (length($a[$i]) < 2) {
+                    $$a[$i] = "0$a[$i]";# pad to 2 digits if necessary
+                }
+            }
+            $val = join(':', @a[5,4,3]) . ' ' . join(':', @a[2,1,0]);
+        } elsif ($$self{OPTIONS}{StrictDate}) {
+            warn "Install POSIX::strptime to do inverse date/time conversions\n";
+            return undef;
+        }
     }
     if ($val =~ /(\d{4})/g) {           # get YYYY
         my $yr = $1;
@@ -4236,6 +4285,8 @@ sub AssembleRational($$@)
 # - the returned rational will be accurate to at least 8 significant figures if possible
 # - eg. an input of 3.14159265358979 returns a rational of 104348/33215,
 #   which equals    3.14159265392142 and is accurate to 10 significant figures
+# - the returned rational will be reduced to the lowest common denominator except when
+#   the input is a fraction in which case the input is returned unchanged
 # - these routines were a bit tricky, but fun to write!
 sub Rationalize($;$)
 {
@@ -5913,7 +5964,7 @@ sub SetFileTime($$;$$$)
     # open file by name if necessary
     unless (ref $file) {
         local *FH;
-        $self->Open(\*FH, $file, '+<') or $self->Warn("SetFileTime error for '$file'"), return 0;
+        $self->Open(\*FH, $file, '+<') or $self->Warn('Error opening file for update'), return 0;
         $file = *FH;  # (not \*FH, so *FH will be kept open until $file goes out of scope)
     }
     # on Windows, try to work around incorrect file times when daylight saving time is in effect

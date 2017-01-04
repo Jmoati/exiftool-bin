@@ -355,13 +355,14 @@ toward magenta)</span></span></td></tr>
   <br>4 = Local
   <br>8 = Zone
   <br>9 = Spot
-  <br><span class=n>(NEX and ILCE models)</span>
-  <br>0 = Multi
+  <br><span class=n>(NEX and ILCE models)</span></span><table class=cols><tr>
+  <td>0 = Multi
   <br>1 = Center
   <br>3 = Flexible Spot
+  <br>4 = Flexible Spot (LA-EA4)
   <br>11 = Zone
-  <br>12 = Expanded Flexible Spot
-  <br><span class=n>(ILCA models)</span>
+  <br>12 = Expanded Flexible Spot</td></tr></table>
+<span class=s><span class=n>(ILCA models)</span>
   <br>0 = Wide
   <br>4 = Flexible Spot
   <br>8 = Zone
@@ -399,7 +400,7 @@ Spot)</span></span></td></tr>
   <br>17 = Lower Far Right
   <br>18 = Lower Far Left
   <br>19 = Upper Far Left</td></tr></table>
-<span class=s><span class=n>(ILCA models)</span></span><table class=cols><tr>
+<span class=s><span class=n>(ILCA-68 and ILCA-77M2)</span></span><table class=cols><tr>
   <td>-1 = Auto
   <br>0 = A5
   <br>1 = A6
@@ -480,7 +481,10 @@ Spot)</span></span></td></tr>
   <br>76 = I5
   <br>77 = I6
   <br>78 = I7</td></tr></table>
-<span class=s><span class=n>(NEX and ILCE models)</span></span><table class=cols><tr>
+<span class=s><span class=n>(ILCA-99M2, appears to indicate the number of the selectable Focal Plane AF Point)</span>
+  <br>0 = Auto
+  <br>162 = 162 = E6 (Center)
+  <br><span class=n>(NEX and ILCE models)</span></span><table class=cols><tr>
   <td>0 = n/a
   <br>1 = Center
   <br>2 = Top
@@ -648,9 +652,11 @@ toward magenta)</span></span></td></tr>
 <td>--&gt; <a href='Sony.html#Tag900b'>Sony Tag900b Tags</a></td></tr>
 <tr>
 <td title='0x9050 = 36944'>0x9050</td>
-<td>Tag9050</td>
-<td class=c>-</td>
-<td>--&gt; <a href='Sony.html#Tag9050'>Sony Tag9050 Tags</a></td></tr>
+<td>Tag9050a
+  <br>Tag9050b</td>
+<td class=c>-<br>-</td>
+<td>--&gt; <a href='Sony.html#Tag9050a'>Sony Tag9050a Tags</a>
+  <br>--&gt; <a href='Sony.html#Tag9050b'>Sony Tag9050b Tags</a></td></tr>
 <tr class=b>
 <td title='0x9400 = 37888'>0x9400</td>
 <td>Tag9400a
@@ -758,9 +764,9 @@ toward magenta)</span></span></td></tr>
   <br>290 = NEX-VG20E
   <br>291 = SLT-A37
   <br>292 = SLT-A57
-  <br>293 = NEX-F3</td><td>&nbsp;&nbsp;</td>
-  <td>294 = SLT-A99 / SLT-A99V
-  <br>295 = NEX-6
+  <br>293 = NEX-F3
+  <br>294 = SLT-A99 / SLT-A99V</td><td>&nbsp;&nbsp;</td>
+  <td>295 = NEX-6
   <br>296 = NEX-5R
   <br>297 = DSC-RX100
   <br>298 = DSC-RX1
@@ -789,8 +795,11 @@ toward magenta)</span></span></td></tr>
   <br>347 = ILCE-7RM2
   <br>350 = ILCE-7SM2
   <br>353 = ILCA-68
+  <br>354 = ILCA-99M2
   <br>355 = DSC-RX10M3
-  <br>357 = ILCE-6300</td></tr></table>
+  <br>356 = DSC-RX100M5
+  <br>357 = ILCE-6300
+  <br>360 = ILCE-6500</td></tr></table>
 </td></tr>
 <tr>
 <td title='0xb020 = 45088'>0xb020</td>
@@ -1270,6 +1279,7 @@ adapter is used.</p>
 </tr><tr><td>128.19</td><td>= Sigma 35mm F1.4 DG HSM</td>
 </tr><tr><td>128.20</td><td>= Sigma 18-35mm F1.8 DC HSM</td>
 </tr><tr><td>128.21</td><td>= Sigma 50-500mm F4.5-6.3 APO DG OS HSM</td>
+</tr><tr><td>128.22</td><td>= Sigma 24-105mm F4 DG HSM | Art 013</td>
 </tr><tr><td>129</td><td>= Tamron Lens (129)</td>
 </tr><tr><td>129.1</td><td>= Tamron 200-400mm F5.6 LD</td>
 </tr><tr><td>129.2</td><td>= Tamron 70-300mm F4-5.6 LD</td>
@@ -1284,8 +1294,10 @@ adapter is used.</p>
 </tr><tr><td>194</td><td>= Tamron SP AF 17-50mm F2.8 XR Di II LD Aspherical [IF]</td>
 </tr><tr><td>203</td><td>= Tamron SP 70-200mm F2.8 Di USD</td>
 </tr><tr><td>204</td><td>= Tamron SP 24-70mm F2.8 Di USD</td>
-</tr><tr><td>213</td><td>= Tamron 16-300mm F3.5-6.3 Di II PZD</td>
+</tr><tr><td>212</td><td>= Tamron 28-300mm F3.5-6.3 Di PZD</td>
+</tr><tr><td>213</td><td>= Tamron 16-300mm F3.5-6.3 Di II PZD Macro</td>
 </tr><tr><td>214</td><td>= Tamron SP 150-600mm F5-6.3 Di USD</td>
+</tr><tr><td>215</td><td>= Tamron SP 15-30mm F2.8 Di USD</td>
 </tr><tr><td>224</td><td>= Tamron SP 90mm F2.8 Di Macro 1:1 USD</td>
 </tr><tr><td>255</td><td>= Tamron Lens (255)</td>
 </tr><tr><td>255.1</td><td>= Tamron SP AF 17-50mm F2.8 XR Di II LD Aspherical</td>
@@ -1444,43 +1456,46 @@ adapter is used.</p>
 </tr><tr><td>6553.20</td><td>= Sony FE 55mm F1.8 ZA</td>
 </tr><tr><td>6553.21</td><td>= Sony FE 70-200mm F4 G OSS</td>
 </tr><tr><td>6553.22</td><td>= Sony FE 16-35mm F4 ZA OSS</td>
-</tr><tr><td>6553.23</td><td>= Sony FE 28-70mm F3.5-5.6 OSS</td>
-</tr><tr><td>6553.24</td><td>= Sony FE 35mm F1.4 ZA</td>
-</tr><tr><td>6553.25</td><td>= Sony FE 24-240mm F3.5-6.3 OSS</td>
-</tr><tr><td>6553.26</td><td>= Sony FE 28mm F2</td>
-</tr><tr><td>6553.27</td><td>= Sony FE PZ 28-135mm F4 G OSS</td>
-</tr><tr><td>6553.28</td><td>= Sony FE 24-70mm F2.8 GM</td>
-</tr><tr><td>6553.29</td><td>= Sony FE 50mm F1.4 ZA</td>
-</tr><tr><td>6553.30</td><td>= Sony FE 85mm F1.4 GM</td>
-</tr><tr><td>6553.31</td><td>= Sony FE 50mm F1.8</td>
-</tr><tr><td>6553.32</td><td>= Sony FE 21mm F2.8 (SEL28F20 + SEL075UWC)</td>
-</tr><tr><td>6553.33</td><td>= Sony FE 16mm F3.5 Fisheye (SEL28F20 + SEL057FEC)</td>
-</tr><tr><td>6553.34</td><td>= Sony FE 70-300mm F4.5-5.6 G OSS</td>
-</tr><tr><td>6553.35</td><td>= Sony FE 70-200mm F2.8 GM OSS</td>
-</tr><tr><td>6553.36</td><td>= Sony FE 70-200mm F2.8 GM OSS + 1.4X Teleconverter</td>
-</tr><tr><td>6553.37</td><td>= Sony FE 70-200mm F2.8 GM OSS + 2X Teleconverter</td>
-</tr><tr><td>6553.38</td><td>= Sigma 19mm F2.8 [EX] DN</td>
-</tr><tr><td>6553.39</td><td>= Sigma 30mm F2.8 [EX] DN</td>
-</tr><tr><td>6553.40</td><td>= Sigma 60mm F2.8 DN</td>
-</tr><tr><td>6553.41</td><td>= Sigma 30mm F1.4 DC DN | C</td>
-</tr><tr><td>6553.42</td><td>= Tamron 18-200mm F3.5-6.3 Di III VC</td>
-</tr><tr><td>6553.43</td><td>= Zeiss Batis 25mm F2</td>
-</tr><tr><td>6553.44</td><td>= Zeiss Batis 85mm F1.8</td>
-</tr><tr><td>6553.45</td><td>= Zeiss Batis 18mm F2.8</td>
-</tr><tr><td>6553.46</td><td>= Zeiss Loxia 21mm F2.8</td>
-</tr><tr><td>6553.47</td><td>= Zeiss Loxia 35mm F2</td>
-</tr><tr><td>6553.48</td><td>= Zeiss Loxia 50mm F2</td>
-</tr><tr><td>6553.49</td><td>= Zeiss Touit 12mm F2.8</td>
-</tr><tr><td>6553.50</td><td>= Zeiss Touit 32mm F1.8</td>
-</tr><tr><td>6553.51</td><td>= Zeiss Touit 50mm F2.8 Macro</td>
-</tr><tr><td>6553.52</td><td>= Samyang AF 50mm F1.4 FE</td>
-</tr><tr><td>6553.53</td><td>= Arax MC 35mm F2.8 Tilt+Shift</td>
-</tr><tr><td>6553.54</td><td>= Arax MC 80mm F2.8 Tilt+Shift</td>
-</tr><tr><td>6553.55</td><td>= Zenitar MF 16mm F2.8 Fisheye M42</td>
-</tr><tr><td>6553.56</td><td>= Samyang 500mm Mirror F8.0</td>
-</tr><tr><td>6553.57</td><td>= Pentacon Auto 135mm F2.8</td>
-</tr><tr><td>6553.58</td><td>= Pentacon Auto 29mm F2.8</td>
-</tr><tr><td>6553.59</td><td>= Helios 44-2 58mm F2.0</td>
+</tr><tr><td>6553.23</td><td>= Sony FE 50mm F2.8 Macro</td>
+</tr><tr><td>6553.24</td><td>= Sony FE 28-70mm F3.5-5.6 OSS</td>
+</tr><tr><td>6553.25</td><td>= Sony FE 35mm F1.4 ZA</td>
+</tr><tr><td>6553.26</td><td>= Sony FE 24-240mm F3.5-6.3 OSS</td>
+</tr><tr><td>6553.27</td><td>= Sony FE 28mm F2</td>
+</tr><tr><td>6553.28</td><td>= Sony FE PZ 28-135mm F4 G OSS</td>
+</tr><tr><td>6553.29</td><td>= Sony FE 24-70mm F2.8 GM</td>
+</tr><tr><td>6553.30</td><td>= Sony FE 50mm F1.4 ZA</td>
+</tr><tr><td>6553.31</td><td>= Sony FE 85mm F1.4 GM</td>
+</tr><tr><td>6553.32</td><td>= Sony FE 50mm F1.8</td>
+</tr><tr><td>6553.33</td><td>= Sony FE 21mm F2.8 (SEL28F20 + SEL075UWC)</td>
+</tr><tr><td>6553.34</td><td>= Sony FE 16mm F3.5 Fisheye (SEL28F20 + SEL057FEC)</td>
+</tr><tr><td>6553.35</td><td>= Sony FE 70-300mm F4.5-5.6 G OSS</td>
+</tr><tr><td>6553.36</td><td>= Sony FE 70-200mm F2.8 GM OSS</td>
+</tr><tr><td>6553.37</td><td>= Sony FE 70-200mm F2.8 GM OSS + 1.4X Teleconverter</td>
+</tr><tr><td>6553.38</td><td>= Sony FE 70-200mm F2.8 GM OSS + 2X Teleconverter</td>
+</tr><tr><td>6553.39</td><td>= Samyang AF 50mm F1.4 FE</td>
+</tr><tr><td>6553.40</td><td>= Samyang AF 14mm F2.8 FE</td>
+</tr><tr><td>6553.41</td><td>= Sigma 19mm F2.8 [EX] DN</td>
+</tr><tr><td>6553.42</td><td>= Sigma 30mm F2.8 [EX] DN</td>
+</tr><tr><td>6553.43</td><td>= Sigma 60mm F2.8 DN</td>
+</tr><tr><td>6553.44</td><td>= Sigma 30mm F1.4 DC DN | C 016</td>
+</tr><tr><td>6553.45</td><td>= Tamron 18-200mm F3.5-6.3 Di III VC</td>
+</tr><tr><td>6553.46</td><td>= Zeiss Touit 12mm F2.8</td>
+</tr><tr><td>6553.47</td><td>= Zeiss Touit 32mm F1.8</td>
+</tr><tr><td>6553.48</td><td>= Zeiss Touit 50mm F2.8 Macro</td>
+</tr><tr><td>6553.49</td><td>= Zeiss Batis 25mm F2</td>
+</tr><tr><td>6553.50</td><td>= Zeiss Batis 85mm F1.8</td>
+</tr><tr><td>6553.51</td><td>= Zeiss Batis 18mm F2.8</td>
+</tr><tr><td>6553.52</td><td>= Zeiss Loxia 50mm F2</td>
+</tr><tr><td>6553.53</td><td>= Zeiss Loxia 35mm F2</td>
+</tr><tr><td>6553.54</td><td>= Zeiss Loxia 21mm F2.8</td>
+</tr><tr><td>6553.55</td><td>= Zeiss Loxia 85mm F2.4</td>
+</tr><tr><td>6553.56</td><td>= Arax MC 35mm F2.8 Tilt+Shift</td>
+</tr><tr><td>6553.57</td><td>= Arax MC 80mm F2.8 Tilt+Shift</td>
+</tr><tr><td>6553.58</td><td>= Zenitar MF 16mm F2.8 Fisheye M42</td>
+</tr><tr><td>6553.59</td><td>= Samyang 500mm Mirror F8.0</td>
+</tr><tr><td>6553.60</td><td>= Pentacon Auto 135mm F2.8</td>
+</tr><tr><td>6553.61</td><td>= Pentacon Auto 29mm F2.8</td>
+</tr><tr><td>6553.62</td><td>= Helios 44-2 58mm F2.0</td>
 </tr><tr><td>18688</td><td>= Sigma MC-11 SA-E Mount Converter with not-supported Sigma lens</td>
 </tr><tr><td>25501</td><td>= Minolta AF 50mm F1.7</td>
 </tr><tr><td>25511</td><td>= Minolta AF 35-70mm F4 or Other Lens</td>
@@ -1628,43 +1643,46 @@ adapter is used.</p>
 </tr><tr><td>65535.20</td><td>= Sony FE 55mm F1.8 ZA</td>
 </tr><tr><td>65535.21</td><td>= Sony FE 70-200mm F4 G OSS</td>
 </tr><tr><td>65535.22</td><td>= Sony FE 16-35mm F4 ZA OSS</td>
-</tr><tr><td>65535.23</td><td>= Sony FE 28-70mm F3.5-5.6 OSS</td>
-</tr><tr><td>65535.24</td><td>= Sony FE 35mm F1.4 ZA</td>
-</tr><tr><td>65535.25</td><td>= Sony FE 24-240mm F3.5-6.3 OSS</td>
-</tr><tr><td>65535.26</td><td>= Sony FE 28mm F2</td>
-</tr><tr><td>65535.27</td><td>= Sony FE PZ 28-135mm F4 G OSS</td>
-</tr><tr><td>65535.28</td><td>= Sony FE 24-70mm F2.8 GM</td>
-</tr><tr><td>65535.29</td><td>= Sony FE 50mm F1.4 ZA</td>
-</tr><tr><td>65535.30</td><td>= Sony FE 85mm F1.4 GM</td>
-</tr><tr><td>65535.31</td><td>= Sony FE 50mm F1.8</td>
-</tr><tr><td>65535.32</td><td>= Sony FE 21mm F2.8 (SEL28F20 + SEL075UWC)</td>
-</tr><tr><td>65535.33</td><td>= Sony FE 16mm F3.5 Fisheye (SEL28F20 + SEL057FEC)</td>
-</tr><tr><td>65535.34</td><td>= Sony FE 70-300mm F4.5-5.6 G OSS</td>
-</tr><tr><td>65535.35</td><td>= Sony FE 70-200mm F2.8 GM OSS</td>
-</tr><tr><td>65535.36</td><td>= Sony FE 70-200mm F2.8 GM OSS + 1.4X Teleconverter</td>
-</tr><tr><td>65535.37</td><td>= Sony FE 70-200mm F2.8 GM OSS + 2X Teleconverter</td>
-</tr><tr><td>65535.38</td><td>= Sigma 19mm F2.8 [EX] DN</td>
-</tr><tr><td>65535.39</td><td>= Sigma 30mm F2.8 [EX] DN</td>
-</tr><tr><td>65535.40</td><td>= Sigma 60mm F2.8 DN</td>
-</tr><tr><td>65535.41</td><td>= Sigma 30mm F1.4 DC DN | C</td>
-</tr><tr><td>65535.42</td><td>= Tamron 18-200mm F3.5-6.3 Di III VC</td>
-</tr><tr><td>65535.43</td><td>= Zeiss Batis 25mm F2</td>
-</tr><tr><td>65535.44</td><td>= Zeiss Batis 85mm F1.8</td>
-</tr><tr><td>65535.45</td><td>= Zeiss Batis 18mm F2.8</td>
-</tr><tr><td>65535.46</td><td>= Zeiss Loxia 21mm F2.8</td>
-</tr><tr><td>65535.47</td><td>= Zeiss Loxia 35mm F2</td>
-</tr><tr><td>65535.48</td><td>= Zeiss Loxia 50mm F2</td>
-</tr><tr><td>65535.49</td><td>= Zeiss Touit 12mm F2.8</td>
-</tr><tr><td>65535.50</td><td>= Zeiss Touit 32mm F1.8</td>
-</tr><tr><td>65535.51</td><td>= Zeiss Touit 50mm F2.8 Macro</td>
-</tr><tr><td>65535.52</td><td>= Samyang AF 50mm F1.4 FE</td>
-</tr><tr><td>65535.53</td><td>= Arax MC 35mm F2.8 Tilt+Shift</td>
-</tr><tr><td>65535.54</td><td>= Arax MC 80mm F2.8 Tilt+Shift</td>
-</tr><tr><td>65535.55</td><td>= Zenitar MF 16mm F2.8 Fisheye M42</td>
-</tr><tr><td>65535.56</td><td>= Samyang 500mm Mirror F8.0</td>
-</tr><tr><td>65535.57</td><td>= Pentacon Auto 135mm F2.8</td>
-</tr><tr><td>65535.58</td><td>= Pentacon Auto 29mm F2.8</td>
-</tr><tr><td>65535.59</td><td>= Helios 44-2 58mm F2.0</td>
+</tr><tr><td>65535.23</td><td>= Sony FE 50mm F2.8 Macro</td>
+</tr><tr><td>65535.24</td><td>= Sony FE 28-70mm F3.5-5.6 OSS</td>
+</tr><tr><td>65535.25</td><td>= Sony FE 35mm F1.4 ZA</td>
+</tr><tr><td>65535.26</td><td>= Sony FE 24-240mm F3.5-6.3 OSS</td>
+</tr><tr><td>65535.27</td><td>= Sony FE 28mm F2</td>
+</tr><tr><td>65535.28</td><td>= Sony FE PZ 28-135mm F4 G OSS</td>
+</tr><tr><td>65535.29</td><td>= Sony FE 24-70mm F2.8 GM</td>
+</tr><tr><td>65535.30</td><td>= Sony FE 50mm F1.4 ZA</td>
+</tr><tr><td>65535.31</td><td>= Sony FE 85mm F1.4 GM</td>
+</tr><tr><td>65535.32</td><td>= Sony FE 50mm F1.8</td>
+</tr><tr><td>65535.33</td><td>= Sony FE 21mm F2.8 (SEL28F20 + SEL075UWC)</td>
+</tr><tr><td>65535.34</td><td>= Sony FE 16mm F3.5 Fisheye (SEL28F20 + SEL057FEC)</td>
+</tr><tr><td>65535.35</td><td>= Sony FE 70-300mm F4.5-5.6 G OSS</td>
+</tr><tr><td>65535.36</td><td>= Sony FE 70-200mm F2.8 GM OSS</td>
+</tr><tr><td>65535.37</td><td>= Sony FE 70-200mm F2.8 GM OSS + 1.4X Teleconverter</td>
+</tr><tr><td>65535.38</td><td>= Sony FE 70-200mm F2.8 GM OSS + 2X Teleconverter</td>
+</tr><tr><td>65535.39</td><td>= Samyang AF 50mm F1.4 FE</td>
+</tr><tr><td>65535.40</td><td>= Samyang AF 14mm F2.8 FE</td>
+</tr><tr><td>65535.41</td><td>= Sigma 19mm F2.8 [EX] DN</td>
+</tr><tr><td>65535.42</td><td>= Sigma 30mm F2.8 [EX] DN</td>
+</tr><tr><td>65535.43</td><td>= Sigma 60mm F2.8 DN</td>
+</tr><tr><td>65535.44</td><td>= Sigma 30mm F1.4 DC DN | C 016</td>
+</tr><tr><td>65535.45</td><td>= Tamron 18-200mm F3.5-6.3 Di III VC</td>
+</tr><tr><td>65535.46</td><td>= Zeiss Touit 12mm F2.8</td>
+</tr><tr><td>65535.47</td><td>= Zeiss Touit 32mm F1.8</td>
+</tr><tr><td>65535.48</td><td>= Zeiss Touit 50mm F2.8 Macro</td>
+</tr><tr><td>65535.49</td><td>= Zeiss Batis 25mm F2</td>
+</tr><tr><td>65535.50</td><td>= Zeiss Batis 85mm F1.8</td>
+</tr><tr><td>65535.51</td><td>= Zeiss Batis 18mm F2.8</td>
+</tr><tr><td>65535.52</td><td>= Zeiss Loxia 50mm F2</td>
+</tr><tr><td>65535.53</td><td>= Zeiss Loxia 35mm F2</td>
+</tr><tr><td>65535.54</td><td>= Zeiss Loxia 21mm F2.8</td>
+</tr><tr><td>65535.55</td><td>= Zeiss Loxia 85mm F2.4</td>
+</tr><tr><td>65535.56</td><td>= Arax MC 35mm F2.8 Tilt+Shift</td>
+</tr><tr><td>65535.57</td><td>= Arax MC 80mm F2.8 Tilt+Shift</td>
+</tr><tr><td>65535.58</td><td>= Zenitar MF 16mm F2.8 Fisheye M42</td>
+</tr><tr><td>65535.59</td><td>= Samyang 500mm Mirror F8.0</td>
+</tr><tr><td>65535.60</td><td>= Pentacon Auto 135mm F2.8</td>
+</tr><tr><td>65535.61</td><td>= Pentacon Auto 29mm F2.8</td>
+</tr><tr><td>65535.62</td><td>= Helios 44-2 58mm F2.0</td>
 </tr></table></td></tr></table></blockquote>
 
 <h2><a name='CameraInfo'>Sony CameraInfo Tags</a></h2>
@@ -4619,7 +4637,8 @@ multi-frame noise reduction)</span></span></td></tr>
 </tr><tr><td>32788</td><td>= Sony E 30mm F3.5 Macro</td>
 </tr><tr><td>32789</td><td>= Sony E 24mm F1.8 ZA or Samyang AF 50mm F1.4 FE</td>
 </tr><tr><td>32789.1</td><td>= Samyang AF 50mm F1.4 FE</td>
-</tr><tr><td>32790</td><td>= Sony E 50mm F1.8 OSS</td>
+</tr><tr><td>32790</td><td>= Sony E 50mm F1.8 OSS or Samyang AF 14mm F2.8 FE</td>
+</tr><tr><td>32790.1</td><td>= Samyang AF 14mm F2.8 FE</td>
 </tr><tr><td>32791</td><td>= Sony E 16-70mm F4 ZA OSS</td>
 </tr><tr><td>32792</td><td>= Sony E 10-18mm F4 OSS</td>
 </tr><tr><td>32793</td><td>= Sony E PZ 16-50mm F3.5-5.6 OSS</td>
@@ -4635,6 +4654,7 @@ multi-frame noise reduction)</span></span></td></tr>
 </tr><tr><td>32808</td><td>= Sony FE 55mm F1.8 ZA</td>
 </tr><tr><td>32810</td><td>= Sony FE 70-200mm F4 G OSS</td>
 </tr><tr><td>32811</td><td>= Sony FE 16-35mm F4 ZA OSS</td>
+</tr><tr><td>32812</td><td>= Sony FE 50mm F2.8 Macro</td>
 </tr><tr><td>32813</td><td>= Sony FE 28-70mm F3.5-5.6 OSS</td>
 </tr><tr><td>32814</td><td>= Sony FE 35mm F1.4 ZA</td>
 </tr><tr><td>32815</td><td>= Sony FE 24-240mm F3.5-6.3 OSS</td>
@@ -4659,6 +4679,7 @@ multi-frame noise reduction)</span></span></td></tr>
 </tr><tr><td>49232</td><td>= Zeiss Loxia 50mm F2</td>
 </tr><tr><td>49233</td><td>= Zeiss Loxia 35mm F2</td>
 </tr><tr><td>49234</td><td>= Zeiss Loxia 21mm F2.8</td>
+</tr><tr><td>49235</td><td>= Zeiss Loxia 85mm F2.4</td>
 </tr><tr><td>50480</td><td>= Sigma 30mm F1.4 DC DN | C 016</td>
 </tr><tr><td>50481</td><td>= Sigma 50mm F1.4 DG HSM | A 014 + MC-11</td>
 </tr><tr><td>50482</td><td>= Sigma 18-300mm F3.5-6.3 DC MACRO OS HSM | C 014 + MC-11</td>
@@ -4672,6 +4693,9 @@ multi-frame noise reduction)</span></span></td></tr>
 </tr><tr><td>50492</td><td>= Sigma 24-105mm F4 DG OS HSM | A 013 + MC-11</td>
 </tr><tr><td>50493</td><td>= Sigma 17-70mm F2.8-4 DC MACRO OS HSM | C 013 + MC-11</td>
 </tr><tr><td>50495</td><td>= Sigma 50-100mm F1.8 DC HSM | A 016 + MC-11</td>
+</tr><tr><td>50992</td><td>= Voigtlander SUPER WIDE-HELIAR 15mm F4.5 III</td>
+</tr><tr><td>50993</td><td>= Voigtlander HELIAR-HYPER WIDE 10mm F5.6</td>
+</tr><tr><td>50994</td><td>= Voigtlander ULTRA WIDE-HELIAR 12mm F5.6 III</td>
 </tr></table></td></tr></table></blockquote>
 
 <h2><a name='CameraSettingsUnknown'>Sony CameraSettingsUnknown Tags</a></h2>
@@ -6584,7 +6608,8 @@ ILCE-7/7R/7S/7M2/5000/5100/6000/QX1, ILCA-68/77M2.</p>
 </table></td></tr></table></blockquote>
 
 <h2><a name='Tag2010h'>Sony Tag2010h Tags</a></h2>
-<p>Valid for DSC-HX90V/RX1RM2/RX10M2/RX10M3/RX100M4/WX500, ILCE-6300/7RM2/7SM2.</p>
+<p>Valid for DSC-HX90V/RX1RM2/RX10M2/RX10M3/RX100M4/RX100M5/WX500,
+ILCE-6300/6500/7RM2/7SM2, ILCA-99M2.</p>
 <blockquote>
 <table class=frame><tr><td>
 <table class=inner cellspacing=1>
@@ -6788,30 +6813,35 @@ ILCE-7/7R/7S/7M2/5000/5100/6000/QX1, ILCA-68/77M2.</p>
 <td class=c>-</td>
 <td>--&gt; <a href='Sony.html#MeterInfo'>Sony MeterInfo Tags</a></td></tr>
 <tr class=b>
+<td title='0x0398 = 920'>0x0398</td>
+<td>MeterInfo?</td>
+<td class=c>-</td>
+<td>--&gt; <a href='Sony.html#MeterInfo'>Sony MeterInfo Tags</a></td></tr>
+<tr>
 <td title='0x18cc = 6348'>0x18cc</td>
 <td>LensParameters?</td>
 <td class=c title=' ~ = Writable only with -n'>int16s[16]~</td>
 <td>&nbsp;</td></tr>
-<tr>
+<tr class=b>
 <td title='0x18ed = 6381'>0x18ed</td>
 <td>LensFormat</td>
 <td class=c>int8u</td>
 <td><span class=s>0 = Unknown
   <br>1 = APS-C
   <br>2 = Full-frame</span></td></tr>
-<tr class=b>
+<tr>
 <td title='0x18ee = 6382'>0x18ee</td>
 <td>LensMount</td>
 <td class=c>int8u</td>
 <td><span class=s>0 = Unknown
   <br>1 = A-mount
   <br>2 = E-mount</span></td></tr>
-<tr>
+<tr class=b>
 <td title='0x18ef = 6383'>0x18ef</td>
 <td>LensType2</td>
 <td class=c>int16u</td>
 <td>--&gt; <a href='Sony.html#LensType2'>Sony LensType2 Values</a></td></tr>
-<tr class=b>
+<tr>
 <td title='0x18f2 = 6386'>0x18f2</td>
 <td>LensType</td>
 <td class=c>int16u</td>
@@ -7091,7 +7121,7 @@ the full-sized unrotated image, with increasing Y downwards)</span></span></td><
   <br>98 = On</span></td></tr>
 </table></td></tr></table></blockquote>
 
-<h2><a name='Tag9050'>Sony Tag9050 Tags</a></h2>
+<h2><a name='Tag9050a'>Sony Tag9050a Tags</a></h2>
 <p>Data for tags 0x9050, 0x94xx and 0x2010 is encrypted by a simple
 substitution cipher, but the deciphered values are listed below.</p>
 <blockquote>
@@ -7128,45 +7158,17 @@ substitution cipher, but the deciphered values are listed below.</p>
 <td class=c>int32u</td>
 <td><span class=s><span class=n>(total number of image exposures made by the camera)</span></span></td></tr>
 <tr>
-<td title='0x0039 = 57'>0x0039</td>
-<td>FlashStatus</td>
-<td class=c>int8u</td>
-<td><table class=cols><tr>
-  <td>0 = No Flash present
-  <br>2 = Flash Inhibited
-  <br>64 = Built-in Flash present
-  <br>65 = Built-in Flash Fired
-  <br>66 = Built-in Flash Inhibited
-  <br>128 = External Flash present
-  <br>129 = External Flash Fired</td></tr></table>
-</td></tr>
-<tr class=b>
 <td title='0x003a = 58'>0x003a</td>
-<td>ImageCount</td>
-<td class=c>int32u</td>
-<td><span class=s><span class=n>(total number of image exposures made by the camera)</span></span></td></tr>
-<tr>
-<td title='0x003c = 60'>0x003c</td>
-<td>SonyFNumber</td>
-<td class=c>int16u</td>
-<td>&nbsp;</td></tr>
-<tr class=b>
-<td title='0x003f = 63'>0x003f</td>
-<td>ReleaseMode2</td>
-<td class=c>int8u</td>
-<td>--&gt; <a href='Sony.html#ReleaseMode2'>Sony ReleaseMode2 Values</a></td></tr>
-<tr>
-<td title='0x0046 = 70'>0x0046</td>
 <td>SonyExposureTime</td>
 <td class=c>int16u</td>
 <td>&nbsp;</td></tr>
 <tr class=b>
-<td title='0x0048 = 72'>0x0048</td>
+<td title='0x003c = 60'>0x003c</td>
 <td>SonyFNumber</td>
 <td class=c>int16u</td>
 <td>&nbsp;</td></tr>
 <tr>
-<td title='0x004b = 75'>0x004b</td>
+<td title='0x003f = 63'>0x003f</td>
 <td>ReleaseMode2</td>
 <td class=c>int8u</td>
 <td>--&gt; <a href='Sony.html#ReleaseMode2'>Sony ReleaseMode2 Values</a></td></tr>
@@ -7181,34 +7183,14 @@ substitution cipher, but the deciphered values are listed below.</p>
 <td class=c>undef[6]</td>
 <td>&nbsp;</td></tr>
 <tr class=b>
-<td title='0x0058 = 88'>0x0058</td>
-<td>ImageCount2</td>
-<td class=c>int32u</td>
-<td>&nbsp;</td></tr>
-<tr>
-<td title='0x005d = 93'>0x005d</td>
-<td>SonyDateTime2</td>
-<td class=c>undef[6]</td>
-<td>&nbsp;</td></tr>
-<tr class=b>
 <td title='0x0067 = 103'>0x0067</td>
 <td>ReleaseMode2</td>
 <td class=c>int8u</td>
 <td>--&gt; <a href='Sony.html#ReleaseMode2'>Sony ReleaseMode2 Values</a></td></tr>
 <tr>
-<td title='0x0073 = 115'>0x0073</td>
-<td>ReleaseMode2</td>
-<td class=c>int8u</td>
-<td>--&gt; <a href='Sony.html#ReleaseMode2'>Sony ReleaseMode2 Values</a></td></tr>
-<tr class=b>
 <td title='0x007c = 124'>0x007c</td>
 <td>InternalSerialNumber</td>
 <td class=c title=' ~ = Writable only with -n'>int8u[4]~</td>
-<td>&nbsp;</td></tr>
-<tr>
-<td title='0x0088 = 136'>0x0088</td>
-<td>InternalSerialNumber</td>
-<td class=c title=' ~ = Writable only with -n'>int8u[6]~</td>
 <td>&nbsp;</td></tr>
 <tr class=b>
 <td title='0x00f0 = 240'>0x00f0</td>
@@ -7265,10 +7247,127 @@ substitution cipher, but the deciphered values are listed below.</p>
 <td>ImageCount3</td>
 <td class=c>int32u</td>
 <td>&nbsp;</td></tr>
+</table></td></tr></table></blockquote>
+
+<h2><a name='Tag9050b'>Sony Tag9050b Tags</a></h2>
+<p>Valid from July 2015 for ILCE-6300/6500/7RM2/7SM2, ILCA-99M2.</p>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Tag&nbsp;ID</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td title='0x0000 = 0'>0x0000</td>
+<td>MaxAperture</td>
+<td class=c>int8u</td>
+<td>&nbsp;</td></tr>
 <tr class=b>
+<td title='0x0001 = 1'>0x0001</td>
+<td>MinAperture</td>
+<td class=c>int8u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0039 = 57'>0x0039</td>
+<td>FlashStatus</td>
+<td class=c>int8u</td>
+<td><table class=cols><tr>
+  <td>0 = No Flash present
+  <br>2 = Flash Inhibited
+  <br>64 = Built-in Flash present
+  <br>65 = Built-in Flash Fired
+  <br>66 = Built-in Flash Inhibited
+  <br>128 = External Flash present
+  <br>129 = External Flash Fired</td></tr></table>
+</td></tr>
+<tr class=b>
+<td title='0x003a = 58'>0x003a</td>
+<td>ImageCount</td>
+<td class=c>int32u</td>
+<td><span class=s><span class=n>(total number of image exposures made by the camera)</span></span></td></tr>
+<tr>
+<td title='0x0046 = 70'>0x0046</td>
+<td>SonyExposureTime</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0048 = 72'>0x0048</td>
+<td>SonyFNumber</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x004b = 75'>0x004b</td>
+<td>ReleaseMode2</td>
+<td class=c>int8u</td>
+<td>--&gt; <a href='Sony.html#ReleaseMode2'>Sony ReleaseMode2 Values</a></td></tr>
+<tr class=b>
+<td title='0x0058 = 88'>0x0058</td>
+<td>ImageCount2</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0061 = 97'>0x0061</td>
+<td>SonyTimeMinSec</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0073 = 115'>0x0073</td>
+<td>ReleaseMode2</td>
+<td class=c>int8u</td>
+<td>--&gt; <a href='Sony.html#ReleaseMode2'>Sony ReleaseMode2 Values</a></td></tr>
+<tr>
+<td title='0x0088 = 136'>0x0088</td>
+<td>InternalSerialNumber</td>
+<td class=c title=' ~ = Writable only with -n'>int8u[6]~</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0105 = 261'>0x0105</td>
+<td>LensMount</td>
+<td class=c>int8u</td>
+<td><span class=s>0 = Unknown
+  <br>1 = A-mount
+  <br>2 = E-mount</span></td></tr>
+<tr>
+<td title='0x0106 = 262'>0x0106</td>
+<td>LensFormat</td>
+<td class=c>int8u</td>
+<td><span class=s>0 = Unknown
+  <br>1 = APS-C
+  <br>2 = Full-frame</span></td></tr>
+<tr class=b>
+<td title='0x0107 = 263'>0x0107</td>
+<td>LensType2</td>
+<td class=c>int16u</td>
+<td>--&gt; <a href='Sony.html#LensType2'>Sony LensType2 Values</a></td></tr>
+<tr>
+<td title='0x0109 = 265'>0x0109</td>
+<td>LensType</td>
+<td class=c>int16u</td>
+<td>--&gt; <a href='Sony.html#LensType'>Sony LensType Values</a>
+  <br><span class='n s'>(SLT models, and NEX with A-mount lenses)</span></td></tr>
+<tr class=b>
+<td title='0x0116 = 278'>0x0116</td>
+<td>LensSpecFeatures</td>
+<td class=c>undef[2]</td>
+<td>&nbsp;</td></tr>
+<tr>
 <td title='0x01cb = 459'>0x01cb</td>
 <td>ImageCount3</td>
 <td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x01cd = 461'>0x01cd</td>
+<td>ImageCount3</td>
+<td class=c>int32u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x021c = 540'>0x021c</td>
+<td>LensSpecFeatures</td>
+<td class=c>undef[2]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x021e = 542'>0x021e</td>
+<td>LensSpecFeatures</td>
+<td class=c>undef[2]</td>
 <td>&nbsp;</td></tr>
 </table></td></tr></table></blockquote>
 
@@ -7428,8 +7527,9 @@ DSC-HX50V, DSC-QX10/QX100.</p>
 </table></td></tr></table></blockquote>
 
 <h2><a name='Tag9400c'>Sony Tag9400c Tags</a></h2>
-<p>Valid for DSC-HX400V/HX60V/QX30/RX10/RX100M3/WX220/WX350,
-ILCE-7/7R/7S/7M2/7RM2/7SM2/5000/5100/6000/6300/QX1, ILCA-68/77M2.</p>
+<p>Valid for DSC-HX400V/HX60V/HX90V/QX30/RX1RM2/RX10/RX10M2/RX10M3/RX100M3/
+RX100M4/RX100M5/WX220/WX350/WX500, ILCE-7/7R/7S/7M2/7RM2/7SM2/5000/5100/
+6000/6300/6500/QX1, ILCA-68/77M2/99M2.</p>
 <blockquote>
 <table class=frame><tr><td>
 <table class=inner cellspacing=1>
@@ -7648,8 +7748,9 @@ ILCE-7/7R/7S/7M2/7RM2/7SM2/5000/5100/6000/6300/QX1, ILCA-68/77M2.</p>
 </table></td></tr></table></blockquote>
 
 <h2><a name='Tag9405b'>Sony Tag9405b Tags</a></h2>
-<p>Valid for DSC-HX400V/HX60V/QX30/RX10/RX10M2/RX10M3/RX100M3/RX100M4/WX220/WX350,
-ILCE-7/7M2/7R/7RM2/7S/7SM2/5000/5100/6000/6300/QX1, ILCA-68/77M2.</p>
+<p>Valid for DSC-HX400V/HX60V/QX30/RX10/RX10M2/RX10M3/RX100M3/RX100M4/RX100M5/
+WX220/WX350, ILCE-7/7M2/7R/7RM2/7S/7SM2/5000/5100/6000/6300/6500/QX1,
+ILCA-68/77M2/99M2.</p>
 <blockquote>
 <table class=frame><tr><td>
 <table class=inner cellspacing=1>
@@ -7883,7 +7984,7 @@ ILCE-7/7M2/7R/7RM2/7S/7SM2/5000/5100/6000/6300/QX1, ILCA-68/77M2.</p>
 <td title='0x0009 = 9'>0x0009</td>
 <td>LensType3</td>
 <td class=c>int16u</td>
-<td>--&gt; <a href='Sony.html#LensType3'>Sony LensType3 Values</a></td></tr>
+<td>--&gt; <a href='Sony.html#LensType2'>Sony LensType2 Values</a></td></tr>
 <tr>
 <td title='0x000b = 11'>0x000b</td>
 <td>CameraE-mountVersion</td>
@@ -7900,83 +8001,6 @@ ILCE-7/7M2/7R/7RM2/7S/7SM2/5000/5100/6000/6300/QX1, ILCA-68/77M2.</p>
 <td class=c>int8u</td>
 <td>&nbsp;</td></tr>
 </table></td></tr></table></blockquote>
-
-<h2><a name='LensType3'>Sony LensType3 Values</a></h2>
-<p>Lens type numbers for Sony E-mount lenses used by NEX models.</p>
-<blockquote>
-<table class=frame><tr><td>
-<table class='inner sep' cellspacing=1>
-<tr class=h><th>Value</th><th>LensType3</th></tr>
-<tr><td>0</td><td>= Unknown E-mount lens or other lens</td>
-</tr><tr><td>1</td><td>= Sony LA-EA1 Adapter</td>
-</tr><tr><td>2</td><td>= Sony LA-EA2 Adapter</td>
-</tr><tr><td>3</td><td>= Sony LA-EA3 Adapter</td>
-</tr><tr><td>6</td><td>= Sony LA-EA4 Adapter</td>
-</tr><tr><td>44</td><td>= Metabones Canon EF Smart Adapter</td>
-</tr><tr><td>78</td><td>= Metabones Canon EF Smart Adapter Mark III or Other Adapter</td>
-</tr><tr><td>234</td><td>= Metabones Canon EF Smart Adapter Mark IV</td>
-</tr><tr><td>239</td><td>= Metabones Canon EF Speed Booster</td>
-</tr><tr><td>32784</td><td>= Sony E 16mm F2.8</td>
-</tr><tr><td>32785</td><td>= Sony E 18-55mm F3.5-5.6 OSS</td>
-</tr><tr><td>32786</td><td>= Sony E 55-210mm F4.5-6.3 OSS</td>
-</tr><tr><td>32787</td><td>= Sony E 18-200mm F3.5-6.3 OSS</td>
-</tr><tr><td>32788</td><td>= Sony E 30mm F3.5 Macro</td>
-</tr><tr><td>32789</td><td>= Sony E 24mm F1.8 ZA or Samyang AF 50mm F1.4 FE</td>
-</tr><tr><td>32789.1</td><td>= Samyang AF 50mm F1.4 FE</td>
-</tr><tr><td>32790</td><td>= Sony E 50mm F1.8 OSS</td>
-</tr><tr><td>32791</td><td>= Sony E 16-70mm F4 ZA OSS</td>
-</tr><tr><td>32792</td><td>= Sony E 10-18mm F4 OSS</td>
-</tr><tr><td>32793</td><td>= Sony E PZ 16-50mm F3.5-5.6 OSS</td>
-</tr><tr><td>32794</td><td>= Sony FE 35mm F2.8 ZA</td>
-</tr><tr><td>32795</td><td>= Sony FE 24-70mm F4 ZA OSS</td>
-</tr><tr><td>32797</td><td>= Sony E 18-200mm F3.5-6.3 OSS LE</td>
-</tr><tr><td>32798</td><td>= Sony E 20mm F2.8</td>
-</tr><tr><td>32799</td><td>= Sony E 35mm F1.8 OSS</td>
-</tr><tr><td>32800</td><td>= Sony E PZ 18-105mm F4 G OSS</td>
-</tr><tr><td>32802</td><td>= Sony FE 90mm F2.8 Macro G OSS</td>
-</tr><tr><td>32803</td><td>= Sony E 18-50mm F4-5.6</td>
-</tr><tr><td>32807</td><td>= Sony E PZ 18-200mm F3.5-6.3 OSS</td>
-</tr><tr><td>32808</td><td>= Sony FE 55mm F1.8 ZA</td>
-</tr><tr><td>32810</td><td>= Sony FE 70-200mm F4 G OSS</td>
-</tr><tr><td>32811</td><td>= Sony FE 16-35mm F4 ZA OSS</td>
-</tr><tr><td>32813</td><td>= Sony FE 28-70mm F3.5-5.6 OSS</td>
-</tr><tr><td>32814</td><td>= Sony FE 35mm F1.4 ZA</td>
-</tr><tr><td>32815</td><td>= Sony FE 24-240mm F3.5-6.3 OSS</td>
-</tr><tr><td>32816</td><td>= Sony FE 28mm F2</td>
-</tr><tr><td>32817</td><td>= Sony FE PZ 28-135mm F4 G OSS</td>
-</tr><tr><td>32821</td><td>= Sony FE 24-70mm F2.8 GM</td>
-</tr><tr><td>32822</td><td>= Sony FE 50mm F1.4 ZA</td>
-</tr><tr><td>32823</td><td>= Sony FE 85mm F1.4 GM</td>
-</tr><tr><td>32824</td><td>= Sony FE 50mm F1.8</td>
-</tr><tr><td>32826</td><td>= Sony FE 21mm F2.8 (SEL28F20 + SEL075UWC)</td>
-</tr><tr><td>32827</td><td>= Sony FE 16mm F3.5 Fisheye (SEL28F20 + SEL057FEC)</td>
-</tr><tr><td>32828</td><td>= Sony FE 70-300mm F4.5-5.6 G OSS</td>
-</tr><tr><td>32830</td><td>= Sony FE 70-200mm F2.8 GM OSS</td>
-</tr><tr><td>33072</td><td>= Sony FE 70-200mm F2.8 GM OSS + 1.4X Teleconverter</td>
-</tr><tr><td>33073</td><td>= Sony FE 70-200mm F2.8 GM OSS + 2X Teleconverter</td>
-</tr><tr><td>49201</td><td>= Zeiss Touit 12mm F2.8</td>
-</tr><tr><td>49202</td><td>= Zeiss Touit 32mm F1.8</td>
-</tr><tr><td>49203</td><td>= Zeiss Touit 50mm F2.8 Macro</td>
-</tr><tr><td>49216</td><td>= Zeiss Batis 25mm F2</td>
-</tr><tr><td>49217</td><td>= Zeiss Batis 85mm F1.8</td>
-</tr><tr><td>49218</td><td>= Zeiss Batis 18mm F2.8</td>
-</tr><tr><td>49232</td><td>= Zeiss Loxia 50mm F2</td>
-</tr><tr><td>49233</td><td>= Zeiss Loxia 35mm F2</td>
-</tr><tr><td>49234</td><td>= Zeiss Loxia 21mm F2.8</td>
-</tr><tr><td>50480</td><td>= Sigma 30mm F1.4 DC DN | C 016</td>
-</tr><tr><td>50481</td><td>= Sigma 50mm F1.4 DG HSM | A 014 + MC-11</td>
-</tr><tr><td>50482</td><td>= Sigma 18-300mm F3.5-6.3 DC MACRO OS HSM | C 014 + MC-11</td>
-</tr><tr><td>50483</td><td>= Sigma 18-35mm F1.8 DC HSM | A 013 + MC-11</td>
-</tr><tr><td>50484</td><td>= Sigma 24-35mm F2 DG HSM | A 015 + MC-11</td>
-</tr><tr><td>50486</td><td>= Sigma 150-600mm F5-6.3 DG OS HSM | C 015 + MC-11</td>
-</tr><tr><td>50487</td><td>= Sigma 20mm F1.4 DG HSM | A 015 + MC-11</td>
-</tr><tr><td>50488</td><td>= Sigma 35mm F1.4 DG HSM | A 012 + MC-11</td>
-</tr><tr><td>50489</td><td>= Sigma 150-600mm F5-6.3 DG OS HSM | S 014 + MC-11</td>
-</tr><tr><td>50490</td><td>= Sigma 120-300mm F2.8 DG OS HSM | S 013 + MC-11</td>
-</tr><tr><td>50492</td><td>= Sigma 24-105mm F4 DG OS HSM | A 013 + MC-11</td>
-</tr><tr><td>50493</td><td>= Sigma 17-70mm F2.8-4 DC MACRO OS HSM | C 013 + MC-11</td>
-</tr><tr><td>50495</td><td>= Sigma 50-100mm F1.8 DC HSM | A 016 + MC-11</td>
-</tr></table></td></tr></table></blockquote>
 
 <h2><a name='AFInfo'>Sony AFInfo Tags</a></h2>
 <p>These tags are currently extracted for SLT models only.</p>
@@ -10157,11 +10181,16 @@ this information is also written to ARW images by other models.</p>
 <td class=c>N</td>
 <td>&nbsp;</td></tr>
 <tr>
+<td title='0x797d = 31101'>0x797d</td>
+<td>LightFalloffParams</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
 <td title='0x7980 = 31104'>0x7980</td>
 <td>ChromaticAberrationCorrParams</td>
 <td class=c>N</td>
 <td>&nbsp;</td></tr>
-<tr class=b>
+<tr>
 <td title='0x7982 = 31106'>0x7982</td>
 <td>DistortionCorrParams</td>
 <td class=c>N</td>
@@ -10270,7 +10299,7 @@ the JPEG image from a PMP file)</span></span></td></tr>
 
 <hr>
 (This document generated automatically by Image::ExifTool::BuildTagLookup)
-<br><i>Last revised Aug 30, 2016</i>
+<br><i>Last revised Dec 19, 2016</i>
 <p class=lf><a href='index.html'>&lt;-- ExifTool Tag Names</a></p>
 </body>
 </html>
