@@ -4,8 +4,543 @@ ExifTool Version History
 
 RSS feed: http://owl.phy.queensu.ca/~phil/exiftool/rss.xml
 
-Note: The most recent production release is Version 10.36. (Other versions are
+Note: The most recent production release is Version 10.80. (Other versions are
 considered development releases, and are not uploaded to CPAN.)
+
+Mar. 7, 2018 - Version 10.83
+
+  - Added read support for Sketch design files
+  - Added Light LRI files to the list of recognized file types
+  - Added a new Canon LensType (thanks LibRaw)
+  - Decode a couple of new Sony tags (thanks Jos Roost)
+  - Extract JpgFromRaw image from CR3 files
+  - Improved warning message when attempting to write a tag in a specific group
+    that isn't writable
+  - Changed group name of JSON tags from "File" to "JSON"
+  - Fixed some incorrect offsets in -v3 output for CR3 images
+
+Mar. 1, 2018 - Version 10.82
+
+  - Added support for Canon's new CR3 raw file format
+  - Added a few new CanonModelID/SonyModelID values (thanks LibRaw)
+  - Added support for the Sony ILCE-7M3 (thanks Jos Roost)
+  - Decode timed GPS information from Insta360 MP4 videos with the -ee option
+  - Write XMP before idat in MOV/MP4/CR3 files if possible
+  - Fixed "'x' outside of string" runtime error when reading some Sony images
+  - Fixed problem with some hex dumps going to the console when -v3 was combined
+    with the -w option
+
+Feb. 26, 2018 - Version 10.81
+
+  - Added new values for a few Panasonic tags (thanks Bernd-Michael Kemper)
+  - Added a new Canon, Olympus and Sony LensTypes (thanks LibRaw)
+  - Added a new PanasonicRaw Compression type (thanks LibRaw)
+  - Added definitions for a number of new MacOS tags
+  - Decode CameraInfo for Canon 5DmkIII firmware 1.3.5
+  - Removed INX from list of writable files (-listwf option output)
+  - Fixed problem introduced in version 10.16 that could cause a "Can't create"
+    error when using the -o option to write certain types of files
+  - Fixed problem introduced in version 10.34 resulting in a "Can't delete all
+    meta information" error when writing .PS files
+
+Feb. 22, 2018 - Version 10.80 (production release)
+
+  - Added preliminary read/write support for Reconyx UltraFire maker notes
+  - Added a new Sony/Minolta lens (thanks Jos Roost)
+  - Decode a new PanasonicRaw tag (thanks LibRaw)
+  - Extract ImageWidth/Height for main image of an HEIC file
+  - Internal changes:
+      - Changed TimeNow() make ExifTool object optional
+
+Feb. 11, 2018 - Version 10.79
+
+  - Added a new Olympus CameraType (thanks LibRaw)
+  - Added a new XMP-microsoft tag (thanks Jos&eacute; Oliver-Didier)
+  - Decode a new GoPro QuickTime tag
+  - Convert nulls IPTC:DocumentHistory to newlines
+  - Removed all null terminators from JSON and PHP output
+  - Fixed writing of GPSDateStamp and GPSTimeStamp to be able to set to "now"
+  - Internal changes:
+      - Changed TimeNow() to require ExifTool object as first argument
+
+Jan. 31, 2018 - Version 10.78
+
+  - Added a few new values for some Olympus tags (thanks John)
+  - Decode GoPro APP6 metadata in JPEG images and more GoPro MP4 tags
+  - Decode more Red tags, and improved decoding of others
+  - Decode face detection information from timed metadata with the -ee option
+  - Fixed problem writing shorthand XMP containing CDATA sections
+  - Fixed problem copying XMP-acdsee:Snapshots
+  - Fixed decoding of a few Panasonic RAW tags (thanks Klaus Homeister)
+
+Jan. 26, 2018 - Version 10.77
+
+  - Added read support for Redcode R3D RAW videos
+  - Enhanced -sep option to specify separator and terminator for binary output
+  - Removed null terminator from JSON output of ICC_Profile:CharTarget
+  - Improved error messages to help diagnosing some types of corrupted files
+  - Return an exit status of 2 instead of 1 if all files fail the -if condition
+  - Fixed decoding of QuickTime chapter names
+  - Fixed incorrect MimeType for RMD files
+  - Fixed problem where exit status of 1 was returned when writing with a -if
+    condition if any of the files failed the condition
+
+Jan. 22, 2018 - Version 10.76
+
+  - Added ability to write shorthand XMP with the -z option
+  - Added write support for Google XMP GFocus tags
+  - Improved decoding of GoPro timed metadata
+  - Renamed ASF PlayDuration to Duration
+  - Fixed problem where fractional seconds were ignored when geotagging from an
+    NMEA track log with no date stamps
+  - Fixed runtime warning when reading XMP with an empty structure in a list
+  - API Changes:
+      - Added XMPShorthand option
+      - Enhanced Compact option so a setting of 2 avoids XMP indentation
+
+Jan. 12, 2018 - Version 10.75
+
+  - Added another Sony/Minolta lens (thanks Jos Roost)
+  - Decode more QuickTime tags
+  - Decode a number of new tags from GoPro Hero6 MP4 videos
+  - Enhanded "Unknown file type" error to indicate if "File is empty" or "File
+    header is all binary zeros"
+  - Improved decoding of some Sony tags (thanks Jos Roost)
+  - Improved decoding of QuickTime timed metadata
+  - Marked ArtworkCircaDateCreated as "Unsafe" for writing to avoid it being
+    added when attempting to shift all date/time tags
+  - Fixed bug which could cause runtime error when reading some old Sony maker
+    notes (thanks Tamas Lovag)
+
+Jan. 8, 2018 - Version 10.74
+
+  - Added a new Sony/Minolta lens (thanks Jos Roost)
+  - Added print conversion for ICC_Profile DeviceManufacturer and ProfileCreator
+  - Added informational warning when the ExtractEmbedded option may be useful
+  - Improved experimental validate feature for RAW files
+  - Fixed bug in experimental Validate feature that could cause out-of-memory
+    error when combined with "-use mwg"
+
+Jan. 5, 2018 - Version 10.73
+
+  - Added read/write support for GoPro RAW (GPR) files
+  - Added a new Sony/Minolta lens (thanks Sylvain)
+  - Improved conversions for GPS tags extracted from video streams
+
+Jan. 4, 2018 - Version 10.72
+
+  - Added IF feature to -p option
+  - Decode streamed GPS position and other streamed metadata from MP4 videos
+    when the -ee option is used
+  - Fixed problem geotagging GPSAltitude from some GPX files
+
+Jan. 2, 2018 - Version 10.71
+
+  - Decode some more ICC_Profile tags (thanks Eef Vreeland)
+  - Decode MechanicalShutterCount for Nikon D850 (thanks Xavier Jubier)
+  - Convert PNG:CreationTime values to/from standard date format
+  - Fixed problem loading default config file from application directory
+  - Fixed problem reading XMP where a namespace is defined after an attribute
+    which uses the namespace
+
+Dec. 27, 2017 - Version 10.70
+
+  - Search application directory for -config file
+  - Improved robustness of JSON import
+  - Enhancements to experimental Validate feature
+  - Fixed bug introduced in 10.69 which could result in hang when writing
+    multi-segment JPEG metadata
+
+Dec. 18, 2017 - Version 10.69
+
+  - Added "OK" UserParam for use in -if conditions
+  - Allow writing an empty JPEG Comment
+  - Check for proper location of Photoshop metadata with -validate or -use mwg
+  - Exit status now set to 1 if command was aborted due to invalid arguments
+  - Translate "UTF8" to appropriate escape sequence when writing
+    IPTC:CodedCharacterSet with the -n option
+  - Improved "Not a valid TIFF" error message to be more specific about the file
+    type for TIFF-based formats
+  - Fixed problem parsing Honeywell PTNTHPR NMEA sentences from some GPS devices
+
+Dec. 5, 2017 - Version 10.68
+
+  - Added ability to set tag values and API options to an empty string using
+    "^=" on the command line
+  - Added a new Sony LensType (thanks Jos Roost)
+  - Added a new Nikon LensID
+  - Decode more tags from some newer Leica models
+  - Decode a new Apple tag
+  - Fixed indeterminate order of extracted XMP structures
+
+Nov. 16, 2017 - Version 10.67
+
+  - Fixed problem introduced in 10.66 with -execute not returning the command
+    number in the "{ready}" message when -stay_open was used
+  - API Changes:
+      - Added TimeZone option
+
+Nov. 14, 2017 - Version 10.66
+
+  - Added a new Canon LensType (thanks Norbert Wasser)
+  - Updated en-ca and en-gb language translations
+  - Minor format change to experimental Validate feature return value
+  - Prevent JFIF from being added to a JPEG containing Adobe APP14
+  - Changed a number of Canon LensType strings to add "USM" to L model names
+  - Patched for compatibility with Time::Piece version 1.29_04 and later, and
+    improved error handling when writing formatted date/time values
+  - Fixed bug in Composite MWG CreateDate and DateTimeOriginal tags which could
+    cause existing tags to be hidden when not using the -a option
+  - Fixed problem using '#' suffix not properly fixed in 10.65
+  - Fixed problem decoding Nikon D810 MultiExposure tags
+
+Oct. 31, 2017 - Version 10.65
+
+  - Added support for DOSLatinUS (cp437) and DOSLatin1 (cp850) character sets
+  - Added Extra ForceWrite tag for forcing metadata in a file to be rewritten
+  - Added write support for RAF images from some newer FujiFilm models
+  - Added a new SonyModelID, Sony LensType and Olympus LensTypes (thanks LibRaw)
+  - Added a new Pentax LensType
+  - Added a new Nikon LensID
+  - Decode more Sony tags for new models (thanks Jos Roost)
+  - Decode Nikon D850 ShotInfo tags and custom settings (thanks Warren Hatch)
+  - Decode Nikon D850 ColorTemperatureAuto (thanks LibRaw)
+  - Decode Photoshop LayerModifyDates and LayerIDs
+  - Improved decoding of Nikon D5/D500/D810 ShotInfo tags
+  - Allow advanced formatting expressions to return a list reference
+  - Fixed problem in Composite:GPSAltitude when derived from an "undef" altitude
+  - Fixed bug which could result in runtime warning when excluding some tags
+    from being extracted
+
+Oct. 17, 2017 - Version 10.64
+
+  - Added a new Nikon LensID
+  - Added a new SonyModelID
+  - Added a new CanonModelID (thanks LibRaw)
+  - Added some new non-standard CustomRendered values
+  - Decode FrameRate from FLIR SEQ files (thanks Sebastian Hani)
+  - Enhanced shift feature to be able to shift some not-so-simple numerical
+    values (eg. GPSLatitude) with -TAG+=VALUE syntax
+  - Fixed problem with possible malformed UTF-8 when writing IPTC values that
+    require truncation
+  - Fixed incorrect Writable type for XMP-GSpherical:TimeStamp
+  - Fixed incorrect family 2 group name for Nikon HDRInfo tags
+
+Oct. 4, 2017 - Version 10.63
+
+  - Added a number of new Canon LensTypes (thanks Norbert Wasser for some)
+  - Added a new CanonModelID
+  - Added a new Olympus CameraType
+  - Decode MD5Signature in FLAC StreamInfo (thanks Tim Eliseo)
+  - Improved decoding of HEIC/HEIF metadata
+  - Removed useless write support for QuickTime date/time tags in HEIC/HEIF
+    images
+  - Fixed "Incorrect XMP stream length" problem when writing some INDD files
+
+Sept. 28, 2017 - Version 10.62
+
+  - Added preliminary support for HEIC/HEIF images
+  - Added support for Google depthmap metadata (XMP-GDepth)
+  - Added some new Sony/Minolta lenses (thanks LibRaw and Jos Roost)
+  - Added a new CanonModelID (thanks Norbert Wasser)
+  - Added a new Nikon LensID (thanks Michael Tapes)
+  - Decode a new Sony tag (thanks Jos Roost)
+  - Decode some new Nikon tags (thanks Warren Hatch)
+  - Decode maker notes from Leica TL2
+  - Enhanced ID3 -v2 output to show frame flags
+  - Fixed problem decoding Nikon D810 camera tilt angles
+  - Fixed problem where SphericalVideoXML metadata was deleted when writing XMP
+    to a QuickTime-format file containing this information
+
+Aug. 18, 2017 - Version 10.61
+
+  - Added a new Canon LensType (thanks LibRaw)
+  - Added a number of new Sigma, Nikon and Sony lenses (thanks Jos Roost)
+  - Added a new Nikon LensID (thanks Yang You)
+  - Decode a number of new Sony tags (thanks Jos Roost)
+  - Decode Panasonic FocusDistance (thanks David Ellsworth)
+  - Updated to the IPTC video metadata 1.1 specification
+  - Restored the ability to delete JpgFromRaw from RAW images (broken in 10.38)
+  - Fixed problem decoding maker notes from Pentax K-70 AVI videos
+  - Fixed problem conditionally replacing a tag if the value to be deleted was
+    taken from another tag while the new value was assigned directly
+
+July 21, 2017 - Version 10.60
+
+  - Added two new Sony/Minolta LensTypes (thanks Jos Roost)
+  - Added a new Pentax LensType (thanks Dieter Pearcey)
+  - Added new Composite UniquePathPoints tag to photoshop_paths.config
+  - Extract raw-data JFIF/JFXX thumbnails as ThumbnailTIFF
+  - Improved Sony LensSpec conversion
+  - Updated German translations (thanks Herbert Kauer)
+  - Set family 1 group name of JFXX ThumbnailImage to JFXX instead of JFIF
+  - Fixed problem with %C no longer incrementing properly
+
+July 7, 2017 - Version 10.59
+
+  - Added a new Canon LensType (thanks LibRaw)
+  - Added a new Nikon LensID
+  - Added "wrong extension" warning to experimental Validate feature
+  - Decode Pentax maker notes in Q-S1 AVI videos
+  - Updated iptc2exif.args and exif2iptc.args to support new EXIF OffsetTime
+    tags (thanks Herb)
+  - Patched potential problem with "Use of uninitialized value $pos" error when
+    importing malformed JSON data
+  - Patched to avoid runtime warning due to invalid Nikon ShutterCount value
+  - Raise an error if -b is used with the -csv option
+  - Changed PNG exIf chunk name to eXIf
+  - Fixed bug introduced in 10.26 which could cause hang when %C is used in an
+    output file name
+  - Fixed MWG:DateTimeOriginal and MWG:CreateDate to return XMP when EXIF and
+    IPTC don't exist
+
+June 29, 2017 - Version 10.58
+
+  - Added read support for RIFF-format MBWF/RF64 files
+  - Added write support for dji-drone XMP tags
+  - Added a new Canon LensType (thanks Steve Bates)
+  - Added a few new Sony/Minolta LensType values (thanks Jos Roost)
+  - Added a couple of new CanonModelID values (thanks LibRaw and Norbert Wasser)
+  - Decode some new FujiFilm tags (thanks Chris Schucker)
+  - Enhanced FileSize print conversion to show in "GB" for large files
+  - Fixed "outside of string in unpack" errors when reading some corrupted
+    EXE/ICC files
+  - Fixed problem extracting GIF MIDISong metadata
+
+June 20, 2017 - Version 10.57
+
+  - Added a new Canon LensType (thanks Norbert Wasser)
+  - Added write support for PNG Collection tag
+  - Added a few new CanonModelID values
+  - Added some new Pentax ShakeReduction values
+  - Removed ability to create PNG zxIf chunks
+  - Documented -progress:%b feature (added in 10.26)
+  - No longer report FileType, FileTypeExtension or MIMEType for JPEG/TIFF
+    images with an unknown header
+  - Relaxed case requirement for "SourceFile" header in CSV and JSON import
+  - Fixed decoding of Pentax ExposureCompensation for newer Ricoh models
+  - Fixed some incorrect "Wrong IFD" messages with experimental Validate feature
+  - Fixed a couple of Sony/Minolta lens names (thanks Jos Roost)
+  - Fixed "Error reading PreviewImage" warning for some Sony models
+
+June 6, 2017 - Version 10.56
+
+  - Removed ordering constraints between Geotag/Geosync and Geotime assignments
+    on the command line
+  - Removed debugging print statement left in photoshop_paths.config
+
+June 5, 2017 - Version 10.55 (production release)
+
+  - Added support for GIF multimedia extensions
+  - Added a couple of new Sony/Minolta lenses (thanks Chris)
+  - Added a new Nikon LensID (thanks Jakob Dettner)
+  - Added new Composite TotalPathPoints tag to photoshop_paths.config
+  - Decode a number of new Sony tags and updated some others (thanks Jos Roost)
+  - Decode a new Pentax tag and fixed decoding of another (thanks Andras
+    Salamon)
+  - Updated iptcCore.args for new IPTC specification
+  - Changed description of a couple of AVI Model tags to match EXIF
+  - Patched tests to avoid failures with Perl 5.25.11 due to missing "." in @INC
+  - Fixed an incorrect warning from the experimental Validate feature
+
+May 26, 2017 - Version 10.54
+
+  - Added support for Google XMP GImage and GAudio tags
+  - Added a new Olympus CameraType (thanks LibRaw)
+  - Added a two new Sony lenses and decode more ILCE-9 tags (thanks Jos Roost)
+  - Added new values to some Pentax tags (thanks Andras Salamon)
+  - Added a new Canon LensType
+  - Added an additional checks to the experimental Validate feature
+  - Improved user-defined FileTypes feature to provide more flexibility
+  - Enhanced -ext option to allow specific files extensions to be processed
+    along with supported files
+  - API Changes:
+      - Added ListJoin option to replace List and ListSep options
+
+May 17, 2017 - Version 10.53
+
+  - Added support for "MeSa" Photoshop IRB resource
+  - Made XMP-GSpherical tags writable
+  - Improved German translations (thanks Jobi)
+
+May 12, 2017 - Version 10.52
+
+  - Added some new values to a number of FujiFilm tags and changed some others
+    (thanks Albert Shan)
+  - Decode a number of new Sony tags for the ILCE-9 (thanks Jos Roost)
+  - Made SonyISO writable
+  - Changed behaviour of advanced formatting expression for Shortcut tags so it
+    now applies to the combined value rather than individual constituent values
+  - Minor changes to some Pentax print conversions
+  - Fixed problem using new NoDups utility with Shortcut tags
+
+May 2, 2017 - Version 10.51
+
+  - Added "NoDups" utility function for use in advanced formatting expressions
+  - Added a new Pentax LensType (thanks JohnK)
+  - Added some new Pentax DriveMode values (thanks Andras Salamon)
+  - Enhanced -ver option to report Perl include directories with -v2
+  - Improved warning message when advanced formatting expression returns undef
+  - Minor change to a few FujiFilm print conversion strings (thanks Albert Shan)
+  - Changed behaviour when interpolating Shortcut tags in a string (the values
+    are now separated according to the -sep option setting instead of simply
+    being concatenated)
+  - Patched to allow file times to be set on systems where futimes is not
+    available
+
+Apr. 20, 2017 - Version 10.50 (production release)
+
+  - Decode a new Pentax tag (thanks Andras Salamon)
+  - Improved decoding of Olympus DriveMode (thanks Herbert Kauer)
+  - Improved handling of errors from utime when setting file times
+  - Fixed potential hang problem when reading corrupted QuickTime metadata
+  - Fixed problem deleting duplicate EXIF tags when writing other tags at the
+    same time
+
+Apr. 10, 2017 - Version 10.49
+
+  - Added "DateFmt" utility function for use in advanced formatting expressions
+  - Added a new Sony/Minolta LensType (thanks LibRaw)
+  - Decode a new Panasonic tag
+  - Fixed problem decoding Sony VariableLowPassFilter values (thanks Jos Roost)
+  - Fixed problem setting XMP:About when creating new XMP in a file
+  - Fixed an incorect Pentax DriveMode value (thanks Andras Salamon)
+  - API Changes
+      - Allow access to the advanced formatting expression via a new ExifTool
+        "FMT_EXPR" member variable
+
+Apr. 3, 2017 - Version 10.48
+
+  - Added some new FujiFlashMode values (thanks Albert Shan)
+  - Added a new Sony LensType (thanks Jos Roost)
+  - Added a new Canon LensType (thanks LibRaw)
+  - Added a new CanonModelID and minor changes to some others (thanks Dmitry)
+  - Decode two Pentax tags and added a number of new values for other Pentax
+    tags (thanks Andras Salamon)
+  - Decode a new Sony tag (thanks Jos Roost)
+  - Improvements to the experimental Validate feature
+  - Fixed problem which could cause hang when reading bad PPT documents
+
+Mar. 20, 2017 - Version 10.47
+
+  - Added read support for JSON-format files
+  - Added two new Sony/Minolta lenses (thanks Jos Roost)
+  - Added a number of new Pentax tag values
+  - Decode a new Canon CR2 tag (thanks Ed Hannon)
+  - Decode WB information for Canon 800D (thanks LibRaw)
+  - Improved config_files/photoshop_paths.config to indicate start of paths
+  - Attempt to validate new file names in Windows before renaming images
+  - Experimental Validate feature no longer warns about Windows XP tags
+  - Fixed problem extracting layer information from very large PSD/PSB files
+
+Mar. 8, 2017 - Version 10.46
+
+  - Moved Mac System tags from the Extra table into a new MacOS group and added
+    ability to extract them by requesting the MacOS group
+  - Updated QuickTime GenreID list (thanks Francois Bonzon)
+  - Fixed "Invalid xref" problem when reading some PDF files
+  - Fixed error in Minolta lens list (thanks Jos Roost)
+  - Fixed minor problem with -U option generating Unknown tags for some known
+    bytes in variable-sized strings
+  - API Changes:
+      - Enhanced RequestTags option to allow groups to be requested
+
+Mar. 2, 2017 - Version 10.45
+
+  - Added ability to write a number of Mac OS X system tags (including the file
+    creation date!)
+  - Added ability to extract OS X extended attributes ("XAttr" tags)
+  - API Changes:
+      - Added XAttrTags option
+      - Enhanced RequestAll option
+
+Feb. 24, 2017 - Version 10.44
+
+  - Added a few new CanonModelID values and a new Canon LensType
+  - Added two new Nikon lenses (thanks Rolf Probst)
+  - Added a few new Sony/Minolta lenses (thanks Jos Roost)
+  - Added two new Sony MeteringMode values (thanks Jos Roost)
+  - Improved verbose dump of Photoshop Layer information
+  - Patched to allow "FileName encoding not specified" warnings to be avoided by
+    setting -charset filename=""
+  - Fixed problem in photoshop_paths.config printing some paths
+
+Feb. 16, 2017 - Version 10.43
+
+  - Restrict writing of EXIF:FlashEnergy to a single value as per EXIF spec
+  - Reverted format change of Sony ImageCount tag
+  - Changed PNG new eXIF/zXIF chunk names to "exIf" and "zxIf" until the
+    proposed chunks are accepted (of course, while maintaining backward
+    compatibility for reading/updating the other chunks)
+  - Lowered priority of XMP-pdf:Keywords so it doesn't take precedence over
+    PDF:Keywords when the Duplicates option is not used
+  - Improved config_files/convert_regions.config to handle the case where the
+    RegionInfoMP is missing a Rectangle
+
+Feb. 10, 2017 - Version 10.42
+
+  - Added ability to read/write PNG eXIF and zXIF chunks, and made these the
+    place where new EXIF is created in PNG images (zXIF if the -z option is
+    used, or eXIF otherwise)
+  - Added ability to copy Photoshop OriginPathInfo with photoshop_paths.config
+  - Made FileUserID and FileGroupID writable
+  - Changed format for a Sony ImageCount tag
+  - Improvements to experimental Validate feature
+  - Fixed incorrect XMP swf namespace URI
+  - Fixed problem using new -p section feature when combined with -w or -ee
+  - Fixed formatting problem in -listx output when -lang option was used
+  - Fixed problem where UserComment wasn't removed if found in IFD0 when writing
+    it to the correct IFD
+
+Feb. 1, 2017 - Version 10.41
+
+  - Added an experimental metadata validation feature (invoked either by
+    requesting the new Extra Validate tag or by setting the API Validate option)
+  - Added support for PSDT file extension
+  - Added age.config to the distribution
+  - Added a new Sony lens (thanks Jos Roost)
+  - Added a new PentaxModelID (thanks Louis Granboulan)
+  - Enhanced -p option to allow files to be grouped in sections
+  - Made makernote offset warning minor
+  - Relaxed parsing of NMEA GGA sentence so comma after the geoid units is now
+    optional
+  - Patched problem extracting value of an unsafe binary tag with the -b option
+    when specified using -TAG# instead of -TAG with -n
+  - API Changes:
+      - Added experimental Validate option
+
+Jan. 14, 2017 - Version 10.40 (production release)
+
+  - Fixed tests that were failing on some platforms
+
+Jan. 13, 2017 - Version 10.39
+
+  - Added Perl version and Unicode settings to -ver -v output
+  - Added a new Sony LensType2 value
+  - Added a new Canon LensType (thanks Norbert Wasser)
+  - More improvements to sample time_zone.config file (thanks Hayo Baan)
+  - Fixed problem with MWG date/time tags introduced in version 10.34
+  - Fixed problem setting the value of a tag from a binary file when the
+    PERL_UNICODE environment or the perl -C option is used to force UTF-8
+    treatment of @ARGV elements
+
+Jan. 5, 2017 - Version 10.38
+
+  - Added a couple of new XMP-ics tags
+  - Added a new Nikon LensID (thanks Ken Cochran)
+  - Decode a couple more PhaseOne tags
+  - Increased priority of Sony 0x0115 WhiteBalance when reading
+  - Range check QuickTime date/time values when writing
+  - Apply CharsetPhotoshop setting to decoding of Photoshop LayerNames
+  - Improved identification of Nikon NRW images
+  - Minor improvements to verbose dump of FLIR information
+  - Improvements to sample time_zone.config file (thanks Hayo Baan)
+  - Removed trailing null in -b output for GPSDateStamp
+  - Changed "TAG is not supported" warning when writing to "TAG is not defined"
+  - Changed groups of Composite Preview/Thumbnail/JpgFromRaw/etc images to match
+    the tags from which they are derived
+  - Changed description of Composite Nikon LensSpec tag to match the tag name
+  - Fixed problems reading/writing PreviewImage from some DNG files
 
 Dec. 19, 2016 - Version 10.37
 
@@ -13,7 +548,7 @@ Dec. 19, 2016 - Version 10.37
   - Added a few new FujiFlashMode values (thanks Albert Shan)
   - Changed -geotime default to use unconverted value of DateTimeOriginal
   - Changed a couple of Sony Voigtlander LensType strings (thanks Jos Roost)
-  - Warn about invalid TAG name
+  - Warn about invalid tag names used on the command line
   - Generate default-language version of QuickTime tags even if the same-named
     tag already exists in another group
   - Fixed bug reading some Photoshop layer information
@@ -307,7 +842,7 @@ Apr. 8, 2016 - Version 10.14
   - Added a few new Olympus LensType values (thanks Niels Kristian Bech Jensen)
   - Added a couple of new SonyModelID values (thanks LibRaw for one)
   - Added a new Olympus CameraType
-  - Added config_files/gps2utm.config to distribution
+  - Added config_files/gps2utm.config to the distribution
   - Decode Canon ColorData for the EOS 80D (thanks LibRaw)
   - Decode a few new Samsung tags (thanks Francois)
   - Decode a new Fuji tag (thanks Frank Markesteijn)

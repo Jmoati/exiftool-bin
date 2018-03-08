@@ -1,7 +1,10 @@
 # Before "make install", this script should be runnable with "make test".
 # After "make install" it should work as "perl t/QuickTime.t".
 
-BEGIN { $| = 1; print "1..5\n"; $Image::ExifTool::noConfig = 1; }
+BEGIN {
+    $| = 1; print "1..5\n"; $Image::ExifTool::configFile = '';
+    require './t/TestLib.pm'; t::TestLib->import();
+}
 END {print "not ok 1\n" unless $loaded;}
 
 # test 1: Load the module(s)
@@ -9,8 +12,6 @@ use Image::ExifTool 'ImageInfo';
 use Image::ExifTool::QuickTime;
 $loaded = 1;
 print "ok 1\n";
-
-use t::TestLib;
 
 my $testname = 'QuickTime';
 my $testnum = 1;
@@ -37,6 +38,10 @@ my $testnum = 1;
     $exifTool->SetNewValue('Track1:TrackModifyDate' => '2013:11:04 10:32:15');
     foreach $ext (qw(mov m4a)) {
         ++$testnum;
+        unless (eval { require Time::Local }) {
+            print "ok $testnum # skip Requires Time::Local\n";
+            next;
+        }
         my $testfile = "t/${testname}_$testnum.failed";
         unlink $testfile;
         my $rtnVal = $exifTool->WriteInfo("t/images/QuickTime.$ext", $testfile);

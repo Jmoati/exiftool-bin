@@ -31,8 +31,10 @@ use Image::ExifTool::IPTC;
 use Image::ExifTool::XMP;
 use Image::ExifTool::Canon;
 use Image::ExifTool::Nikon;
+use Image::ExifTool::Validate;
+use Image::ExifTool::MacOS;
 
-$VERSION = '3.01';
+$VERSION = '3.15';
 @ISA = qw(Exporter);
 
 sub NumbersFirst($$);
@@ -97,11 +99,12 @@ my %tweakOrder = (
    'MWG::Regions' => 'MWG::Composite',
    'MWG::Keywords' => 'MWG::Regions',
    'MWG::Collections' => 'MWG::Keywords',
+   'GoPro::fdsc' => 'GoPro::KBAT',
 );
 
 # list of all recognized Format strings
 # (not a complete list, but this is all we use so far)
-# (also, formats like "var_X[Y]" are allowed for any valid X)
+# (also, formats like "var_X[num]" are allowed for any valid X)
 my %formatOK = (
     %Image::ExifTool::Exif::formatNumber,
     0 => 1,
@@ -176,7 +179,7 @@ default when extracting information with exiftool.  To see the tag names
 instead of the descriptions, use C<exiftool -s>.
 
 The B<Writable> column indicates whether the tag is writable by ExifTool.
-Anything but an C<N> in this column means the tag is writable.  A C<Y>
+Anything but a C<no> in this column means the tag is writable.  A C<yes>
 indicates writable information that is either unformatted or written using
 the existing format.  Other expressions give details about the information
 format, and vary depending on the general type of information.  The format
@@ -198,8 +201,10 @@ explicitly (ie. not when wildcards or "all" are used), and care should be
 taken when editing them manually since they may affect the way an image is
 rendered.  An asterisk (C<*>) indicates a I<Protected> tag which is not
 writable directly, but is written automatically by ExifTool (often when a
-corresponding Composite or Extra tag is written). A colon (C<:>) indicates a
-I<Mandatory> tag which may be added automatically when writing.
+corresponding L<Composite|Image::ExifTool::TagNames/Composite Tags> or
+L<Extra|Image::ExifTool::TagNames/Extra Tags> tag is written). A colon
+(C<:>) indicates a I<Mandatory> tag which may be added automatically when
+writing.
 
 The HTML version of these tables also lists possible B<Values> for
 discrete-valued tags, as well as B<Notes> for some tags.  The B<Values> are
@@ -237,6 +242,11 @@ The EXIF meta information is organized into different Image File Directories
 (IFD's) within an image.  The names of these IFD's correspond to the
 ExifTool family 1 group names.  When writing EXIF information, the default
 B<Group> listed below is used unless another group is specified.
+
+Mandatory tags (indicated by a colon after the B<Writable> type) may be
+added automatically with default values when creating a new IFD, and the IFD
+is removed automatically when deleting tags if only default-valued mandatory
+tags remain.
 
 The table below lists all EXIF tags.  Also listed are TIFF, DNG, HDP and
 other tags which are not part of the EXIF specification, but may co-exist
@@ -315,15 +325,20 @@ to preserve other existing languages (eg. "XMP-dc:Description-x-default").
 When reading, "x-default" is not specified.
 
 The XMP tags are organized according to schema B<Namespace> in the following
-tables.  Note that a few of the longer namespace prefixes given below have
-been shortened for convenience (since the family 1 group names are derived
-from these by adding a leading "XMP-").  In cases where a tag name exists in
-more than one namespace, less common namespaces are avoided when writing.
-However, any namespace may be written by specifying a family 1 group name
-for the tag, eg) XMP-exif:Contrast or XMP-crs:Contrast.  When deciding on
-which tags to add to an image, using standard schemas such as
-L<dc|/XMP dc Tags>, L<xmp|/XMP xmp Tags>, L<iptcCore|/XMP iptcCore Tags>
-and L<iptcExt|/XMP iptcExt Tags> is recommended if possible.
+tables.  In general, the ExifTool family 1 group names are derived from the
+namespace prefixes by adding a leading "XMP-" (eg. "XMP-dc"), but a few of
+the longer prefixes have been shortened for convenience (as mentioned in the
+documentation below).  The tags of any namespace may be deleted as a group
+by specifying the family 1 group name (eg. "-XMP-dc:all=" on the command
+line).  This includes namespaces which are not pre-defined by ExifTool.
+
+In cases where a tag name exists in more than one namespace, less common
+namespaces are avoided when writing.  However, a specific namespace may be
+written by providing a family 1 group name for the tag (eg. XMP-crs:Contrast
+or XMP-exif:Contrast).  When deciding on which tags to add to an image,
+using standard schemas such as L<dc|/XMP dc Tags>, L<xmp|/XMP xmp Tags>,
+L<iptcCore|/XMP iptcCore Tags> and L<iptcExt|/XMP iptcExt Tags> is
+recommended if possible.
 
 For structures, the heading of the first column is B<Field Name>.  Field
 names are very similar to tag names, except they are used to identify fields
@@ -360,12 +375,12 @@ This specification dictates a length for ASCII (C<string> or C<digits>) and
 binary (C<undef>) values.  These lengths are given in square brackets after
 the B<Writable> format name.  For tags where a range of lengths is allowed,
 the minimum and maximum lengths are separated by a comma within the
-brackets.  IPTC strings are not null terminated.  When writing, ExifTool
-issues a minor warning and truncates the value if it is longer than allowed
-by the IPTC specification.  Minor errors may be ignored with the
-IgnoreMinorErrors (-m) option, allowing longer values to be written, but
-beware that values like this may cause problems for some other IPTC readers.
-ExifTool will happily read IPTC values of any length.
+brackets.  When writing, ExifTool issues a minor warning and truncates the
+value if it is longer than allowed by the IPTC specification.  Minor errors
+may be ignored with the IgnoreMinorErrors (-m) option, allowing longer
+values to be written, but beware that values like this may cause problems
+for some other IPTC readers. ExifTool will happily read IPTC values of any
+length.
 
 Separate IPTC date and time tags may be written with a combined date/time
 value and ExifTool automagically takes the appropriate part of the date/time
@@ -485,16 +500,19 @@ password-protected PDF files.
 
 ExifTool may be used to write native PDF and XMP metadata to PDF files. It
 uses an incremental update technique that has the advantages of being both
-fast and reversible.  The original PDF can be easily recovered by deleting
-the C<PDF-update> pseudo-group (with C<-PDF-update:all=> on the command
-line).  However, there are two main disadvantages to this technique:
+fast and reversible.  If ExifTool was used to modify a PDF file, the
+original may be recovered by deleting the C<PDF-update> pseudo-group (with
+C<-PDF-update:all=> on the command line).  However, there are two main
+disadvantages to this technique:
 
 1) A linearized PDF file is no longer linearized after the update, so it
 must be subsequently re-linearized if this is required.
 
 2) All metadata edits are reversible.  While this would normally be
 considered an advantage, it is a potential security problem because old
-information is never actually deleted from the file.
+information is never actually deleted from the file.  (However, after
+running ExifTool the old information may be removed permanently using the
+"qpdf" utility with this command: "qpdf --linearize in.pdf out.pdf".)
 },
     DNG => q{
 The main DNG tags are found in the EXIF table.  The tables below define only
@@ -512,17 +530,16 @@ RealMedia (RM, RV and RMVB), 2) RealAudio (RA), and 3) Real Metafile (RAM
 and RPM).
 },
     Extra => q{
-The extra tags represent extra information extracted or generated by
-ExifTool that is not directly associated with another tag group.  The
-B<Group> column lists the family 1 group name when reading.  Tags with a "-"
-in this column are write-only.
+The extra tags provide extra features or extra information extracted or
+generated by ExifTool that is not directly associated with another tag
+group.  The B<Group> column lists the family 1 group name when reading. 
+Tags with a "-" in this column are write-only.
 
 Tags in the family 1 "System" group are referred to as "pseudo" tags because
 they don't represent real metadata in the file.  Instead, this information
-is stored in the directory structure of the filesystem.  Seven writable
-"pseudo" tags (FileName, Directory, FileModifyDate, FileCreateDate,
-FilePermissions, HardLink and TestName) may be written without modifying the
-file itself.  The TestName tag is used for dry-run testing before writing
+is stored in the directory structure of the filesystem.  The B<Writable>
+System "pseudo" tags in this table may be written without modifying the file
+itself.  The TestName tag is used for dry-run testing before writing
 FileName.
 },
     Composite => q{
@@ -551,6 +568,19 @@ in the implementation of these recommendations.  As well, the MWG defines
 new XMP tags which are listed in the subsequent tables below.  See
 L<http://www.metadataworkinggroup.org/> for the official MWG specification.
 },
+    MacOS => q{
+On MacOS systems, there are a number of additional tags with names beginning
+with "MDItem" and "XAttr" that may be extracted.  These tags are not
+extracted by default -- they must be specifically requested or enabled via
+an API option.
+
+The tables below list some of the tags that may be extracted, but ExifTool
+will extract all available information even for tags not listed.
+
+Tags in these tables are referred to as "pseudo" tags because their
+information is not stored in the file itself.  As such, B<Writable> tags in
+these tables may be changed without having to rewrite the file.
+},
     PodTrailer => q{
 ~head1 NOTES
 
@@ -559,7 +589,7 @@ L<Image::ExifTool::BuildTagLookup|Image::ExifTool::BuildTagLookup>.
 
 ~head1 AUTHOR
 
-Copyright 2003-2016, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -603,39 +633,6 @@ my %shortcutNotes = (
 );
 
 
-
-# EXIF table tag ID's which are part of the EXIF 2.3 specification
-# (used only to add underlines in HTML version of EXIF Tag Table)
-my %exifSpec = (
-    0x100 => 1,  0x214 => 1,   0x9205 => 1,  0xa210 => 1,
-    0x101 => 1,  0x8298 => 1,  0x9206 => 1,  0xa214 => 1,
-    0x102 => 1,  0x829a => 1,  0x9207 => 1,  0xa215 => 1,
-    0x103 => 1,  0x829d => 1,  0x9208 => 1,  0xa217 => 1,
-    0x106 => 1,  0x8769 => 1,  0x9209 => 1,  0xa300 => 1,
-    0x10e => 1,  0x8822 => 1,  0x920a => 1,  0xa301 => 1,
-    0x10f => 1,  0x8824 => 1,  0x9214 => 1,  0xa302 => 1,
-    0x110 => 1,  0x8825 => 1,  0x927c => 1,  0xa401 => 1,
-    0x111 => 1,  0x8827 => 1,  0x9286 => 1,  0xa402 => 1,
-    0x112 => 1,  0x8828 => 1,  0x9290 => 1,  0xa403 => 1,
-    0x115 => 1,  0x8830 => 1,  0x9291 => 1,  0xa404 => 1,
-    0x116 => 1,  0x8831 => 1,  0x9292 => 1,  0xa405 => 1,
-    0x117 => 1,  0x8832 => 1,  0x9400 => 1,  0xa406 => 1,
-    0x11a => 1,  0x8833 => 1,  0x9401 => 1,  0xa407 => 1,
-    0x11b => 1,  0x8834 => 1,  0x9402 => 1,  0xa408 => 1,
-    0x11c => 1,  0x8835 => 1,  0x9403 => 1,  0xa409 => 1,
-    0x128 => 1,  0x9000 => 1,  0x9404 => 1,  0xa40a => 1,
-    0x12d => 1,  0x9003 => 1,  0x9405 => 1,  0xa40b => 1,
-    0x131 => 1,  0x9004 => 1,  0xa000 => 1,  0xa40c => 1,
-    0x132 => 1,  0x9010 => 1,  0xa001 => 1,  0xa420 => 1,
-    0x13b => 1,  0x9011 => 1,  0xa002 => 1,  0xa430 => 1,
-    0x13e => 1,  0x9012 => 1,  0xa003 => 1,  0xa431 => 1,
-    0x13f => 1,  0x9101 => 1,  0xa004 => 1,  0xa432 => 1,
-    0x201 => 1,  0x9102 => 1,  0xa005 => 1,  0xa433 => 1,
-    0x202 => 1,  0x9201 => 1,  0xa20b => 1,  0xa434 => 1,
-    0x211 => 1,  0x9202 => 1,  0xa20c => 1,  0xa435 => 1,
-    0x212 => 1,  0x9203 => 1,  0xa20e => 1,
-    0x213 => 1,  0x9204 => 1,  0xa20f => 1,
-);
 # same thing for RIFF INFO tags found in the EXIF spec
 my %riffSpec = (
     IARL => 1,  ICRD => 1,  IGNR => 1,  IPLT => 1,  ISRC => 1,
@@ -675,7 +672,8 @@ sub new
 #
     my (%tagNameInfo, %id, %longID, %longName, %shortName, %tableNum,
         %tagLookup, %tagExists, %noLookup, %tableWritable, %sepTable, %case,
-        %structs, %compositeModules, %isPlugin, %flattened, %structLookup);
+        %structs, %compositeModules, %isPlugin, %flattened, %structLookup,
+        @writePseudo);
     $self->{TAG_NAME_INFO} = \%tagNameInfo;
     $self->{ID_LOOKUP} = \%id;
     $self->{LONG_ID} = \%longID;
@@ -691,6 +689,7 @@ sub new
     $self->{STRUCT_LOOKUP} = \%structLookup;  # lookup for Struct hash ref based on Struct name
     $self->{COMPOSITE_MODULES} = \%compositeModules;
     $self->{COUNT} = \%count;
+    $self->{WRITE_PSEUDO} = \@writePseudo;
 
     Image::ExifTool::LoadAllTables();
     my @tableNames = sort keys %allTables;
@@ -806,6 +805,10 @@ TagID:  foreach $tagID (@keys) {
             }
             foreach $tagInfo (@infoArray) {
                 my $name = $$tagInfo{Name};
+                if ($$tagInfo{WritePseudo}) {
+                    push @writePseudo, $name;
+                    warn "Writable pseudo tag $name is not protected!\n" unless $$tagInfo{Protected};
+                }
                 unless ($$tagInfo{SubDirectory} or $$tagInfo{Struct}) {
                     my $lc = lc $name;
                     warn "Different case for $tableName $name $case{$lc}\n" if $case{$lc} and $case{$lc} ne $name;
@@ -818,7 +821,7 @@ TagID:  foreach $tagID (@keys) {
                     # single-character subdirectory names are allowed
                     (not $$tagInfo{SubDirectory} or $name !~ /^[_A-Za-z]$/))
                 {
-                    warn "Warning: Invalid tag name $short '$name'\n";
+                    warn "Warning: Invalid tag name $short '${name}'\n";
                 }
                 # validate list type
                 if ($$tagInfo{List} and $$tagInfo{List} !~ /^(1|Alt|Bag|Seq|array|string)$/) {
@@ -879,8 +882,14 @@ TagID:  foreach $tagID (@keys) {
                     $writable = $$table{WRITABLE};
                 }
                 # validate some characteristics of obvious date/time tags
+                my @g = $et->GetGroup($tagInfo);
+                if ($$tagInfo{List} and $g[2] eq 'Time' and $writable and not $$tagInfo{Protected} and
+                    not $$tagInfo{PrintConvInv})
+                {
+                    # (this is a problem because shifting Time:All would create a new list entry)
+                    warn "Writable List-type Time tag $g[1]:$name has no PrintConvInv and is not Protected!\n";
+                }
                 if ($$tagInfo{PrintConv} and $$tagInfo{PrintConv} eq '$self->ConvertDateTime($val)') {
-                    my @g = $et->GetGroup($tagInfo);
                     warn "$short $name should be in 'Time' group!\n" unless $g[2] eq 'Time';
                     if ($writable and not defined $$tagInfo{Shift} and $short ne 'PostScript') {
                         warn "$short $name is not shiftable!\n";
@@ -942,17 +951,18 @@ TagID:  foreach $tagID (@keys) {
                     # remove leading/trailing spaces on each line
                     $note =~ s/(^[ \t]+|[ \t]+$)//mg;
                     push @values, "($note)";
-                } elsif ($isXMP and lc $tagID ne lc $name) {
+                }
+                if ($isXMP and lc $tagID ne lc $name) {
                     # add note about different XMP Tag ID
-                    if ($$tagInfo{RootTagInfo}) {
-                        push @values, "($tagID)";
+                    my $note = $$tagInfo{RootTagInfo} ? $tagID : "called $tagID by the spec";
+                    if ($$tagInfo{Notes}) {
+                        $values[-1] =~ s/^\(/($note; /;
                     } else {
-                        push @values,"(called $tagID by the spec)";
+                        push @values, "($note)";
                     }
                 }
                 my $writeGroup;
                 if ($short eq 'Extra') {
-                    my @g = $et->GetGroup($tagInfo);
                     $writeGroup = $$tagInfo{WriteOnly} ? '-' : $g[1];
                 } else {
                     $writeGroup = $$tagInfo{WriteGroup};
@@ -1009,13 +1019,19 @@ TagID:  foreach $tagID (@keys) {
                     }
                 }
                 if (ref($printConv) =~ /^(HASH|ARRAY)$/) {
-                    my (@printConvList, @indexList, $index);
+                    my (@printConvList, @indexList, $index, $valueConvHash);
                     if (ref $printConv eq 'ARRAY') {
                         for ($index=0; $index<@$printConv; ++$index) {
-                            next if ref $$printConv[$index] ne 'HASH';
-                            next unless %{$$printConv[$index]};
-                            push @printConvList, $$printConv[$index];
-                            push @indexList, $index;
+                            if (ref $$printConv[$index] eq 'HASH') {
+                                next unless %{$$printConv[$index]};
+                                push @printConvList, $$printConv[$index];
+                                push @indexList, $index;
+                            } elsif ($$printConv[$index] and $$printConv[$index] eq 'REPEAT' and $index) {
+                                push @printConvList, $$printConv[$index-1];
+                                push @indexList, 'N';
+                            } else {
+                                next;
+                            }
                             # collapse values with identical PrintConv's
                             if (@printConvList >= 2 and $printConvList[-1] eq $printConvList[-2]) {
                                 if (ref $indexList[-2]) {
@@ -1029,6 +1045,8 @@ TagID:  foreach $tagID (@keys) {
                         }
                         $printConv = shift @printConvList;
                         $index = shift @indexList;
+                    } else {
+                        $valueConvHash = $$tagInfo{ValueConv} if ref $$tagInfo{ValueConv} eq 'HASH';
                     }
                     while (defined $printConv) {
                         if (defined $index) {
@@ -1040,11 +1058,11 @@ TagID:  foreach $tagID (@keys) {
                                 # collapse consecutive number ranges
                                 my ($i, @i, $rngStart);
                                 for ($i=0; $i<@$idx; ++$i) {
-                                    if ($i < @$idx - 1 and $$idx[$i+1] == $$idx[$i] + 1) {
-                                        $rngStart = $i unless defined $rngStart;
+                                    if ($i < @$idx - 1 and ($$idx[$i+1] eq 'N' or $$idx[$i+1] == $$idx[$i] + 1)) {
+                                        $rngStart = $$idx[$i] unless defined $rngStart;
                                         next;
                                     }
-                                    push @i, defined($rngStart) ? "$rngStart-$i" : $i;
+                                    push @i, (defined($rngStart) ? "$rngStart-" : '') . $$idx[$i];
                                 }
                                 ($idx = join ', ', @i) =~ s/(.*),/$1 and/;
                             } elsif (not $$tagInfo{Relist}) {
@@ -1074,7 +1092,7 @@ TagID:  foreach $tagID (@keys) {
                             $caseInsensitive = 0;
                             my @pk = sort { NumbersFirst($a,$b) } keys %$printConv;
                             my $n = scalar @values;
-                            my ($bits, $i);
+                            my ($bits, $i, $v);
                             foreach (@pk) {
                                 next if $_ eq '';
                                 $_ eq 'BITMASK' and $bits = $$printConv{$_}, next;
@@ -1098,10 +1116,17 @@ TagID:  foreach $tagID (@keys) {
                                     if ($index =~ s/([\x00-\x1f\x80-\xff])/sprintf("\\x%.2x",ord $1)/eg) {
                                         $index = qq{"$index"};
                                     } else {
-                                        $index = qq{'$index'};
+                                        $index = qq{'${index}'};
                                     }
                                 }
                                 push @values, "$index = " . $$printConv{$_};
+                                if ($valueConvHash) {
+                                    foreach $v (keys %$valueConvHash) {
+                                        next unless $$valueConvHash{$v} eq $_;
+                                        $values[-1] = "$v => " . $values[-1];
+                                        last;
+                                    }
+                                }
                                 # validate all PrintConv values
                                 if ($$printConv{$_} =~ /[\0-\x1f\x7f-\xff]/) {
                                     warn "Warning: Special characters in $short $name PrintConv ($$printConv{$_})\n";
@@ -1164,7 +1189,7 @@ TagID:  foreach $tagID (@keys) {
                 if ($subdir and not $$tagInfo{SeparateTable}) {
                     # subdirectories are only writable if specified explicitly
                     my $tw = $$tagInfo{Writable};
-                    $writable = 'Y' if $tw and $writable eq '1';
+                    $writable = 'yes' if $tw and $writable eq '1';
                     $writable = '-' . ($tw ? $writable : '');
                     $writable .= '!' if $tw and ($$tagInfo{Protected} || 0) & 0x01;
                     $writable .= '+' if $$tagInfo{List};
@@ -1185,9 +1210,9 @@ TagID:  foreach $tagID (@keys) {
                         }
                     }
                     if (not $writable) {
-                        $writable = 'N';
+                        $writable = 'no';
                     } else {
-                        $writable eq '1' and $writable = $format ? $format : 'Y';
+                        $writable eq '1' and $writable = $format ? $format : 'yes';
                         my $count = $$tagInfo{Count} || 1;
                         # adjust count to Writable size if different than Format
                         if ($writable and $format and $writable ne $format and
@@ -1282,9 +1307,8 @@ TagID:  foreach $tagID (@keys) {
                 }
                 $tableWritable{$tableName} = 1;
                 $tagLookup{$lcName}->{$tableNum} = $tagIDs;
-                if ($short eq 'Composite' and $$tagInfo{Module}) {
-                    $compositeModules{$lcName} = $$tagInfo{Module};
-                }
+                # keep track of extra modules needed for Composite tags
+                $compositeModules{$lcName} = $$tagInfo{Module} if $$tagInfo{Module};
             }
 #
 # save TagName information
@@ -1315,7 +1339,7 @@ TagID:  foreach $tagID (@keys) {
                     next if $tagID eq 'jP\x1a\x1a'; # ignore abnormal JP2 signature tag
                     $tagIDstr = qq{"$tagID"};
                 } else {
-                    $tagIDstr = "'$tagID'";
+                    $tagIDstr = "'${tagID}'";
                 }
             }
             my $len = length $tagIDstr;
@@ -1372,6 +1396,15 @@ TagID:  foreach $tagID (@keys) {
                 }
             }
             $writable .= '+' if $$tagInfo{List};
+            push @vals, "($$tagInfo{Notes})" if $$tagInfo{Notes};
+            # handle PrintConv lookups in Structure elements
+            my $printConv = $$tagInfo{PrintConv};
+            if (ref $printConv eq 'HASH') {
+                foreach (sort keys %$printConv) {
+                    next if /^(OTHER|BITMASK)$/;
+                    push @vals, "$_ = $$printConv{$_}";
+                }
+            }
             push @$info, [
                 $tag,
                 [ $$tagInfo{Name} || ucfirst($tag) ],
@@ -1428,7 +1461,7 @@ sub WriteTagLookup($$)
     my $num = 0;
     foreach $tableName (@tableNames) {
         if ($$tableWritable{$tableName}) {
-            print OUTFILE "\t'$tableName',\n";
+            print OUTFILE "\t'${tableName}',\n";
             $wrNum{$count} = $num++;
         }
         $count++;
@@ -1441,11 +1474,11 @@ sub WriteTagLookup($$)
     foreach $tag (qw{filename directory}) {
         next unless $$tagLookup{$tag};
         my $n = scalar keys %{$$tagLookup{$tag}};
-        warn "Warning: $n writable '$tag' tags!\n" if $n > 1;
+        warn "Warning: $n writable '${tag}' tags!\n" if $n > 1;
     }
     print OUTFILE ");\n\n# lookup for all writable tags\nmy \%tagLookup = (\n";
     foreach $tag (sort keys %$tagLookup) {
-        print OUTFILE "\t'$tag' => { ";
+        print OUTFILE "\t'${tag}' => { ";
         my @tableNums = sort { $a <=> $b } keys %{$$tagLookup{$tag}};
         my (@entries, $tableNum);
         foreach $tableNum (@tableNums) {
@@ -1467,12 +1500,12 @@ sub WriteTagLookup($$)
                 }
                 # reference to root structure ID must come first in lookup
                 # (so we can generate the flattened tags just before we need them)
-                unshift @tagIDs, "\\'$rootID'" if $rootID;
+                unshift @tagIDs, "\\'${rootID}'" if $rootID;
                 $entry = '[' . join(',', @tagIDs) . ']';
             } elsif ($tagID =~ /^\d+$/) {
                 $entry = sprintf('0x%x',$tagID);
             } else {
-                $entry = "'$tagID'";
+                $entry = "'${tagID}'";
             }
             my $wrNum = $wrNum{$tableNum};
             push @entries, "$wrNum => $entry";
@@ -1487,7 +1520,7 @@ sub WriteTagLookup($$)
     print OUTFILE "my \%tagExists = (\n";
     foreach $tag (sort keys %$tagExists) {
         next if $$tagLookup{$tag};
-        print OUTFILE "\t'$tag' => 1,\n";
+        print OUTFILE "\t'${tag}' => 1,\n";
     }
 #
 # write module lookup for writable composite tags
@@ -1496,7 +1529,7 @@ sub WriteTagLookup($$)
     print OUTFILE ");\n\n# module names for writable Composite tags\n";
     print OUTFILE "my \%compositeModules = (\n";
     foreach (sort keys %$compositeModules) {
-        print OUTFILE "\t'$_' => '$$compositeModules{$_}',\n";
+        print OUTFILE "\t'${_}' => '$$compositeModules{$_}',\n";
     }
     print OUTFILE ");\n\n";
 #
@@ -1597,7 +1630,7 @@ sub Doc2Pod($;@)
     $doc .= shift while @_;
     $doc =~ s/\n~/\n=/g;
     $doc =~ s/L<[^>]+?\|(http[^>]+)>/L<$1>/g; # POD doesn't support text for http links
-    $doc =~ s/L<([^>]+?)\|[^>]+\.html>/$1/g;  # remove relative HTML links
+    $doc =~ s/L<([^>]+?)\|[^>]+\.html(#\w+)?>/$1/g;  # remove relative HTML links
     return $doc;
 }
 
@@ -1820,7 +1853,7 @@ sub OpenHtmlFile($;$$)
             $top = " class=top";
         }
     }
-    $head = "<a name='$url'>$head</a>" if $url;
+    $head = "<a name='${url}'>$head</a>" if $url;
     print HTMLFILE "<h2$top>$head</h2>\n" or return 0;
     print HTMLFILE '<p>',Doc2Html($docs{$category}),"</p>\n" if $docs{$category};
     $createdFiles{$htmlFile} = 1;
@@ -1926,7 +1959,7 @@ sub WriteTagNames($$)
     # open the file and write the header
     open(PODFILE, ">$podFile") or return 0;
     print PODFILE Doc2Pod($docs{PodHeader}, $docs{ExifTool}, $docs{ExifTool2});
-    mkdir "$htmldir/TagNames";
+    mkdir "$htmldir/TagNames", 0777;
     OpenHtmlFile($htmldir) or return 0;
     print HTMLFILE "<blockquote>\n";
     print HTMLFILE "<table width='100%' class=frame><tr><td>\n";
@@ -1972,7 +2005,7 @@ sub WriteTagNames($$)
         $short = $$shortName{$tableName};
         $short = $tableName unless $short;
         $url = "$short.html";
-        print HTMLFILE "<a href='$url'>$short</a>";
+        print HTMLFILE "<a href='${url}'>$short</a>";
         ++$count;
     }
     print HTMLFILE "\n</td></tr></table></td></tr></table></blockquote>\n";
@@ -2258,7 +2291,7 @@ sub WriteTagNames($$)
                 }
                 if ($$sepTable{$vals[0]}) {
                     $wrStr =~ s/^[-=]//;
-                    $wrStr = 'N' unless $wrStr;
+                    $wrStr = 'no' unless $wrStr;
                 } elsif ($$structs{$vals[0]}) {
                     my $flags = $wrStr =~ /([+_]+)$/ ? $1 : '';
                     $wrStr = "$vals[0] Struct$flags";
@@ -2266,7 +2299,7 @@ sub WriteTagNames($$)
                     $wrStr = $vals[0];
                 }
                 shift @vals;
-            } elsif ($wrStr and $wrStr ne 'N' and @masks) {
+            } elsif ($wrStr and $wrStr ne 'no' and @masks) {
                 # fill in missing entries if masks are different
                 my $mask = shift @masks;
                 while (@masks > @vals) {
@@ -2340,7 +2373,7 @@ sub WriteTagNames($$)
             foreach (@$tagNames) {
                 push @htmlTags, EscapeHTML($_);
             }
-            if (($isExif and $exifSpec{hex $tagIDstr}) or
+            if (($isExif and $Image::ExifTool::Validate::exifSpec{hex $tagIDstr}) or
                 ($isRiff and $tagIDstr=~/(\w+)/ and $riffSpec{$1}) or
                 ($isXmpMain and $tagIDstr=~/([-\w]+)/ and $xmpSpec{$1}))
             {
@@ -2441,7 +2474,7 @@ sub WriteTagNames($$)
                         }
                         $url = (shift @names) . '.html';
                         @names and $url .= '#' . join '_', @names;
-                        push @values, "--&gt; <a href='$url'>$_$suffix</a>";
+                        push @values, "--&gt; <a href='${url}'>$_$suffix</a>";
                     }
                     # put small note last
                     $smallNote and push @values, shift @values;
@@ -2544,11 +2577,15 @@ descriptions, and values are the numerical counts.  Valid after
 BuildTagLookup object is created, but additional statistics are added by
 WriteTagNames().
 
+=item WRITE_PSEUDO
+
+List of writable pseudo tags.
+
 =back
 
 =head1 AUTHOR
 
-Copyright 2003-2016, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

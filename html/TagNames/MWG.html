@@ -61,7 +61,7 @@ implements this policy and changes EXIF:Artist to a list-type tag.</p>
 <th>Writable</th><th>Derived From</th><th>Values / <span class=n>Notes</span></th></tr>
 <tr>
 <td>City</td>
-<td class=c>Y</td>
+<td class=c>yes</td>
 <td class=n>IPTC:City
   <br>XMP-photoshop:City
   <br>XMP-iptcExt:LocationShownCity
@@ -70,7 +70,7 @@ implements this policy and changes EXIF:Artist to a list-type tag.</p>
 <td>&nbsp;</td></tr>
 <tr class=b>
 <td>Copyright</td>
-<td class=c>Y</td>
+<td class=c>yes</td>
 <td class=n>EXIF:Copyright
   <br>IPTC:CopyrightNotice
   <br>XMP-dc:Rights
@@ -79,7 +79,7 @@ implements this policy and changes EXIF:Artist to a list-type tag.</p>
 <td>&nbsp;</td></tr>
 <tr>
 <td>Country</td>
-<td class=c>Y</td>
+<td class=c>yes</td>
 <td class=n>IPTC:Country-PrimaryLocationName
   <br>XMP-photoshop:Country
   <br>XMP-iptcExt:LocationShownCountryName
@@ -88,8 +88,9 @@ implements this policy and changes EXIF:Artist to a list-type tag.</p>
 <td>&nbsp;</td></tr>
 <tr class=b>
 <td>CreateDate</td>
-<td class=c>Y</td>
+<td class=c>yes</td>
 <td class=n>Composite:SubSecCreateDate
+  <br>EXIF:CreateDate
   <br>IPTC:DigitalCreationDate
   <br>IPTC:DigitalCreationTime
   <br>XMP-xmp:CreateDate
@@ -98,7 +99,7 @@ implements this policy and changes EXIF:Artist to a list-type tag.</p>
 <td><span class=s><span class=n>(&quot;creation date of the digital representation&quot; - MWG)</span></span></td></tr>
 <tr>
 <td>Creator</td>
-<td class=c title=' + = List'>Y+</td>
+<td class=c title=' + = List'>yes+</td>
 <td class=n>EXIF:Artist
   <br>IPTC:By-line
   <br>XMP-dc:Creator
@@ -107,8 +108,9 @@ implements this policy and changes EXIF:Artist to a list-type tag.</p>
 <td>&nbsp;</td></tr>
 <tr class=b>
 <td>DateTimeOriginal</td>
-<td class=c>Y</td>
+<td class=c>yes</td>
 <td class=n>Composite:SubSecDateTimeOriginal
+  <br>EXIF:DateTimeOriginal
   <br>IPTC:DateCreated
   <br>IPTC:TimeCreated
   <br>XMP-photoshop:DateCreated
@@ -117,7 +119,7 @@ implements this policy and changes EXIF:Artist to a list-type tag.</p>
 <td><span class=s><span class=n>(&quot;creation date of the intellectual content being shown&quot; - MWG)</span></span></td></tr>
 <tr>
 <td>Description</td>
-<td class=c>Y</td>
+<td class=c>yes</td>
 <td class=n>EXIF:ImageDescription
   <br>IPTC:Caption-Abstract
   <br>XMP-dc:Description
@@ -126,7 +128,7 @@ implements this policy and changes EXIF:Artist to a list-type tag.</p>
 <td>&nbsp;</td></tr>
 <tr class=b>
 <td>Keywords</td>
-<td class=c title=' + = List'>Y+</td>
+<td class=c title=' + = List'>yes+</td>
 <td class=n>IPTC:Keywords
   <br>XMP-dc:Subject
   <br>CurrentIPTCDigest
@@ -134,7 +136,7 @@ implements this policy and changes EXIF:Artist to a list-type tag.</p>
 <td>&nbsp;</td></tr>
 <tr>
 <td>Location</td>
-<td class=c>Y</td>
+<td class=c>yes</td>
 <td class=n>IPTC:Sub-location
   <br>XMP-iptcCore:Location
   <br>XMP-iptcExt:LocationShownSublocation
@@ -143,15 +145,16 @@ implements this policy and changes EXIF:Artist to a list-type tag.</p>
 <td>&nbsp;</td></tr>
 <tr class=b>
 <td>ModifyDate</td>
-<td class=c>Y</td>
+<td class=c>yes</td>
 <td class=n>Composite:SubSecModifyDate
+  <br>EXIF:ModifyDate
   <br>XMP-xmp:ModifyDate
   <br>CurrentIPTCDigest
   <br>IPTCDigest</td>
 <td><span class=s><span class=n>(&quot;modification date of the digital image file&quot; - MWG)</span></span></td></tr>
 <tr>
 <td>Orientation</td>
-<td class=c>Y</td>
+<td class=c>yes</td>
 <td class=n>EXIF:Orientation</td>
 <td><table class=cols><tr>
   <td>1 = Horizontal (normal)
@@ -165,12 +168,12 @@ implements this policy and changes EXIF:Artist to a list-type tag.</p>
 </td></tr>
 <tr class=b>
 <td>Rating</td>
-<td class=c>Y</td>
+<td class=c>yes</td>
 <td class=n>XMP-xmp:Rating</td>
 <td>&nbsp;</td></tr>
 <tr>
 <td>State</td>
-<td class=c>Y</td>
+<td class=c>yes</td>
 <td class=n>IPTC:Province-State
   <br>XMP-photoshop:State
   <br>XMP-iptcExt:LocationShownProvinceState
@@ -288,7 +291,7 @@ These tags belong to the ExifTool XMP-mwg-rs family 1 group.</p>
 <td>RegionRotation</td>
 <td class=c title=' _ = Flattened
  + = List'>real_+</td>
-<td><span class=s><span class=n>(RegionsRegionListRotation, not part of MWG 2.0 spec)</span></span></td></tr>
+<td><span class=s><span class=n>(RegionsRegionListRotation; not part of MWG 2.0 spec)</span></span></td></tr>
 <tr class=b>
 <td>RegionSeeAlso</td>
 <td class=c title=' _ = Flattened
@@ -346,7 +349,9 @@ These tags belong to the ExifTool XMP-mwg-rs family 1 group.</p>
 <tr>
 <td>FocusUsage</td>
 <td class=c>string</td>
-<td>&nbsp;</td></tr>
+<td><span class=s>EvaluatedNotUsed = Evaluated, Not Used
+  <br>EvaluatedUsed = Evaluated, Used
+  <br>NotEvaluatedNotUsed = Not Evaluated, Not Used</span></td></tr>
 <tr class=b>
 <td>Name</td>
 <td class=c>string</td>
@@ -354,11 +359,14 @@ These tags belong to the ExifTool XMP-mwg-rs family 1 group.</p>
 <tr>
 <td>Rotation</td>
 <td class=c>real</td>
-<td>&nbsp;</td></tr>
+<td><span class=s><span class=n>(not part of MWG 2.0 spec)</span></span></td></tr>
 <tr class=b>
 <td>Type</td>
 <td class=c>string</td>
-<td>&nbsp;</td></tr>
+<td><span class=s>BarCode = BarCode
+  <br>Face = Face
+  <br>Focus = Focus
+  <br>Pet = Pet</span></td></tr>
 <tr>
 <td>SeeAlso</td>
 <td class=c>string</td>
@@ -575,7 +583,7 @@ These tags belong to the ExifTool XMP-mwg-coll family 1 group.</p>
 
 <hr>
 (This document generated automatically by Image::ExifTool::BuildTagLookup)
-<br><i>Last revised Nov 15, 2016</i>
+<br><i>Last revised Aug 22, 2017</i>
 <p class=lf><a href='index.html'>&lt;-- ExifTool Tag Names</a></p>
 </body>
 </html>

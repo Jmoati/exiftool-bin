@@ -53,7 +53,7 @@ use vars qw($VERSION $AUTOLOAD @formatSize @formatName %formatNumber %intFormat
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::MakerNotes;
 
-$VERSION = '3.88';
+$VERSION = '3.98';
 
 sub ProcessExif($$$);
 sub WriteExif($$$);
@@ -349,6 +349,7 @@ my %sampleFormat = (
     },
     0xfe => {
         Name => 'SubfileType',
+        Notes => 'called NewSubfileType by the TIFF specification',
         Protected => 1,
         Writable => 'int32u',
         WriteGroup => 'IFD0',
@@ -359,6 +360,7 @@ my %sampleFormat = (
     },
     0xff => {
         Name => 'OldSubfileType',
+        Notes => 'called SubfileType by the TIFF specification',
         Protected => 1,
         Writable => 'int16u',
         WriteGroup => 'IFD0',
@@ -502,9 +504,11 @@ my %sampleFormat = (
             ByteOrder => 'LittleEndian',
         },
         {
+            # (APP1 IFD2 is for Leica JPEG preview)
             Condition => q[
-                ($$self{TIFF_TYPE} ne 'CR2' or $$self{DIR_NAME} ne 'IFD0') and
-                ($$self{TIFF_TYPE} ne 'DNG' or $$self{DIR_NAME} !~ /^SubIFD[12]$/)
+                not ($$self{TIFF_TYPE} eq 'CR2' and $$self{DIR_NAME} eq 'IFD0') and
+                not ($$self{TIFF_TYPE} eq 'DNG' and $$self{Compression} eq '7' and $$self{SubfileType} ne '0') and
+                not ($$self{TIFF_TYPE} eq 'APP1' and $$self{DIR_NAME} eq 'IFD2')
             ],
             Name => 'StripOffsets',
             IsOffset => 1,
@@ -512,40 +516,44 @@ my %sampleFormat = (
             ValueConv => 'length($val) > 32 ? \$val : $val',
         },
         {
-            Condition => '$$self{DIR_NAME} eq "IFD0"',
+            # PreviewImageStart in IFD0 of CR2 images
+            Condition => '$$self{TIFF_TYPE} eq "CR2"',
             Name => 'PreviewImageStart',
             IsOffset => 1,
             OffsetPair => 0x117,
             Notes => q{
-                PreviewImageStart in IFD0 of CR2 images and SubIFD1 of DNG images, and
-                JpgFromRawStart in SubIFD2 of DNG images
+                called StripOffsets in most locations, but it is PreviewImageStart in IFD0
+                of CR2 images and various IFD's of DNG images except for SubIFD2 where it is
+                JpgFromRawStart
             },
             DataTag => 'PreviewImage',
             Writable => 'int32u',
             WriteGroup => 'IFD0',
-            WriteCondition => '$$self{TIFF_TYPE} eq "CR2"',
             Protected => 2,
+            Permanent => 1,
         },
         {
-            Condition => '$$self{DIR_NAME} eq "SubIFD1"',
+            # PreviewImageStart in various IFD's of DNG images except SubIFD2
+            Condition => '$$self{DIR_NAME} ne "SubIFD2"',
             Name => 'PreviewImageStart',
             IsOffset => 1,
             OffsetPair => 0x117,
             DataTag => 'PreviewImage',
             Writable => 'int32u',
-            WriteGroup => 'SubIFD1',
-            WriteCondition => '$$self{TIFF_TYPE} eq "DNG"',
+            WriteGroup => 'All',    # (writes to specific group of associated Composite tag)
             Protected => 2,
+            Permanent => 1,
         },
         {
+            # JpgFromRawStart in various IFD's of DNG images except SubIFD2
             Name => 'JpgFromRawStart',
             IsOffset => 1,
             OffsetPair => 0x117,
             DataTag => 'JpgFromRaw',
             Writable => 'int32u',
             WriteGroup => 'SubIFD2',
-            WriteCondition => '$$self{TIFF_TYPE} eq "DNG"',
             Protected => 2,
+            Permanent => 1,
         },
     ],
     0x112 => {
@@ -582,46 +590,52 @@ my %sampleFormat = (
             ByteOrder => 'LittleEndian',
         },
         {
+            # (APP1 IFD2 is for Leica JPEG preview)
             Condition => q[
-                ($$self{TIFF_TYPE} ne 'CR2' or $$self{DIR_NAME} ne 'IFD0') and
-                ($$self{TIFF_TYPE} ne 'DNG' or $$self{DIR_NAME} !~ /^SubIFD[12]$/)
+                not ($$self{TIFF_TYPE} eq 'CR2' and $$self{DIR_NAME} eq 'IFD0') and
+                not ($$self{TIFF_TYPE} eq 'DNG' and $$self{Compression} eq '7' and $$self{SubfileType} ne '0') and
+                not ($$self{TIFF_TYPE} eq 'APP1' and $$self{DIR_NAME} eq 'IFD2')
             ],
             Name => 'StripByteCounts',
             OffsetPair => 0x111,   # point to associated offset
             ValueConv => 'length($val) > 32 ? \$val : $val',
         },
         {
-            Condition => '$$self{DIR_NAME} eq "IFD0"',
+            # PreviewImageLength in IFD0 of CR2 images
+            Condition => '$$self{TIFF_TYPE} eq "CR2"',
             Name => 'PreviewImageLength',
             OffsetPair => 0x111,
             Notes => q{
-                PreviewImageLength in IFD0 of CR2 images and SubIFD1 of DNG images, and
-                JpgFromRawLength in SubIFD2 of DNG images
+                called StripByteCounts in most locations, but it is PreviewImageLength in
+                IFD0 of CR2 images and various IFD's of DNG images except for SubIFD2 where
+                it is JpgFromRawLength
             },
             DataTag => 'PreviewImage',
             Writable => 'int32u',
             WriteGroup => 'IFD0',
-            WriteCondition => '$$self{TIFF_TYPE} eq "CR2"',
             Protected => 2,
+            Permanent => 1,
         },
         {
-            Condition => '$$self{DIR_NAME} eq "SubIFD1"',
+            # PreviewImageLength in various IFD's of DNG images except SubIFD2
+            Condition => '$$self{DIR_NAME} ne "SubIFD2"',
             Name => 'PreviewImageLength',
             OffsetPair => 0x111,
             DataTag => 'PreviewImage',
             Writable => 'int32u',
-            WriteGroup => 'SubIFD1',
-            WriteCondition => '$$self{TIFF_TYPE} eq "DNG"',
+            WriteGroup => 'All',    # (writes to specific group of associated Composite tag)
             Protected => 2,
+            Permanent => 1,
         },
         {
+            # JpgFromRawLength in SubIFD2 of DNG images
             Name => 'JpgFromRawLength',
             OffsetPair => 0x111,
             DataTag => 'JpgFromRaw',
             Writable => 'int32u',
             WriteGroup => 'SubIFD2',
-            WriteCondition => '$$self{TIFF_TYPE} eq "DNG"',
             Protected => 2,
+            Permanent => 1,
         },
     ],
     0x118 => {
@@ -758,6 +772,7 @@ my %sampleFormat = (
         Writable => 'string',
         Shift => 'Time',
         WriteGroup => 'IFD0',
+        Validate => 'ValidateExifDate($val)',
         PrintConv => '$self->ConvertDateTime($val)',
         PrintConvInv => '$self->InverseDateTime($val,0)',
     },
@@ -869,6 +884,7 @@ my %sampleFormat = (
             Notes => 'the data offset in original Sony DSLR-A100 ARW images',
             DataMember => 'A100DataOffset',
             RawConv => '$$self{A100DataOffset} = $val',
+            WriteGroup => 'IFD0', # (only for Validate)
             IsOffset => 1,
             Protected => 2,
         },
@@ -901,6 +917,7 @@ my %sampleFormat = (
     0x153 => {
         Name => 'SampleFormat',
         Notes => 'SamplesPerPixel values',
+        WriteGroup => 'SubIFD', # (only for Validate)
         PrintConvColumns => 2,
         PrintConv => [ \%sampleFormat, \%sampleFormat, \%sampleFormat, \%sampleFormat ],
     },
@@ -996,6 +1013,10 @@ my %sampleFormat = (
             # thumbnail is found in IFD1 of JPEG and TIFF images, and
             # IFD0 of EXIF information in FujiFilm AVI (RIFF) and MOV videos
             Condition => q{
+                # recognize NRW file from a JPEG-compressed thumbnail in IFD0
+                if ($$self{TIFF_TYPE} eq 'NEF' and $$self{DIR_NAME} eq 'IFD0' and $$self{Compression} == 6) {
+                    $self->OverrideFileType($$self{TIFF_TYPE} = 'NRW');
+                }
                 $$self{DIR_NAME} eq 'IFD1' or
                 ($$self{DIR_NAME} eq 'IFD0' and $$self{FILE_TYPE} =~ /^(RIFF|MOV)$/)
             },
@@ -1027,8 +1048,8 @@ my %sampleFormat = (
             DataTag => 'ThumbnailImage',
             Writable => 'int32u',
             WriteGroup => 'IFD0',
-            WriteCondition => '$$self{FILE_TYPE} =~ /^(MRW|NRW)$/',
             Protected => 2,
+            Permanent => 1,
         },
         {
             Name => 'ThumbnailOffset',
@@ -1042,8 +1063,8 @@ my %sampleFormat = (
             DataTag => 'ThumbnailImage',
             Writable => 'int32u',
             WriteGroup => 'SubIFD',
-            WriteCondition => '$$self{TIFF_TYPE} eq "SRW"',
             Protected => 2,
+            Permanent => 1,
         },
         {
             Name => 'PreviewImageStart',
@@ -1053,8 +1074,8 @@ my %sampleFormat = (
             DataTag => 'PreviewImage',
             Writable => 'int32u',
             WriteGroup => 'MakerNotes',
-            # (no WriteCondition necessary because MakerNotes won't be created)
             Protected => 2,
+            Permanent => 1,
         },
         {
             Name => 'PreviewImageStart',
@@ -1065,8 +1086,8 @@ my %sampleFormat = (
             DataTag => 'PreviewImage',
             Writable => 'int32u',
             WriteGroup => 'IFD0',
-            WriteCondition => '$$self{TIFF_TYPE} =~ /^(ARW|SR2)$/',
             Protected => 2,
+            Permanent => 1,
         },
         {
             Name => 'JpgFromRawStart',
@@ -1077,8 +1098,8 @@ my %sampleFormat = (
             Writable => 'int32u',
             WriteGroup => 'SubIFD',
             # JpgFromRaw is in SubIFD of NEF, NRW and SRW files
-            WriteCondition => '$$self{TIFF_TYPE} =~ /^(NEF|NRW|SRW)$/',
             Protected => 2,
+            Permanent => 1,
         },
         {
             Name => 'JpgFromRawStart',
@@ -1089,8 +1110,8 @@ my %sampleFormat = (
             Writable => 'int32u',
             WriteGroup => 'IFD2',
             # JpgFromRaw is in IFD2 of PEF files
-            WriteCondition => '$$self{TIFF_TYPE} eq "PEF"',
             Protected => 2,
+            Permanent => 1,
         },
         {
             Name => 'OtherImageStart',
@@ -1101,8 +1122,8 @@ my %sampleFormat = (
             Writable => 'int32u',
             WriteGroup => 'SubIFD1',
             Protected => 2,
-            Permanent => 1, # (don't add/delete this tag: makes WriteCondition unnecessary)
-       },
+            Permanent => 1,
+        },
         {
             Name => 'OtherImageStart',
             Condition => '$$self{DIR_NAME} eq "SubIFD2"',
@@ -1112,7 +1133,7 @@ my %sampleFormat = (
             Writable => 'int32u',
             WriteGroup => 'SubIFD2',
             Protected => 2,
-            Permanent => 1, # (don't add/delete this tag: makes WriteCondition unnecessary)
+            Permanent => 1,
         },
         {
             Name => 'OtherImageStart',
@@ -1153,8 +1174,8 @@ my %sampleFormat = (
             DataTag => 'ThumbnailImage',
             Writable => 'int32u',
             WriteGroup => 'IFD0',
-            WriteCondition => '$$self{FILE_TYPE} =~ /^(MRW|NRW)$/',
             Protected => 2,
+            Permanent => 1,
         },
         {
             Name => 'ThumbnailLength',
@@ -1167,8 +1188,8 @@ my %sampleFormat = (
             DataTag => 'ThumbnailImage',
             Writable => 'int32u',
             WriteGroup => 'SubIFD',
-            WriteCondition => '$$self{TIFF_TYPE} eq "SRW"',
             Protected => 2,
+            Permanent => 1,
         },
         {
             Name => 'PreviewImageLength',
@@ -1177,8 +1198,8 @@ my %sampleFormat = (
             DataTag => 'PreviewImage',
             Writable => 'int32u',
             WriteGroup => 'MakerNotes',
-            # (no WriteCondition necessary because MakerNotes won't be created)
             Protected => 2,
+            Permanent => 1,
         },
         {
             Name => 'PreviewImageLength',
@@ -1188,8 +1209,8 @@ my %sampleFormat = (
             DataTag => 'PreviewImage',
             Writable => 'int32u',
             WriteGroup => 'IFD0',
-            WriteCondition => '$$self{TIFF_TYPE} =~ /^(ARW|SR2)$/',
             Protected => 2,
+            Permanent => 1,
         },
         {
             Name => 'JpgFromRawLength',
@@ -1198,8 +1219,8 @@ my %sampleFormat = (
             DataTag => 'JpgFromRaw',
             Writable => 'int32u',
             WriteGroup => 'SubIFD',
-            WriteCondition => '$$self{TIFF_TYPE} =~ /^(NEF|NRW|SRW)$/',
             Protected => 2,
+            Permanent => 1,
         },
         {
             Name => 'JpgFromRawLength',
@@ -1208,8 +1229,8 @@ my %sampleFormat = (
             DataTag => 'JpgFromRaw',
             Writable => 'int32u',
             WriteGroup => 'IFD2',
-            WriteCondition => '$$self{TIFF_TYPE} eq "PEF"',
             Protected => 2,
+            Permanent => 1,
         },
         {
             Name => 'OtherImageLength',
@@ -1219,7 +1240,7 @@ my %sampleFormat = (
             Writable => 'int32u',
             WriteGroup => 'SubIFD1',
             Protected => 2,
-            Permanent => 1, # (don't add/delete this tag: makes WriteCondition unnecessary)
+            Permanent => 1,
         },
         {
             Name => 'OtherImageLength',
@@ -1229,7 +1250,7 @@ my %sampleFormat = (
             Writable => 'int32u',
             WriteGroup => 'SubIFD2',
             Protected => 2,
-            Permanent => 1, # (don't add/delete this tag: makes WriteCondition unnecessary)
+            Permanent => 1,
         },
         {
             Name => 'OtherImageLength',
@@ -1297,8 +1318,9 @@ my %sampleFormat = (
     0x22f => 'StripRowCounts',
     0x2bc => {
         Name => 'ApplicationNotes', # (writable directory!)
-        Writable => 'int8u',
         Format => 'undef',
+        Writable => 'int8u',
+        WriteGroup => 'IFD0', # (only for Validate)
         Flags => [ 'Binary', 'Protected' ],
         # this could be an XMP block
         SubDirectory => {
@@ -1370,7 +1392,7 @@ my %sampleFormat = (
     # 0x7020 - int32u[1] (in SubIFD of Sony ARW images) - values: 0,3
     # 0x7031 - int16u[1] (in SubIFD of Sony ARW images) - values: 256,257
     0x7032 => {
-        Name => 'LightFalloffParams', #forum7640
+        Name => 'VignettingCorrParams', #forum7640
         Notes => 'found in Sony ARW images',
         Protected => 1,
         Writable => 'int16s',
@@ -1630,6 +1652,7 @@ my %sampleFormat = (
     0x8649 => { #19
         Name => 'PhotoshopSettings',
         Format => 'binary',
+        WriteGroup => 'IFD0', # (only for Validate)
         SubDirectory => {
             DirName => 'Photoshop',
             TagTable => 'Image::ExifTool::Photoshop::Main',
@@ -1638,6 +1661,7 @@ my %sampleFormat = (
     0x8769 => {
         Name => 'ExifOffset',
         Groups => { 1 => 'ExifIFD' },
+        WriteGroup => 'IFD0', # (only for Validate)
         SubIFD => 2,
         SubDirectory => {
             DirName => 'ExifIFD',
@@ -1646,6 +1670,7 @@ my %sampleFormat = (
     },
     0x8773 => {
         Name => 'ICC_Profile',
+        WriteGroup => 'IFD0', # (only for Validate)
         SubDirectory => {
             TagTable => 'Image::ExifTool::ICC_Profile::Main',
         },
@@ -1759,6 +1784,7 @@ my %sampleFormat = (
     0x8825 => {
         Name => 'GPSInfo',
         Groups => { 1 => 'GPS' },
+        WriteGroup => 'IFD0', # (only for Validate)
         Flags => 'SubIFD',
         SubDirectory => {
             DirName => 'GPS',
@@ -1848,6 +1874,7 @@ my %sampleFormat = (
             Start => '$val',
         },
     },
+  # 0x89ab - seen "11 100 130 16 0 0 0 0" in IFD0 of TIFF image from IR scanner (forum8470)
     0x9000 => {
         Name => 'ExifVersion',
         Writable => 'undef',
@@ -1862,6 +1889,7 @@ my %sampleFormat = (
         Notes => 'date/time when original image was taken',
         Writable => 'string',
         Shift => 'Time',
+        Validate => 'ValidateExifDate($val)',
         PrintConv => '$self->ConvertDateTime($val)',
         PrintConvInv => '$self->InverseDateTime($val,0)',
     },
@@ -1871,6 +1899,7 @@ my %sampleFormat = (
         Notes => 'called DateTimeDigitized by the EXIF spec.',
         Writable => 'string',
         Shift => 'Time',
+        Validate => 'ValidateExifDate($val)',
         PrintConv => '$self->ConvertDateTime($val)',
         PrintConvInv => '$self->InverseDateTime($val,0)',
     },
@@ -2046,7 +2075,7 @@ my %sampleFormat = (
         PrintConvInv => '$val=~s/\s*mm$//;$val',
     },
     # Note: tags 0x920b-0x9217 are duplicates of 0xa20b-0xa217
-    # (The TIFF standard uses 0xa2xx, but you'll find both in images)
+    # (The EXIF standard uses 0xa2xx, but you'll find both in images)
     0x920b => { #12
         Name => 'FlashEnergy',
         Groups => { 2 => 'Camera' },
@@ -2096,14 +2125,14 @@ my %sampleFormat = (
     0x9217 => { #12
         Name => 'SensingMethod',
         Groups => { 2 => 'Camera' },
-        Notes => 'values 1 and 6 are not standard EXIF',
         PrintConv => {
-            1 => 'Monochrome area', #12 (not standard EXIF)
+            # (values 1 and 6 are not used by corresponding EXIF tag 0xa217)
+            1 => 'Monochrome area',
             2 => 'One-chip color area',
             3 => 'Two-chip color area',
             4 => 'Three-chip color area',
             5 => 'Color sequential area',
-            6 => 'Monochrome linear', #12 (not standard EXIF)
+            6 => 'Monochrome linear',
             7 => 'Trilinear',
             8 => 'Color sequential linear',
         },
@@ -2330,7 +2359,6 @@ my %sampleFormat = (
         Name => 'FlashEnergy',
         Groups => { 2 => 'Camera' },
         Writable => 'rational64u',
-        Count => -1, # 1 or 2 (ref 12)
     },
     0xa20c => {
         Name => 'SpatialFrequencyResponse',
@@ -2420,11 +2448,20 @@ my %sampleFormat = (
     0xa401 => {
         Name => 'CustomRendered',
         Writable => 'int16u',
+        Notes => q{
+            only 0 and 1 are standard EXIF, but other values are used by Apple iOS
+            devices
+        },
         PrintConv => {
             0 => 'Normal',
             1 => 'Custom',
-            # 4 - Apple iPhone5c horizontal orientation
-            # 6 - Apple iPhone5c panorama
+            # 2 - also seen (Apple iOS)
+            3 => 'HDR',      # non-standard (Apple iOS)
+            # 4 - also seen (Apple iOS) - normal image from iOS Camera app (ref http://regex.info/blog/lightroom-goodies/metadata-presets)
+            6 => 'Panorama', # non-standard (Apple iOS, horizontal or vertical)
+            # 7 - also seen (Apple iOS)
+            8 => 'Portrait', # non-standard (Apple iOS, blurred background)
+            # 9 - also seen (Apple iOS) (HDR Portrait?)
         },
     },
     0xa402 => {
@@ -2751,7 +2788,21 @@ my %sampleFormat = (
     },
     # 0xc5d8 - found in CR2 images
     # 0xc5d9 - found in CR2 images
-    # 0xc5e0 - found in CR2 images
+    0xc5e0 => { #forum8153 (CR2 images)
+        Name => 'CR2CFAPattern',
+        ValueConv => {
+            1 => '0 1 1 2',
+            2 => '2 1 1 0',
+            3 => '1 2 0 1',
+            4 => '1 0 2 1',
+        },
+        PrintConv => {
+            '0 1 1 2' => '[Red,Green][Green,Blue]',
+            '2 1 1 0' => '[Blue,Green][Green,Red]',
+            '1 2 0 1' => '[Green,Blue][Red,Green]',
+            '1 0 2 1' => '[Green,Red][Blue,Green]',
+        },
+    },
 #
 # DNG tags 0xc6XX and 0xc7XX (ref 2 unless otherwise stated)
 #
@@ -2794,6 +2845,7 @@ my %sampleFormat = (
     },
     0xc616 => {
         Name => 'CFAPlaneColor',
+        WriteGroup => 'SubIFD', # (only for Validate)
         PrintConv => q{
             my @cols = qw(Red Green Blue Cyan Magenta Yellow White);
             my @vals = map { $cols[$_] || "Unknown($_)" } split(' ', $val);
@@ -2802,6 +2854,7 @@ my %sampleFormat = (
     },
     0xc617 => {
         Name => 'CFALayout',
+        WriteGroup => 'SubIFD', # (only for Validate)
         PrintConv => {
             1 => 'Rectangular',
             2 => 'Even columns offset down 1/2 row',
@@ -3018,6 +3071,7 @@ my %sampleFormat = (
             # - Adobe Camera Raw 5.3 gives an error
             # - Apple Preview 10.5.8 gets the wrong white balance
             FixFormat => 'int8u', # (stupid Sony)
+            WriteGroup => 'IFD0', # (for Validate)
             SubDirectory => {
                 DirName => 'SR2Private',
                 TagTable => 'Image::ExifTool::Sony::SR2Private',
@@ -3045,6 +3099,7 @@ my %sampleFormat = (
             Name => 'MakerNotePentax',
             MakerNotes => 1,    # (causes "MakerNotes header" to be identified in HtmlDump output)
             Binary => 1,
+            WriteGroup => 'IFD0', # (for Validate)
             # Note: Don't make this block-writable for a few reasons:
             # 1) It would be dangerous (possibly confusing Pentax software)
             # 2) It is a different format from the JPEG version of MakerNotePentax
@@ -3065,6 +3120,7 @@ my %sampleFormat = (
             Name => 'MakerNotePentax5',
             MakerNotes => 1,
             Binary => 1,
+            WriteGroup => 'IFD0', # (for Validate)
             SubDirectory => {
                 TagTable => 'Image::ExifTool::Pentax::Main',
                 Start => '$valuePtr + 10',
@@ -3160,7 +3216,7 @@ my %sampleFormat = (
         Name => 'MaskedAreas',
         Writable => 'int32u',
         WriteGroup => 'SubIFD',
-        Count => 4,
+        Count => -1,
         Protected => 1,
     },
     0xc68f => {
@@ -3214,7 +3270,7 @@ my %sampleFormat = (
         WriteGroup => 'IFD0',
         Protected => 1,
     },
-    0xc6c5 => { Name => 'SRawType', Description => 'SRaw Type' }, #exifprobe (CR2 proprietary)
+    0xc6c5 => { Name => 'SRawType', Description => 'SRaw Type', WriteGroup => 'IFD0' }, #exifprobe (CR2 proprietary)
     0xc6d2 => { #JD (Panasonic DMC-TZ5)
         # this text is UTF-8 encoded (hooray!) - PH (TZ5)
         Name => 'PanasonicTitle',
@@ -3241,6 +3297,7 @@ my %sampleFormat = (
         ValueConvInv => '$self->Encode($val,"UTF8")',
     },
     # 0xc6dc - int32u[4]: found in CR2 images (PH, 7DmkIII)
+    # 0xc6dd - int16u[256]: found in CR2 images (PH, 5DmkIV)
     0xc6f3 => {
         Name => 'CameraCalibrationSig',
         WriteGroup => 'IFD0',
@@ -3257,6 +3314,7 @@ my %sampleFormat = (
         Name => 'ProfileIFD', # (ExtraCameraProfiles)
         Groups => { 1 => 'ProfileIFD' },
         Flags => 'SubIFD',
+        WriteGroup => 'IFD0', # (only for Validate)
         SubDirectory => {
             ProcessProc => \&ProcessTiffIFD,
             WriteProc => \&ProcessTiffIFD,
@@ -4112,8 +4170,9 @@ my %subSecConv = (
         PrintConv => '$self->ConvertDateTime($val)',
     },
     ThumbnailImage => {
-        Groups => { 2 => 'Preview' },
+        Groups => { 0 => 'EXIF', 1 => 'IFD1', 2 => 'Preview' },
         Writable => 1,
+        WriteGroup => 'All',
         WriteCheck => '$self->CheckImage(\$val)',
         WriteAlso => {
             # (the 0xfeedfeed values are translated in the Exif write routine)
@@ -4124,8 +4183,17 @@ my %subSecConv = (
             0 => 'ThumbnailOffset',
             1 => 'ThumbnailLength',
         },
+        Notes => q{
+            this tag is writable, and may be used to update existing thumbnails, but may
+            only create a thumbnail in IFD1 of certain types of files.  Note that for
+            this and other Composite embedded-image tags the family 0 and 1 groups match
+            those of the originating tags
+        },
         # retrieve the thumbnail from our EXIF data
-        RawConv => 'Image::ExifTool::Exif::ExtractImage($self,$val[0],$val[1],"ThumbnailImage")',
+        RawConv => q{
+            @grps = $self->GetGroup($$val{0});  # set groups from ThumbnailOffsets
+            Image::ExifTool::Exif::ExtractImage($self,$val[0],$val[1],"ThumbnailImage");
+        },
     },
     ThumbnailTIFF => {
         Groups => { 2 => 'Preview' },
@@ -4146,17 +4214,22 @@ my %subSecConv = (
             11 => 'Orientation',
         },
         # rebuild the TIFF thumbnail from our EXIF data
-        RawConv => 'Image::ExifTool::Exif::RebuildTIFF($self, @val)',
+        RawConv => q{
+            my $tiff;
+            ($tiff, @grps) = Image::ExifTool::Exif::RebuildTIFF($self, @val);
+            return $tiff;
+        },
     },
     PreviewImage => {
-        Groups => { 2 => 'Preview' },
+        Groups => { 0 => 'EXIF', 1 => 'SubIFD', 2 => 'Preview' },
         Writable => 1,
+        WriteGroup => 'All',
         WriteCheck => '$self->CheckImage(\$val)',
         DelCheck => '$val = ""; return undef', # can't delete, so set to empty string
         WriteAlso => {
             PreviewImageStart  => 'defined $val ? 0xfeedfeed : undef',
             PreviewImageLength => 'defined $val ? 0xfeedfeed : undef',
-            PreviewImageValid  => 'defined $val and length $val ? 1 : 0',
+            PreviewImageValid  => 'defined $val and length $val ? 1 : 0', # (for Olympus)
         },
         Require => {
             0 => 'PreviewImageStart',
@@ -4167,6 +4240,10 @@ my %subSecConv = (
             # (DNG and A100 ARW may be have 2 preview images)
             3 => 'PreviewImageStart (1)',
             4 => 'PreviewImageLength (1)',
+        },
+        Notes => q{
+            this tag is writable, and may be used to update existing embedded images,
+            but not create or delete them
         },
         # note: extract 2nd preview, but ignore double-referenced preview
         # (in A100 ARW images, the 2nd PreviewImageLength from IFD0 may be wrong anyway)
@@ -4180,13 +4257,18 @@ my %subSecConv = (
                 $self->FoundTag($tagInfo, \%val);
             }
             return undef if defined $val[2] and not $val[2];
+            @grps = $self->GetGroup($$val{0});
             return Image::ExifTool::Exif::ExtractImage($self,$val[0],$val[1],'PreviewImage');
         },
     },
     JpgFromRaw => {
-        Groups => { 2 => 'Preview' },
+        Groups => { 0 => 'EXIF', 1 => 'SubIFD', 2 => 'Preview' },
         Writable => 1,
+        WriteGroup => 'All',
         WriteCheck => '$self->CheckImage(\$val)',
+        # Note: ExifTool 10.38 had disabled the ability to delete this -- why?
+        # --> added the DelCheck in 10.61 to re-enable this
+        DelCheck => '$val = ""; return undef', # can't delete, so set to empty string
         WriteAlso => {
             JpgFromRawStart  => 'defined $val ? 0xfeedfeed : undef',
             JpgFromRawLength => 'defined $val ? 0xfeedfeed : undef',
@@ -4195,11 +4277,19 @@ my %subSecConv = (
             0 => 'JpgFromRawStart',
             1 => 'JpgFromRawLength',
         },
-        RawConv => 'Image::ExifTool::Exif::ExtractImage($self,$val[0],$val[1],"JpgFromRaw")',
+        Notes => q{
+            this tag is writable, and may be used to update existing embedded images,
+            but not create or delete them
+        },
+        RawConv => q{
+            @grps = $self->GetGroup($$val{0});
+            return Image::ExifTool::Exif::ExtractImage($self,$val[0],$val[1],"JpgFromRaw");
+        },
     },
     OtherImage => {
-        Groups => { 2 => 'Preview' },
+        Groups => { 0 => 'EXIF', 1 => 'SubIFD', 2 => 'Preview' },
         Writable => 1,
+        WriteGroup => 'All',
         WriteCheck => '$self->CheckImage(\$val)',
         DelCheck => '$val = ""; return undef', # can't delete, so set to empty string
         WriteAlso => {
@@ -4210,8 +4300,15 @@ my %subSecConv = (
             0 => 'OtherImageStart',
             1 => 'OtherImageLength',
         },
+        Notes => q{
+            this tag is writable, and may be used to update existing embedded images,
+            but not create or delete them
+        },
         # retrieve the thumbnail from our EXIF data
-        RawConv => 'Image::ExifTool::Exif::ExtractImage($self,$val[0],$val[1],"OtherImage")',
+        RawConv => q{
+            @grps = $self->GetGroup($$val{0});
+            Image::ExifTool::Exif::ExtractImage($self,$val[0],$val[1],"OtherImage");
+        },
     },
     PreviewImageSize => {
         Require => {
@@ -4558,6 +4655,12 @@ sub ConvertExifText($$;$$)
     return $val if length($val) < 8;
     my $id = substr($val, 0, 8);
     my $str = substr($val, 8);
+    my $type;
+
+    delete $$et{WrongByteOrder};
+    if ($$et{OPTIONS}{Validate} and $id =~ /^(ASCII|UNICODE|JIS)?\0* \0*$/) {
+        $et->Warn(($1 || 'Undefined') . ' text header' . ($tag ? " for $tag" : '') . ' has spaces instead of nulls');
+    }
     # Note: allow spaces instead of nulls in the ID codes because
     # it is fairly common for camera manufacturers to get this wrong
     # (also handle Canon ZoomBrowser EX 4.5 null followed by 7 bytes of garbage)
@@ -4574,16 +4677,22 @@ sub ConvertExifText($$;$$)
     # apparently Kodak sometimes uses "Unicode\0" in the APP3 "Meta" information.
     # However, unfortunately Ricoh uses "Unicode\0" in the RR30 EXIF UserComment
     # when the text is actually ASCII, so only recognize uppercase "UNICODE\0".
-    } elsif ($id =~ /^UNICODE[\0 ]$/) {
+    } elsif ($id =~ /^(UNICODE)[\0 ]$/) {
+        $type = $1;
         # MicrosoftPhoto writes as little-endian even in big-endian EXIF,
         # so we must guess at the true byte ordering
         $str = $et->Decode($str, 'UTF16', 'Unknown');
-    } elsif ($id =~ /^JIS[\0 ]{5}$/) {
+    } elsif ($id =~ /^(JIS)[\0 ]{5}$/) {
+        $type = $1;
         $str = $et->Decode($str, 'JIS', 'Unknown');
     } else {
         $tag = $asciiFlex if $asciiFlex and $asciiFlex ne 1;
         $et->Warn('Invalid EXIF text encoding' . ($tag ? " for $tag" : ''));
         $str = $id . $str;
+    }
+    if ($$et{WrongByteOrder} and $$et{OPTIONS}{Validate}) {
+        $et->Warn('Wrong byte order for EXIF' . ($tag ? " $tag" : '') .
+                  ($type ? " $type" : '') . ' text');
     }
     $str =~ s/ +$//;    # trim trailing blanks
     return $str;
@@ -5010,6 +5119,7 @@ sub ExifTime($)
 #------------------------------------------------------------------------------
 # Generate TIFF file from scratch (in current byte order)
 # Inputs: 0) hash of IFD entries (TagID => Value; multiple values space-delimited)
+#         1) raw image data reference
 # Returns: TIFF image data, or undef on error
 sub GenerateTIFF($$)
 {
@@ -5048,13 +5158,13 @@ sub GenerateTIFF($$)
 # Inputs: 0) ExifTool ref, 1) SubfileType, 2) Compression, 3) ImageWidth, 4) ImageHeight,
 #         5) BitsPerSample, 6) PhotometricInterpretation, 7) StripOffsets, 8) SamplesPerPixel,
 #         9) RowsPerStrip, 10) StripByteCounts, 10) PlanarConfiguration, 11) Orientation
-# Returns: TIFF image or undef
+# Returns: 0) TIFF image or undef, 1/2) Family 0/1 groups for TIFF preview IFD
 sub RebuildTIFF($;@)
 {
     local $_;
     my $et = $_[0];
     my $value = $$et{VALUE};
-    my ($i, $j, $rtn);
+    my ($i, $j, $rtn, $grp0, $grp1);
     return undef if $$et{FILE_TYPE} eq 'RWZ';
 SubFile:
     for ($i=0; ; ++$i) {
@@ -5110,12 +5220,14 @@ SubFile:
         if (not defined $img) {
             $et->Warn('Invalid ' . ($w > 256 ? 'Preview' : 'Thumbnail') . 'TIFF data');
         } elsif ($rtn or $w > 256) { # (call it a preview if larger than 256 pixels)
-            $et->FoundTag('PreviewTIFF', \$img);
+            $et->FoundTag('PreviewTIFF', \$img, $et->GetGroup($key));
         } else {
             $rtn = \$img;
+            ($grp0, $grp1) = $et->GetGroup($key);
         }
     }
-    return $rtn;
+    return $rtn unless wantarray;
+    return ($rtn, $grp0, $grp1);
 }
 
 #------------------------------------------------------------------------------
@@ -5175,6 +5287,7 @@ sub ProcessExif($$$)
     my $firstBase = $base;
     my $raf = $$dirInfo{RAF};
     my $verbose = $et->Options('Verbose');
+    my $validate = $et->Options('Validate');
     my $htmlDump = $$et{HTML_DUMP};
     my $success = 1;
     my ($tagKey, $dirSize, $makerAddr, $strEnc);
@@ -5184,17 +5297,23 @@ sub ProcessExif($$$)
     $strEnc = $et->Options('CharsetEXIF') if $$tagTablePtr{GROUPS}{0} eq 'EXIF';
 
     # ignore non-standard EXIF while in strict MWG compatibility mode
-    if ($Image::ExifTool::MWG::strict and $dirName eq 'IFD0' and
+    if (($validate or $Image::ExifTool::MWG::strict) and $dirName eq 'IFD0' and
         $tagTablePtr eq \%Image::ExifTool::Exif::Main and
         $$et{FILE_TYPE} =~ /^(JPEG|TIFF|PSD)$/)
     {
         my $path = $et->MetadataPath();
         unless ($path =~ /^(JPEG-APP1-IFD0|TIFF-IFD0|PSD-EXIFInfo-IFD0)$/) {
-            $et->Warn("Ignored non-standard EXIF at $path");
-            return 1;
+            if ($Image::ExifTool::MWG::strict) {
+                $et->Warn("Ignored non-standard EXIF at $path");
+                return 1;
+            } else {
+                $et->Warn("Non-standard EXIF at $path", 1);
+            }
         }
     }
-    $verbose = -1 if $htmlDump; # mix htmlDump into verbose so we can test for both at once
+    # mix htmlDump and Validate into verbose so we can test for all at once
+    $verbose = -1 if $htmlDump;
+    $verbose = -2 if $validate and not $verbose;
     $dirName eq 'EXIF' and $dirName = $$dirInfo{DirName} = 'IFD0';
     $$dirInfo{Multi} = 1 if $dirName =~ /^(IFD0|SubIFD)$/ and not defined $$dirInfo{Multi};
     # get a more descriptive name for MakerNote sub-directories
@@ -5208,10 +5327,10 @@ sub ProcessExif($$$)
         $dirSize = 2 + 12 * $numEntries;
         $dirEnd = $dirStart + $dirSize;
         if ($dirSize > $dirLen) {
-            if ($verbose > 0 and not $$dirInfo{SubIFD}) {
+            if (($verbose > 0 or $validate) and not $$dirInfo{SubIFD}) {
                 my $short = $dirSize - $dirLen;
                 $$et{INDENT} =~ s/..$//; # keep indent the same
-                $et->Warn("Short directory size (missing $short bytes)");
+                $et->Warn("Short directory size for $name (missing $short bytes)");
                 $$et{INDENT} .= '| ';
             }
             undef $dirSize if $dirEnd > $dataLen; # read from file if necessary
@@ -5299,8 +5418,13 @@ sub ProcessExif($$$)
         }
     }
 
+    # make sure that Compression and SubfileType are defined for this IFD (for Condition's)
+    $$et{Compression} = $$et{SubfileType} = '';
+
     # loop through all entries in an EXIF directory (IFD)
-    my ($index, $valEnd, $offList, $offHash);
+    my ($index, $valEnd, $offList, $offHash, $mapFmt);
+    $mapFmt = $$tagTablePtr{VARS}{MAP_FORMAT} if $$tagTablePtr{VARS};
+
     my ($warnCount, $lastID) = (0, -1);
     for ($index=0; $index<$numEntries; ++$index) {
         if ($warnCount > 10) {
@@ -5311,16 +5435,20 @@ sub ProcessExif($$$)
         my $format = Get16u($dataPt, $entry+2);
         my $count = Get32u($dataPt, $entry+4);
         if ($format < 1 or $format > 13) {
-            $et->HDump($entry+$dataPos+$base,12,"[invalid IFD entry]",
-                       "Bad format type: $format", 1);
-            # warn unless the IFD was just padded with zeros
-            if ($format) {
-                $et->Warn("Bad format ($format) for $name entry $index", $inMakerNotes);
-                ++$warnCount;
+            if ($mapFmt and $$mapFmt{$format}) {
+                $format = $$mapFmt{$format};
+            } else {
+                $et->HDump($entry+$dataPos+$base,12,"[invalid IFD entry]",
+                           "Bad format type: $format", 1);
+                # warn unless the IFD was just padded with zeros
+                if ($format or $validate) {
+                    $et->Warn("Bad format ($format) for $name entry $index", $inMakerNotes);
+                    ++$warnCount;
+                }
+                # assume corrupted IFD if this is our first entry (except Sony ILCE-7M2 firmware 1.21)
+                return 0 unless $index or $$et{Model} eq 'ILCE-7M2';
+                next;
             }
-            # assume corrupted IFD if this is our first entry (except Sony ILCE-7M2 firmware 1.21)
-            return 0 unless $index or $$et{Model} eq 'ILCE-7M2';
-            next;
         }
         my $formatStr = $formatName[$format];   # get name of this format
         my $valueDataPt = $dataPt;
@@ -5340,15 +5468,30 @@ sub ProcessExif($$$)
                 $origFormStr = $formatName[$format] . '[' . $oldCount . ']' if $oldCount != $count;
             }
         }
+        $validate and not $inMakerNotes and Image::ExifTool::Validate::ValidateExif(
+            $et, $tagTablePtr, $tagID, $tagInfo, $lastID, $name, $count, $formatStr);
         my $size = $count * $formatSize[$format];
         my $readSize = $size;
         if ($size > 4) {
             if ($size > 0x7fffffff) {
-                $et->Warn(sprintf("Invalid size (%u) for %s tag 0x%.4x", $size, $name, $tagID));
+                $et->Warn(sprintf("Invalid size (%u) for %s tag 0x%.4x", $size, $name, $tagID), $inMakerNotes);
                 ++$warnCount;
                 next;
             }
             $valuePtr = Get32u($dataPt, $valuePtr);
+            if ($validate and not $inMakerNotes) {
+                $et->Warn(sprintf('Odd offset for %s tag 0x%.4x', $name, $tagID), 1) if $valuePtr & 0x01;
+                if ($valuePtr < 8 || ($valuePtr + $size > length($$dataPt) and
+                                      $valuePtr + $size > $$et{VALUE}{FileSize}))
+                {
+                    $et->Warn(sprintf("Invalid offset for %s tag 0x%.4x", $name, $tagID));
+                    ++$warnCount;
+                    next;
+                }
+                if ($valuePtr + $size > $dirStart + $dataPos and $valuePtr < $dirEnd + $dataPos + 4) {
+                    $et->Warn(sprintf("Value for %s tag 0x%.4x overlaps IFD", $name, $tagID));
+                }
+            }
             # fix valuePtr if necessary
             if ($$dirInfo{FixOffsets}) {
                 my $wFlag;
@@ -5462,7 +5605,7 @@ sub ProcessExif($$$)
                             };
                         }
                     } else {
-                        $et->Warn("Bad $name offset for $tagStr");
+                        $et->Warn("Bad offset for $name $tagStr", $inMakerNotes);
                         ++$warnCount;
                     }
                     unless (defined $buff) {
@@ -5658,19 +5801,21 @@ sub ProcessExif($$$)
                     $et->Warn(sprintf('Tag ID 0x%.4x out of sequence in %s', $tagID, $dirName));
                 }
                 $lastID = $tagID;
-                my $fstr = $formatName[$format];
-                $fstr = "$origFormStr read as $fstr" if $origFormStr;
-                $et->VerboseInfo($tagID, $tagInfo,
-                    Table   => $tagTablePtr,
-                    Index   => $index,
-                    Value   => $tval,
-                    DataPt  => $valueDataPt,
-                    DataPos => $valueDataPos + $base,
-                    Size    => $size,
-                    Start   => $valuePtr,
-                    Format  => $fstr,
-                    Count   => $count,
-                );
+                if ($verbose > 0) {
+                    my $fstr = $formatName[$format];
+                    $fstr = "$origFormStr read as $fstr" if $origFormStr;
+                    $et->VerboseInfo($tagID, $tagInfo,
+                        Table   => $tagTablePtr,
+                        Index   => $index,
+                        Value   => $tval,
+                        DataPt  => $valueDataPt,
+                        DataPos => $valueDataPos + $base,
+                        Size    => $size,
+                        Start   => $valuePtr,
+                        Format  => $fstr,
+                        Count   => $count,
+                    );
+                }
             }
             next if not $tagInfo or $wrongFormat;
         }
@@ -5743,7 +5888,7 @@ sub ProcessExif($$$)
                         last;
                     } elsif ($subdirStart + 2 <= $subdirDataLen) {
                         # attempt to determine the byte ordering by checking
-                        # at the number of directory entries.  This is an int16u
+                        # the number of directory entries.  This is an int16u
                         # that should be a reasonable value.
                         my $num = Get16u($subdirDataPt, $subdirStart);
                         if ($num & 0xff00 and ($num>>8) > ($num&0xff)) {
@@ -5979,7 +6124,7 @@ EXIF and TIFF meta information.
 
 =head1 AUTHOR
 
-Copyright 2003-2016, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

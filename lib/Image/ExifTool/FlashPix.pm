@@ -19,7 +19,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::ASF;   # for GetGUID()
 
-$VERSION = '1.27';
+$VERSION = '1.30';
 
 sub ProcessFPX($$);
 sub ProcessFPXR($$$);
@@ -1063,6 +1063,7 @@ my %fpxFileType = (
         Binary => 1,
         RawConv => q{
             return undef unless $val[0] =~ /\xff\xd8\xff/g;
+            @grps = $self->GetGroup($$val{0});  # set groups from ScreenNail
             return substr($val[0], pos($val[0])-3);
         },
     },
@@ -1481,7 +1482,7 @@ sub ProcessFPXR($$$)
             my $name = Image::ExifTool::Decode(undef, $1, 'UCS2', 'II', 'Latin');
             if ($verbose) {
                 my $psize = ($size == 0xffffffff) ? 'storage' : "$size bytes";
-                $et->VPrint(0,"  |  $entry) Name: '$name' [$psize]\n");
+                $et->VPrint(0,"  |  $entry) Name: '${name}' [$psize]\n");
             }
             # remove directory specification
             $name =~ s{.*/}{}s;
@@ -1636,8 +1637,8 @@ sub ProcessFPX($$)
 {
     my ($et, $dirInfo) = @_;
     my $raf = $$dirInfo{RAF};
-    my ($buff, $out, %dumpParms, $oldIndent, $miniStreamBuff);
-    my ($tag, %hier, %objIndex);
+    my ($buff, $out, $oldIndent, $miniStreamBuff);
+    my ($tag, %hier, %objIndex, %loadedDifSect);
 
     # read header
     return 0 unless $raf->Read($buff,HDR_SIZE) == HDR_SIZE;
@@ -1666,8 +1667,6 @@ sub ProcessFPX($$)
 
     if ($verbose) {
         $out = $et->Options('TextOut');
-        $dumpParms{Out} = $out;
-        $dumpParms{MaxLen} = 96 if $verbose == 3;
         print $out "  Sector size=$sectSize\n  FAT: Count=$fatCount\n";
         print $out "  DIR: Start=$dirStart\n";
         print $out "  MiniFAT: Mini-sector size=$miniSize Start=$miniStart Count=$miniCount Cutoff=$miniCutoff\n";
@@ -1680,7 +1679,9 @@ sub ProcessFPX($$)
     my $endPos = length($buff);
     my $fat = '';
     my $fatCountCheck = 0;
+    my $difCountCheck = 0;
     my $hdrSize = $sectSize > HDR_SIZE ? $sectSize : HDR_SIZE;
+
     for (;;) {
         while ($pos <= $endPos - 4) {
             my $sect = Get32u(\$buff, $pos);
@@ -1699,11 +1700,20 @@ sub ProcessFPX($$)
         }
         last if $difStart >= END_OF_CHAIN;
         # read next DIF (Dual Indirect FAT) sector
+        if (++$difCountCheck > $difCount) {
+            $et->Warn('Unterminated DIF FAT');
+            last;
+        }
+        if ($loadedDifSect{$difStart}) {
+            $et->Warn('Cyclical reference in DIF FAT');
+            last;
+        }
         my $offset = $difStart * $sectSize + $hdrSize;
         unless ($raf->Seek($offset, 0) and $raf->Read($buff, $sectSize) == $sectSize) {
             $et->Error("Error reading DIF sector $difStart");
             return 1;
         }
+        $loadedDifSect{$difStart} = 1;
         # set end of sector information in this DIF
         $pos = 0;
         $endPos = $sectSize - 4;
@@ -1724,11 +1734,11 @@ sub ProcessFPX($$)
     }
     if ($verbose) {
         print $out "  FAT [",length($fat)," bytes]:\n";
-        HexDump(\$fat, undef, %dumpParms) if $verbose > 2;
+        $et->VerboseDump(\$fat);
         print $out "  Mini-FAT [",length($miniFat)," bytes]:\n";
-        HexDump(\$miniFat, undef, %dumpParms) if $verbose > 2;
+        $et->VerboseDump(\$miniFat);
         print $out "  Directory [",length($dir)," bytes]:\n";
-        HexDump(\$dir, undef, %dumpParms) if $verbose > 2;
+        $et->VerboseDump(\$dir);
     }
 #
 # process the directory
@@ -1930,7 +1940,7 @@ JPEG images.
 
 =head1 AUTHOR
 
-Copyright 2003-2016, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

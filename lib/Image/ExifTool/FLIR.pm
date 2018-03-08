@@ -24,7 +24,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 
-$VERSION = '1.14';
+$VERSION = '1.16';
 
 sub ProcessFLIR($$;$);
 sub ProcessFLIRText($$$);
@@ -97,7 +97,7 @@ my %float8g = ( Format => 'float', PrintConv => 'sprintf("%.8g",$val)' );
     PROCESS_PROC => \&ProcessFLIR,
     VARS => { ALPHA_FIRST => 1 },
     NOTES => q{
-        Information extracted from FLIR FFF images and the FLIR APP1 segment of JPEG
+        Information extracted from FLIR FFF images and the APP1 FLIR segment of JPEG
         images.  These tags may also be extracted from the first frame of an FLIR
         SEQ file.
     },
@@ -461,6 +461,7 @@ my %float8g = ( Format => 'float', PrintConv => 'sprintf("%.8g",$val)' );
     0x390 => { Name => 'FocusStepCount', Format => 'int16u' },
     0x45c => { Name => 'FocusDistance',  Format => 'float', PrintConv => 'sprintf("%.1f m",$val)' },
     # 0x43c - string: either "Live" or the file name
+    0x464 => { Name => 'FrameRate',  Format => 'int16u' }, #SebastianHani
 );
 
 # FLIR measurement tools record (ref 6)
@@ -1222,8 +1223,7 @@ sub GetImageType($$$)
     } elsif (length $val != $w * $h * 2) {
         $et->Warn("Unrecognized FLIR $tag data format");
     } elsif (GetByteOrder() eq 'II') {
-        require Image::ExifTool::Sony;
-        $val = Image::ExifTool::Sony::MakeTiffHeader($w,$h,1,16) . $val;
+        $val = Image::ExifTool::MakeTiffHeader($w,$h,1,16) . $val;
         $type = 'TIFF';
     } else {
         $et->Warn("Don't yet support big-endian TIFF $tag");
@@ -1311,10 +1311,7 @@ sub ProcessMeasInfo($$$)
         last if $recLen < 0x28 or $pos + $recLen > $dirEnd;
         my $pre = 'Meas' . $i;
         $et->VerboseDir("MeasInfo $i", undef, $recLen);
-        if ($verbose > 2) {
-            HexDump($dataPt, $recLen,
-                Start=>$pos, Prefix=>$$et{INDENT}, DataPos=>$dataPos);
-        }
+        $et->VerboseDump($dataPt, Len => $recLen, Start=>$pos, DataPos=>$dataPos);
         my $coordLen = Get16u($dataPt, $pos+4);
         # generate tag table entries for this tool if necessary
         foreach $t ('Type', 'Params', 'Label') {
@@ -1426,12 +1423,15 @@ sub ProcessFLIR($$;$)
 
         my $entry = $i * 0x20;
         my $recType = Get16u(\$buff, $entry);
-        next if $recType == 0;  # ignore free records
+        if ($recType == 0) {
+            $verbose and print $out "$$et{INDENT}$i) FLIR Record 0x00 (empty)\n";
+            next;
+        }
         my $recPos = Get32u(\$buff, $entry + 0x0c);
         my $recLen = Get32u(\$buff, $entry + 0x10);
 
-        $verbose and printf $out "%sFLIR Record 0x%.2x, offset 0x%.4x, length 0x%.4x\n",
-                                 $$et{INDENT}, $recType, $recPos, $recLen;
+        $verbose and printf $out "%s%d) FLIR Record 0x%.2x, offset 0x%.4x, length 0x%.4x\n",
+                                 $$et{INDENT}, $i, $recType, $recPos, $recLen;
 
         unless ($raf->Seek($recPos) and $raf->Read($rec, $recLen) == $recLen) {
             $et->Warn('Invalid FLIR record');
@@ -1443,12 +1443,9 @@ sub ProcessFLIR($$;$)
                 DataPos => $recPos,
                 Start   => 0,
                 Size    => $recLen,
-                Index => $i,
             );
         } elsif ($verbose > 2) {
-            my %parms = ( DataPos => $recPos, Prefix => $$et{INDENT} );
-            $parms{MaxLen} = 96 if $verbose < 4;
-            HexDump(\$rec, $recLen, %parms);
+            $et->VerboseDump(\$rec, Len => $recLen, DataPos => $recPos);
         }
     }
     delete $$et{SET_GROUP0};
@@ -1497,7 +1494,7 @@ Systems Inc. thermal image files (FFF, FPF and JPEG format).
 
 =head1 AUTHOR
 
-Copyright 2003-2016, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
