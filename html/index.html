@@ -74,9 +74,9 @@ span.sup        { font-size: 0.8em; font-weight: normal; position: relative; top
 </div>
 
 <blockquote><table class='dl lg'><tr><td><b>
-<a href="Image-ExifTool-10.83.tar.gz">
-Download        Version 10.83</a> (4.2 MB) -
-<a href="history.html">Mar. 7, 2018</a></b></td></tr></table></blockquote>
+<a href="Image-ExifTool-11.26.tar.gz">
+Download        Version 11.26</a> (4.3 MB) -
+<a href="history.html">Jan. 21, 2019</a></b></td></tr></table></blockquote>
 
 <p><b>ExifTool is a platform-independent <a href="ExifTool.html">Perl
 library</a> plus a <a href="exiftool_pod.html">command-line application</a> for
@@ -101,6 +101,7 @@ as well as the maker notes of many digital cameras by
 <a href="TagNames/FLIR.html">FLIR</a>,
 <a href="TagNames/FujiFilm.html">FujiFilm</a>,
 <a href="TagNames/GE.html">GE</a>,
+<a href="TagNames/GoPro.html">GoPro</a>,
 <a href="TagNames/HP.html">HP</a>,
 <a href="TagNames/JVC.html">JVC/Victor</a>,
 <a href="TagNames/Kodak.html">Kodak</a>,
@@ -127,8 +128,8 @@ distribution above.)</i></p>
 
 <blockquote><table class='dl lg'><tr><td><b>
 <a name="alone">Windows Executable:</a>
-<a href="exiftool-10.83.zip">
-         exiftool-10.83.zip</a> (5.9 MB)</b></td></tr></table></blockquote>
+<a href="exiftool-11.26.zip">
+         exiftool-11.26.zip</a> (6.0 MB)</b></td></tr></table></blockquote>
 
 <p><b>The stand-alone Windows executable</b> does not require Perl. Just
 download and un-zip the archive then double-click on
@@ -139,8 +140,8 @@ of Windows.</p>
 
 <blockquote><table class='dl lg'><tr><td><b>
 MacOS Package:
-<a href="ExifTool-10.83.dmg">
-         ExifTool-10.83.dmg</a> (2.7 MB)</b></td></tr></table></blockquote>
+<a href="ExifTool-11.26.dmg">
+         ExifTool-11.26.dmg</a> (2.8 MB)</b></td></tr></table></blockquote>
 
 <p><b>The MacOS package</b> installs the ExifTool command-line application and
 libraries in /usr/local/bin. After installing, type "<code>exiftool</code>" in
@@ -181,7 +182,7 @@ for the SHA1 and MD5 checksums to verify these distribution packages</a>.</li>
     <a href="TagNames/Photoshop.html">Photoshop IRB</a>,
     <a href="TagNames/AFCP.html">AFCP</a> and more...</li>
 <li>Reads and writes maker notes of many digital cameras</li>
-<li>Reads <a href="TagNames/QuickTime.html#Stream">timed metadata</a> from MOV/MP4/M2TS videos</li>
+<li>Reads <a href="TagNames/QuickTime.html#Stream">timed metadata</a> (eg. GPS track) from MOV/MP4/M2TS/AVI videos</li>
 <li>Numerous output formatting options (including tab-delimited, HTML, XML and JSON)</li>
 <li>Multi-lingual output (cs, de, en, en-ca, en-gb, es, fi, fr, it, ja, ko, nl, pl, ru, sv, tr, zh-cn or zh-tw)</li>
 <li><a href="geotag.html">Geotags images</a> from GPS track log files (with time drift correction!)</li>
@@ -267,12 +268,14 @@ for each file format.</p>
 <tr><td>3GP, 3GPP</td><td>R/W</td><td>3rd Gen. Partnership Project a/v (<a href="TagNames/QuickTime.html">QuickTime</a>-based)</td><td>R/W<span class=sup>3</span></td><td>R/W<span class=sup>3</span></td><td>R/W/C</td><td>-</td><td>R/W <a href="TagNames/QuickTime.html">QuickTime</a><span class=sup>4</span></td></tr>
 <tr><td><a href="TagNames/EXE.html#AR">A</a></td><td>R</td><td>Unix static library code Archive</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/EXE.html#AR">EXE</a></td></tr>
 <tr><td><a href="TagNames/Audible.html">AA</a></td><td>R</td><td>Audible Audiobook</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/Audible.html">Audible</a></td></tr>
+<tr><td>AAE</td><td>R</td><td>Apple edit information (XML <a href="TagNames/PLIST.html">PLIST</a>-based)</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/PLIST.html">PLIST</a></td></tr>
 <tr><td>AAX</td><td>R/W</td><td>Audible Enhanced Audiobook (<a href="TagNames/QuickTime.html">QuickTime</a>-based)</td><td>R/W<span class=sup>3</span></td><td>R/W<span class=sup>3</span></td><td>R/W/C</td><td>-</td><td>R/W <a href="TagNames/QuickTime.html">QuickTime</a><span class=sup>4</span></td></tr>
 <tr><td><a href="TagNames/DICOM.html">ACR</a></td><td>R</td><td>American College of Radiology ACR-NEMA (DICOM-like)</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/DICOM.html">DICOM</a></td></tr>
 <tr><td><a href="TagNames/Font.html">AFM, ACFM, AMFM</a></td><td>R</td><td>Adobe [Composite/Multiple Master] Font Metrics</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/Font.html">Font</a></td></tr>
 <tr><td>AI, AIT</td><td>R/W</td><td>Adobe Illustrator [Template] (<a href="TagNames/PostScript.html">PS</a> or <a href="TagNames/PDF.html">PDF</a>)</td><td>R/W/C<span class=sup>5</span></td><td>R/W/C<span class=sup>5</span></td><td>R/W/C<span class=sup>6</span></td><td>R/W/C<span class=sup>5</span></td><td>R/W/C <a href="TagNames/PDF.html">PDF</a> <a href="TagNames/PostScript.html">PostScript</a>, R <a href="TagNames/Photoshop.html">Photoshop</a></td></tr>
 <tr><td><a href="TagNames/AIFF.html">AIFF, AIF, AIFC</a></td><td>R</td><td>Audio Interchange File Format [Compressed]</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/AIFF.html">AIFF</a> <a href="TagNames/ID3.html">ID3</a></td></tr>
 <tr><td><a href="TagNames/APE.html">APE</a></td><td>R</td><td>Monkey's Audio</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/APE.html">APE</a> <a href="TagNames/ID3.html">ID3</a></td></tr>
+<tr><td>ARQ</td><td>R/W</td><td>Sony Alpha Pixel-Shift RAW (<a href="TagNames/EXIF.html">TIFF</a>-based)</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td>R/W <a href="TagNames/Sony.html">Sony</a> <a href="TagNames/SonyIDC.html">SonyIDC</a></td></tr>
 <tr><td>ARW</td><td>R/W</td><td>Sony Alpha RAW (<a href="TagNames/EXIF.html">TIFF</a>-based)</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td>R/W <a href="TagNames/Sony.html">Sony</a> <a href="TagNames/SonyIDC.html">SonyIDC</a></td></tr>
 <tr><td><a href="TagNames/ASF.html">ASF</a></td><td>R</td><td>Microsoft Advanced Systems Format</td><td>-</td><td>-</td><td>R</td><td>-</td><td>R <a href="TagNames/ASF.html">ASF</a></td></tr>
 <tr><td>AVI</td><td>R</td><td>Audio Video Interleaved (<a href="TagNames/RIFF.html">RIFF</a>-based)</td><td>R<span class=sup>3</span></td><td>-</td><td>R</td><td>-</td><td>R <a href="TagNames/RIFF.html">RIFF</a></td></tr>
@@ -281,9 +284,10 @@ for each file format.</p>
 <tr><td><a href="TagNames/EXIF.html">BTF</a></td><td>R</td><td>BigTIFF (64-bit Tagged Image File Format)</td><td>R</td><td>R</td><td>R</td><td>R</td><td>-</td></tr>
 <tr><td><a href="TagNames/EXE.html#CHM">CHM</a></td><td>R</td><td>Microsoft Compiled HTML format</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/EXE.html#CHM">EXE</a></td></tr>
 <tr><td>COS</td><td>R</td><td>Capture One Settings (XML-based)</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R XML</td></tr>
-<tr><td>CR2</td><td>R/W</td><td>Canon RAW 2 (<a href="TagNames/EXIF.html">TIFF</a>-based)</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C <a href="TagNames/CanonVRD.html">CanonVRD</a><span class=sup>2</span>, R/W <a href="TagNames/Canon.html">Canon</a></td></tr>
-<tr><td>CR3</td><td>R/W</td><td>Canon RAW 3 (<a href="TagNames/QuickTime.html">QuickTime</a>-based)</td><td>R</td><td>-</td><td>R/W/C</td><td>-</td><td>R/W <a href="TagNames/QuickTime.html">QuickTime</a><span class=sup>4</span>, R <a href="TagNames/Canon.html">Canon</a></td></tr>
-<tr><td><a href="TagNames/CanonRaw.html">CRW, CIFF</a></td><td>R/W</td><td>Canon RAW Camera Image File Format (<a href="canon_raw.html">CRW spec.</a>)</td><td>-</td><td>-</td><td>R/W/C</td><td>-</td><td>R/W/C <a href="TagNames/CanonVRD.html">CanonVRD</a><span class=sup>2</span>, R/W <a href="TagNames/CanonRaw.html">CanonRaw</a></td></tr>
+<tr><td>CR2</td><td>R/W</td><td>Canon RAW 2 (<a href="TagNames/EXIF.html">TIFF</a>-based) (<a href="http://lclevy.free.fr/cr2/">CR2 spec</a>)</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C <a href="TagNames/CanonVRD.html">CanonVRD</a><span class=sup>2</span>, R/W <a href="TagNames/Canon.html">Canon</a></td></tr>
+<tr><td>CR3</td><td>R/W</td><td>Canon RAW 3 (<a href="TagNames/QuickTime.html">QuickTime</a>-based) (<a href="https://github.com/lclevy/canon_cr3">CR3 spec</a>)</td><td>R</td><td>-</td><td>R/W/C</td><td>-</td><td>R/W <a href="TagNames/QuickTime.html">QuickTime</a><span class=sup>4</span>, R <a href="TagNames/Canon.html">Canon</a></td></tr>
+<tr><td>CRM</td><td>R/W</td><td>Canon RAW Movie (<a href="TagNames/QuickTime.html">QuickTime</a>-based)</td><td>R</td><td>-</td><td>R/W/C</td><td>-</td><td>R/W <a href="TagNames/QuickTime.html">QuickTime</a><span class=sup>4</span>, R <a href="TagNames/Canon.html">Canon</a></td></tr>
+<tr><td><a href="TagNames/CanonRaw.html">CRW, CIFF</a></td><td>R/W</td><td>Canon RAW Camera Image File Format (<a href="canon_raw.html">CRW spec</a>)</td><td>-</td><td>-</td><td>R/W/C</td><td>-</td><td>R/W/C <a href="TagNames/CanonVRD.html">CanonVRD</a><span class=sup>2</span>, R/W <a href="TagNames/CanonRaw.html">CanonRaw</a></td></tr>
 <tr><td>CS1</td><td>R/W</td><td>Sinar CaptureShop 1-shot RAW (<a href="TagNames/Photoshop.html">PSD</a>-based)</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td>R <a href="TagNames/Photoshop.html">Photoshop</a></td></tr>
 <tr><td><a href="TagNames/DICOM.html">DCM, DC3, DIC, DICM</a></td><td>R</td><td>DICOM - Digital Imaging and Communications in Medicine</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/DICOM.html">DICOM</a></td></tr>
 <tr><td>DCP</td><td>R/W</td><td>DNG Camera Profile (<a href="TagNames/DNG.html">DNG</a>-like)</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td>-</td></tr>
@@ -301,6 +305,7 @@ for each file format.</p>
 <tr><td><a href="TagNames/EXE.html#MachO">DYLIB</a></td><td>R</td><td>MacOS Mach-O executable and library files</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/EXE.html#MachO">EXE</a></td></tr>
 <tr><td><a href="TagNames/DV.html">DV</a></td><td>R</td><td>Digital Video</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/DV.html">DV</a></td></tr>
 <tr><td>DVB</td><td>R/W</td><td>Digital Video Broadcasting (<a href="TagNames/QuickTime.html">QuickTime</a>-based)</td><td>R/W<span class=sup>3</span></td><td>R/W<span class=sup>3</span></td><td>R/W/C</td><td>-</td><td>R/W <a href="TagNames/QuickTime.html">QuickTime</a><span class=sup>4</span></td></tr>
+<tr><td>DVR-MS</td><td>R</td><td>Microsoft Digital Video Recording (<a href="TagNames/ASF.html">ASF</a>-based)</td><td>-</td><td>-</td><td>R</td><td>-</td><td>R <a href="TagNames/ASF.html">ASF</a></td></tr>
 <tr><td>EIP</td><td>R</td><td>Capture One Enhanced Image Package (<a href="TagNames/ZIP.html">ZIP</a>-based)</td><td>R</td><td>-</td><td>-</td><td>-</td><td>R XML <a href="TagNames/ZIP.html">ZIP</a></td></tr>
 <tr><td><a href="TagNames/PostScript.html">EPS, EPSF, PS</a></td><td>R/W</td><td>[Encapsulated] PostScript Format</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C <a href="TagNames/PostScript.html">PostScript</a>, R <a href="TagNames/Photoshop.html">Photoshop</a></td></tr>
 <tr><td>EPUB</td><td>R</td><td>Electronic Publication (ZIP/XML-based)</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R XML <a href="TagNames/ZIP.html">ZIP</a></td></tr>
@@ -333,8 +338,8 @@ for each file format.</p>
 <tr><td>INX</td><td>R</td><td>Adobe InDesign Interchange (XML-based)</td><td>-</td><td>-</td><td>R</td><td>-</td><td>-</td></tr>
 <tr><td><a href="TagNames/ISO.html">ISO</a></td><td>R</td><td>ISO 9660 disk image</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/ISO.html">ISO</a></td></tr>
 <tr><td><a href="TagNames/ITC.html">ITC</a></td><td>R</td><td>iTunes Cover Flow artwork</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/ITC.html">ITC</a></td></tr>
-<tr><td>J2C, JPC</td><td>R</td><td>JPEG 2000 codestream</td><td>R<span class=sup>3</span></td><td>R<span class=sup>3</span></td><td>R</td><td>R</td><td>R <a href="TagNames/Jpeg2000.html">Jpeg2000</a> <a href="TagNames/Photoshop.html">Photoshop</a><span class=sup>3</span></td></tr>
-<tr><td><a href="TagNames/Jpeg2000.html">JP2, JPF, J2K, JPM, JPX</a></td><td>R/W</td><td>JPEG 2000 image [Compound/Extended]</td><td>R/W/C<span class=sup>3</span></td><td>R/W/C<span class=sup>3</span></td><td>R/W/C</td><td>R</td><td>R/W/C <a href="TagNames/Jpeg2000.html">Jpeg2000</a>, R <a href="TagNames/Photoshop.html">Photoshop</a><span class=sup>3</span></td></tr>
+<tr><td>J2C, J2K, JPC</td><td>R</td><td>JPEG 2000 codestream</td><td>R<span class=sup>3</span></td><td>R<span class=sup>3</span></td><td>R</td><td>R</td><td>R <a href="TagNames/Jpeg2000.html">Jpeg2000</a> <a href="TagNames/Photoshop.html">Photoshop</a><span class=sup>3</span></td></tr>
+<tr><td><a href="TagNames/Jpeg2000.html">JP2, JPF, JPM, JPX</a></td><td>R/W</td><td>JPEG 2000 image [Compound/Extended]</td><td>R/W/C<span class=sup>3</span></td><td>R/W/C<span class=sup>3</span></td><td>R/W/C</td><td>R</td><td>R/W/C <a href="TagNames/Jpeg2000.html">Jpeg2000</a>, R <a href="TagNames/Photoshop.html">Photoshop</a><span class=sup>3</span></td></tr>
 <tr><td><a href="TagNames/JPEG.html">JPEG, JPG, JPE</a></td><td>R/W</td><td>Joint Photographic Experts Group image</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td><a href="#JPEG">Supported JPEG Meta Information</a></td></tr>
 <tr><td><a href="TagNames/JSON.html">JSON</a></td><td>R</td><td>JavaScript Object Notation</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/JSON.html">JSON</a></td></tr>
 <tr><td>K25</td><td>R</td><td>Kodak DC25 RAW (<a href="TagNames/EXIF.html">TIFF</a>-based)</td><td>R</td><td>R</td><td>R</td><td>R</td><td>-</td></tr>
@@ -377,6 +382,7 @@ for each file format.</p>
 <tr><td>PAC</td><td>R</td><td>Lossless Predictive Audio Compression (<a href="TagNames/RIFF.html">RIFF</a>-based)</td><td>R<span class=sup>3</span></td><td>-</td><td>R</td><td>-</td><td>R <a href="TagNames/RIFF.html">RIFF</a></td></tr>
 <tr><td><a href="TagNames/iWork.html">PAGES</a></td><td>R</td><td>Apple iWork '09 Pages document</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/iWork.html">XML</a> <a href="TagNames/ZIP.html">ZIP</a></td></tr>
 <tr><td><a href="TagNames/PhotoCD.html">PCD</a></td><td>R</td><td>Kodak Photo CD Image Pac</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/PhotoCD.html">PhotoCD</a></td></tr>
+<tr><td><a href="TagNames/PCX.html">PCX</a></td><td>R</td><td>PC Paintbrush</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/PCX.html">PCX</a></td></tr>
 <tr><td><a href="TagNames/Palm.html">PDB, PRC</a></td><td>R</td><td>Palm Database</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/Palm.html">Palm</a></td></tr>
 <tr><td><a href="TagNames/PDF.html">PDF</a></td><td>R/W</td><td>Adobe Portable Document Format</td><td>R<span class=sup>3</span></td><td>R<span class=sup>3</span></td><td>R/W/C</td><td>R<span class=sup>3</span></td><td>R/W/C <a href="TagNames/PDF.html">PDF</a>, R <a href="TagNames/Photoshop.html">Photoshop</a></td></tr>
 <tr><td>PEF</td><td>R/W</td><td>Pentax (RAW) Electronic Format (<a href="TagNames/EXIF.html">TIFF</a>-based)</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td>R/W <a href="TagNames/Pentax.html">Pentax</a></td></tr>
@@ -430,6 +436,7 @@ for each file format.</p>
 <tr><td>WEBM</td><td>R</td><td>Google Web Movie (<a href="TagNames/Matroska.html">Matroska</a>-based)</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/Matroska.html">Matroska</a></td></tr>
 <tr><td>WEBP</td><td>R</td><td>Google Web Picture (<a href="TagNames/RIFF.html">RIFF</a>-based)</td><td>R<span class=sup>3</span></td><td>-</td><td>R</td><td>-</td><td>R <a href="TagNames/RIFF.html">RIFF</a></td></tr>
 <tr><td>WMA, WMV</td><td>R</td><td>Windows Media Audio/Video (<a href="TagNames/ASF.html">ASF</a>-based)</td><td>-</td><td>-</td><td>R</td><td>-</td><td>R <a href="TagNames/ASF.html">ASF</a></td></tr>
+<tr><td><a href="TagNames/WTV.html">WTV</a></td><td>R</td><td>Windows recorded TV show</td><td>-</td><td>-</td><td>-</td><td>-</td><td>R <a href="TagNames/WTV.html">WTV</a></td></tr>
 <tr><td>WV</td><td>R</td><td>WavePack lossless audio (<a href="TagNames/RIFF.html">RIFF</a>-based)</td><td>R<span class=sup>3</span></td><td>-</td><td>R</td><td>-</td><td>R <a href="TagNames/RIFF.html">RIFF</a></td></tr>
 <tr><td><a href="TagNames/SigmaRaw.html">X3F</a></td><td>R/W</td><td>Sigma/Foveon RAW</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td>R/W/C</td><td>R/W <a href="TagNames/Sigma.html">Sigma</a>, R <a href="TagNames/SigmaRaw.html">SigmaRaw</a></td></tr>
 <tr><td><a href="TagNames/GIMP.html">XCF</a></td><td>R</td><td>GIMP native image format</td><td>R</td><td>R</td><td>R</td><td>R</td><td>R <a href="TagNames/GIMP.html">GIMP</a></td></tr>
@@ -454,7 +461,7 @@ of meta information in JPEG images:</p>
 <tr><td>APP0 - <a href="TagNames/CanonRaw.html">CIFF</a></td><td>R/W</td><td><a href="canon_raw.html">Camera Image File Format</a> (used by some Canon models)</td></tr>
 <tr><td>APP0 - <a href="TagNames/JPEG.html#AVI1">AVI1</a></td><td>R</td><td>JPEG AVI information</td></tr>
 <tr><td>APP0 - <a href="TagNames/JPEG.html#Ocad">Ocad</a></td><td>R</td><td>Photobucket Ocad segment</td></tr>
-<tr><td>APP1 - <a href="TagNames/EXIF.html">EXIF</a></td><td>R/W/C</td><td>Exchangeable Image File Format (including maker notes)</td></tr>
+<tr><td>APP1 - <a href="TagNames/EXIF.html">EXIF</a></td><td>R/W/C</td><td>Exchangeable Image File Format (multi-segment)</td></tr>
 <tr><td>APP1 - <a href="TagNames/XMP.html">XMP</a></td><td>R/W/C</td><td>Extensible Metadata Platform (multi-segment)</td></tr>
 <tr><td>APP1 - <a href="TagNames/Casio.html#QVCI">QVCI</a></td><td>R</td><td>Casio QV-7000SX QVCI information</td></tr>
 <tr><td>APP1 - <a href="TagNames/FLIR.html#FFF">FLIR</a></td><td>R</td><td>FLIR thermal imaging data (multi-segment)</td></tr>
@@ -469,6 +476,7 @@ of meta information in JPEG images:</p>
 <tr><td>APP4 - <a href="TagNames/FlashPix.html">FPXR</a></td><td>R</td><td>FlashPix Ready in non-standard location (multi-segment)</td></tr>
 <tr><td>APP4 - PreviewImage</td><td>R</td><td>(continued from APP3)</td></tr>
 <tr><td>APP5 - <a href="TagNames/Ricoh.html#RMETA">Ricoh RMETA</a></td><td>R</td><td>Ricoh custom fields</td></tr>
+<tr><td>APP5 - <a href="TagNames/Samsung.html#APP5">Samsung UniqueID</a></td><td>R</td><td>Samsung Unique ID</td></tr>
 <tr><td>APP5 - PreviewImage</td><td>R</td><td>(continued from APP4)</td></tr>
 <tr><td>APP6 - <a href="TagNames/JPEG.html#EPPIM">EPPIM</a></td><td>R</td><td>Toshiba PrintIM</td></tr>
 <tr><td>APP6 - <a href="TagNames/JPEG.html#NITF">NITF</a></td><td>R</td><td>National Imagery Transmission Format</td></tr>
@@ -755,8 +763,8 @@ JFIF, JPEG, JSON, Jpeg2000, LNK, Leaf, Lytro, M2TS, MIE, MIFF, MNG, MOI,
 MPC, MPEG, MPF, MXF, MakerNotes, Matroska, Meta, Ogg, OpenEXR, Opus, PDF,
 PICT, PLIST, PNG, PSP, Palm, PanasonicRaw, PhotoCD, PhotoMechanic,
 Photoshop, PostScript, PrintIM, QuickTime, RAF, RIFF, RSRC, RTF, Radiance,
-Rawzor, Real, Red, SVG, SigmaRaw, Stim, Theora, Torrent, VCard, Vorbis, XML,
-XMP, ZIP
+Rawzor, Real, Red, SVG, SigmaRaw, Stim, Theora, Torrent, VCard, Vorbis, WTV,
+XML, XMP, ZIP
 </td></tr>
 <tr><td><b>1&nbsp;(Specific&nbsp;Location)</b></td>
 <td class=sm>AC3, AFCP, AIFF, APE, ASF, AVI1, Adobe, AdobeCM, AdobeDNG, Apple, Audible,
@@ -784,7 +792,7 @@ Radiance, Rawzor, Real, Real-CONT, Real-MDPR, Real-PROP, Real-RA3, Real-RA4,
 Real-RA5, Real-RJMD, Reconyx, Red, Ricoh, SPIFF, SR2, SR2DataIFD, SR2SubIFD,
 SRF#, SVG, Samsung, Sanyo, Scalado, Sigma, SigmaRaw, Sony, SonyIDC, Stim,
 SubIFD, System, Theora, Torrent, Track#, VCalendar, VCard, Version0, Vorbis,
-XML, XMP, XMP-DICOM, XMP-GAudio, XMP-GImage, XMP-GPano, XMP-GSpherical,
+WTV, XML, XMP, XMP-DICOM, XMP-GAudio, XMP-GImage, XMP-GPano, XMP-GSpherical,
 XMP-MP, XMP-MP1, XMP-PixelLive, XMP-aas, XMP-acdsee, XMP-album,
 XMP-apple-fi, XMP-aux, XMP-cc, XMP-cell, XMP-creatorAtom, XMP-crs, XMP-dc,
 XMP-dex, XMP-digiKam, XMP-drone-dji, XMP-dwc, XMP-exif, XMP-exifEX,
@@ -926,6 +934,11 @@ for proper rendering of the image.</li>
 
 <h2><font color='#cc6600'><a name="problems">Known Problems</a></font></h2>
 <ul>
+<li>The <b>Sony Imaging Edge applications</b> give an error when trying to open
+<b>ARW</b> or <b>ARQ</b> images edited by ExifTool, although other RAW image
+utilities including Sony IDC (Sony's older RAW image converter), Adobe Photoshop
+and DNG Converter, Apple Preview, dcraw, and LibRaw's SonyPixelShift2DNG have no
+problems with these.</li>
 <li>Some antivirus software has been known to cause problems for the <b>Windows</b>
 version of ExifTool. <b>Norton Antivirus</b> may delete ExifTool when it is run,
 <b>Windows Defender</b> may slow down launching of ExifTool or hang it altogether,
@@ -936,8 +949,8 @@ apparently may be seen as a threat by antivirus software.  A work-around is to
 add ExifTool to the exclusion list of the antivirus software.</li>
 <li><b>Adobe Camera Raw and DNG Converter 9.5.1</b> fail to recognize edited
 <b>Samsung SRW</b> images from some models (NX30, NX300, NX2000 and EK-GN120).
-<i class=red>[This problem was fixed for the NX models in ExifTool 10.26, but
-remains for the EK-GN120]</i></li>
+<i class=grn>[This problem was fixed for the NX models in ExifTool 10.26, and
+writing of EK-GN120 files was disabled in ExifTool 10.95]</i></li>
 <li>In <b>Windows</b>, ExifTool will not process files with <b>Unicode characters
 in the file name</b>.  This is due to an underlying lack of support for Unicode
 filenames in the Windows standard C I/O libraries. <i class=grn>[This deficiency
@@ -1056,8 +1069,8 @@ greatly improved by taking advantage of ExifTool's <b>batch processing capabilit
 command) to reduce the number of executed commands when performing complex
 operations or processing multiple files.<span class=sm><sup>&dagger;</sup></span>
 <i>[One exiftool user
-<a href="https://web.archive.org/web/20131204165247/http://www.christian-etter.de/?p=458">documented
-a 60x speed increase</a> by processing a large number of files with a single
+<!-- dead link <a href="https://web.archive.org/web/20131204165247/http://www.christian-etter.de/?p=458"> -->
+documented a 60x speed increase<!-- </a> --> by processing a large number of files with a single
 command instead of running exiftool separately on each file.]</i> Also, the
 <code>-execute</code> option may be used to perform multiple independent
 operations with a single invocation of exiftool, and together with the
@@ -1122,7 +1135,7 @@ binary data.  The simple script above does not handle this case.</p>
 <li><a href="http://owl.phy.queensu.ca/~phil/exiftool/">ExifTool Home Page</a></li>
 <li><a href="faq.html">ExifTool FAQ</a></li>
 <li><a href="http://u88.n24.queensu.ca/exiftool/forum/">ExifTool Forum</a></li>
-<li><a href="TagNames/index.html">ExifTool Tag Names</a></li>
+<li><a href="TagNames/index.html">ExifTool Tag Names</a> (<a href="http://owl.phy.queensu.ca/~phil/exiftool/TagNames.pdf">download in PDF format</a>)</li>
 <li><a href="history.html">ExifTool Revision History</a> (<a href="http://owl.phy.queensu.ca/~phil/exiftool/rss.xml">RSS feed</a>)</li>
 <li><a href="exiftool_pod.html">exiftool Application Documentation</a> (<a href="http://owl.phy.queensu.ca/~phil/exiftool/exiftool_pod.pdf">download in PDF format</a>)</li>
 <li><a href="ExifTool.html">Image::ExifTool API Documentation</a> (<a href="http://owl.phy.queensu.ca/~phil/exiftool/ExifTool.pdf">download in PDF format</a>)</li>
@@ -1137,19 +1150,22 @@ binary data.  The simple script above does not handle this case.</p>
 <li><a href="canon_raw.html">Canon RAW (CRW) File Format Specification</a></li>
 <li><a href="MIE1.1-20070121.pdf">MIE 1.1 File Format Specification (pdf)</a></li>
 <li><a href="https://sourceforge.net/projects/exiftool/">ExifTool SourceForge project page</a> (<a href="https://sourceforge.net/p/exiftool/discussion/">alternate discussion forum</a>)</li>
+<li><a href="https://github.com/exiftool/exiftool">ExifTool source code on GitHub</a></li>
 <li><a href="http://owl.phy.queensu.ca/~phil/exiftool/sample_images.html">JPEG Image Samples</a> (and
     <a href="http://owl.phy.queensu.ca/~phil/exiftool/makernote_types.html">Table of Makernote Types</a>)</li>
-<li><a href="http://search.cpan.org/dist/Image-ExifTool/">Image::ExifTool at CPAN</a> (CPAN Search)</li>
+<li><a href="https://metacpan.org/release/Image-ExifTool">Image::ExifTool at MetaCPAN</a></li>
 <li><a href="https://rt.cpan.org/Public/Dist/Display.html?Name=Image-ExifTool">ExifTool Bug Reports</a> (CPAN Request Tracker)</li>
 <li><a href="http://www.cpantesters.org/distro/I/Image-ExifTool.html">ExifTool Test Reports</a> (CPAN Testers)</li>
+<li><a href="http://matrix.cpantesters.org/?dist=Image-ExifTool;maxver=1">CPAN Testers Matrix</a> (max version with a PASS)</li>
 </ul>
 
 <p><b><a name="user_docs">User-contributed Documentation</a></b></p>
 <ul>
-<li><a href="http://www.youtube.com/results?search_query=avpreserve+exiftool">ExifTool Tutorial</a> (video in 4 parts by <a href="http://www.avpreserve.com">AVPreserve</a>)</li>
+<li><a href="https://www.weareavp.com/exiftool-tutorial-series/">ExifTool Tutorial</a> (video in 4 parts by <a href="https://www.weareavp.com">AVP</a>)</li>
 <li><a href="http://www.youtube.com/watch?v=K9PAD7GqUag">Using the ExifTool on Linux to read/write Exif Tags to your photo collection</a> (video by <a href="http://www.linuxbyexample.org">Linux By Example</a>)</li>
 <li><a href="http://www.youtube.com/watch?v=WchknYwbFJY">Working with jpg Metadata Comments - Exiftool - BASH - Linux Command Line</a> (video by <a href="http://www.linuxbyexample.org">Linux By Example</a>)</li>
 <li><a href="http://sourceforge.net/projects/exiftool1line/files/">Useful one-line ExifTool commands</a> (.txt file)</li>
+<li><a href="http://orchisere.pagesperso-orange.fr/logiciels/html/exiftool.htm">ExifTool tuto en fran&ccedil;ais</a></li>
 </ul>
 
 <h3><a name="related">Related Utilities</a></h3>
@@ -1159,7 +1175,7 @@ binary data.  The simple script above does not handle this case.</p>
 <p><b><a name="related_win">Windows</a></b></p>
 <ul>
 <li><a href="http://u88.n24.queensu.ca/~bogdan/">ExifTool GUI for Windows</a>: GUI for viewing meta information with some editing features</li>
-<li><a href="http://www.logipole.com/metadata++_en.htm">Metadata++</a>: View, edit, extract, copy metadata metadata</li>
+<li><a href="https://www.logipole.com/metadata++-en.htm">Metadata++</a>: View, edit, extract, copy metadata metadata</li>
 <!-- dead <li><a href="http://www.thezeal.com/software/?Exif_Stats_Utility">Exif Stats Utility</a>: Analyzes images to tabulate apertures, exposure times, etc</li> -->
 <li><a href="http://aeropic.free.fr/H&amp;B/AUTO_ISO_patcher/">Auto ISO Tool</a>: GUI front-end for ExifTool to patch Canon ISO information</li>
 <!-- dead <li><a href="http://home.roadrunner.com/~dick/ExifAuto.htm">ExifAuto</a>: GUI front-end for ExifTool to perform simple operations</li> -->
@@ -1180,6 +1196,7 @@ binary data.  The simple script above does not handle this case.</p>
 <li><a href="http://fhotolab.de/wp/?page_id=795">EXIFCopy</a>: Copy all EXIF information between files</li>
 <li><a href="http://www.abscreensavers.com/random-photo-screensaver/">Random Photo Screensaver</a>: Photo screensaver with metadata display</li>
 <li><a href="https://www.picageotag.com/en/">PicaGeoTag</a>: Geolocate your photos</li>
+<li><a href="https://onedrive.live.com/?authkey=%21ACLDz87Pi7VH%5FWA&amp;id=6266D5E1E0FBB1B8%2193728&amp;cid=6266D5E1E0FBB1B8">PictureTools</a>: Tools for viewing pictures and editing EXIF data or renaming files</li>
 </ul>
 
 <p><b><a name="related_mac">MacOS</a></b></p>
@@ -1336,6 +1353,7 @@ to the code:</p>
 <li>Warren Hatch for decoding many Nikon tags</li>
 <li>Jos Roost for decoding many Sony tags for various models</li>
 <li>Iliah Borg and <a href="http://www.libraw.org/">LibRaw</a> for decoding many raw development tags</li>
+<li>Bryan K. Williams and Hayo Baan for their help with the <a href="http://u88.n24.queensu.ca/exiftool/forum/">ExifTool Forum</a></li>
 </ul>
 
 <h2><a name="license">License</a></h2>
@@ -1367,7 +1385,7 @@ $<input name="amount" value="0.00" size="6">
 </blockquote>
 <p><i class=lt>(Your generous donations have provided the funds used to purchase a backup
 <a href="http://u88.n24.queensu.ca/exiftool/forum/">ExifTool Forum</a> server,
-allowing support to be maintained while the other machine is down for repairs -- Feb 2018.)</i></p>
+allowing support to be maintained while the other machine was down for repairs.)</i></p>
 
 <h2><a name="contact">Contact Me</a></h2>
 

@@ -534,7 +534,7 @@ my %fileFormat = (
             I haven't found a reference for the format of tags 121, 184-188 and
             225-232, so I have just make them writable as strings with
             reasonable length.  Beware that if this is wrong, other utilities
-            won't be able to read these tags as written by ExifTool
+            may not be able to read these tags as written by ExifTool
         },
     },
     122 => {
@@ -1253,7 +1253,7 @@ image files.
 
 =head1 AUTHOR
 
-Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
